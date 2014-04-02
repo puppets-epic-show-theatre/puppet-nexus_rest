@@ -1,4 +1,4 @@
-name    'atlassian/puppet-module-rest'
+name    'atlassian-rest'
 version '0.1.0'
 source 'git@bitbucket.org:atlassian/puppet-module-rest.git'
 author 'Atlassian'
