@@ -1,0 +1,4 @@
+fixtures:
+  symlinks:
+    rest: "#{source_dir}"
+
