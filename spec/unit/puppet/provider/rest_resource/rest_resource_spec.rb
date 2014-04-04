@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-provider_class = Puppet::Type.type(:rest_resource).provider(:rest)
+provider_class = Puppet::Type.type(:nexus_repository).provider(:rest)
 
 describe provider_class do
 
     let :resource do
-      Puppet::Type.type(:rest_resource).new(
+      Puppet::Type.type(:nexus_repository).new(
             :name     => 'example',
             :baseurl  => 'http://example.com',
             :resource => "/api/users",

@@ -1,5 +1,5 @@
-Puppet::Type.newtype(:rest_resource) do
-  @doc = "Manages a resource through a REST API"
+Puppet::Type.newtype(:nexus_repository) do
+  @doc = "Manages Nexus Repository through a REST API"
 
   newparam(:name, :namevar => true) do
   end
