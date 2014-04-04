@@ -9,7 +9,7 @@ describe provider_class do
             :name     => 'example',
             :baseurl  => 'http://example.com',
             :resource => "/api/users",
-            :timeout  => 10,
+            :timeout  => 10
       )
     end
     let :provider do
