@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-provider_class = Puppet::Type.type(:nexus_repository).provider(:rest)
+provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
 

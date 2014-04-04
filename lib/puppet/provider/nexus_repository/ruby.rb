@@ -1,4 +1,4 @@
-Puppet::Type.type(:nexus_repository).provide(:rest) do
+Puppet::Type.type(:nexus_repository).provide(:ruby) do
     desc "Uses Ruby's rest library"
 
     def create
