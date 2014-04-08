@@ -4,7 +4,17 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     desc "Uses Ruby's rest library"
 
     def create
-        # todo
+      uri = URI("http://example.com/service/local/repositories")
+      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+        request = Net::HTTP::Post.new uri.request_uri
+
+        response = http.request request
+        case response
+        when Net::HTTPSuccess then
+        else
+          raise Puppet::Error, "Failed to create nexus_repository #{resource[:name]}: " + response.code + " - " + response.msg
+        end
+      end
     end
 
     def destroy

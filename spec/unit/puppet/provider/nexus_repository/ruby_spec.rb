@@ -58,8 +58,7 @@ describe provider_class do
 
     it 'should raise an error if response is not expected' do
       stub = stub_request(:any, 'example.com/service/local/repositories').to_return(:status => 503)
-      provider.create
-      stub.should have_been_requested
+      expect { provider.create }.to raise_error
     end
   end
 
