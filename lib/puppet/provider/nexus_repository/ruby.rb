@@ -24,9 +24,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           return false
         else
           raise Puppet::Error, "Failed to check existence of puppet resource: " + response.code + " - " + response.msg
+          return false
         end
       end
-
-      false
     end
 end
