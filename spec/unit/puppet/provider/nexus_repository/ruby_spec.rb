@@ -5,6 +5,7 @@ provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
 
+  describe "exists" do
     let :provider do
       resource = Puppet::Type::Nexus_repository.new(
         {
@@ -34,4 +35,5 @@ describe provider_class do
 
       expect { provider.exists? }.to raise_error
     end
+  end
 end
