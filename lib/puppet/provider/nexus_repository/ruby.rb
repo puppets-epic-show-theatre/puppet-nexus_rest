@@ -12,7 +12,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     end
 
     def exists?
-      uri = URI('http://example.com/api/resource')
+      uri = URI("http://example.com/service/local/repositories/#{resource[:name]}")
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Get.new uri.request_uri
 

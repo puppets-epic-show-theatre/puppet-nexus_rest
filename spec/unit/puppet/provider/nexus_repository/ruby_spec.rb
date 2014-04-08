@@ -18,21 +18,20 @@ describe provider_class do
     end
 
     it "should return false if response is not found" do
-      stub_request(:any, 'example.com/api/resource').to_return(:status => 404)
+      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 404)
 
       provider.exists?.should be_false
     end
 
     it "should return true if response is ok" do
-      stub_request(:any, 'example.com/api/resource').to_return(:status => 200)
+      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 200)
 
       provider.exists?.should be_true
     end
 
     it "should return raise an error if response is not expected" do
-      stub_request(:any, 'example.com/api/resource').to_return(:status => 503)
+      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 503)
 
       expect { provider.exists? }.to raise_error
     end
 end
-
