@@ -30,7 +30,7 @@ describe provider_class do
       provider.exists?.should be_true
     end
 
-    it "should return raise an error if response is not expected" do
+    it "should raise an error if response is not expected" do
       stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 503)
 
       expect { provider.exists? }.to raise_error
