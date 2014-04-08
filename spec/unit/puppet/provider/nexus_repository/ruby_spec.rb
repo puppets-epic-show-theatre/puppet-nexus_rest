@@ -51,20 +51,19 @@ describe provider_class do
     end
 
     it 'should submit a DELETE to /service/local/repositories/example' do
-      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 200)
-
+      stub = stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 200)
       provider.destroy
+      stub.should have_been_requested
     end
 
     it 'should not fail if resource already deleted' do
-      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 404)
-
+      stub = stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 404)
       provider.destroy
+      stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
       stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 503)
-
       expect { provider.destroy }.to raise_error
     end
   end
