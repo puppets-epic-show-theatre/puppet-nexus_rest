@@ -16,6 +16,24 @@ describe provider_class do
     provider_class.new(resource)
   end
 
+  describe 'instances' do
+    let :instances do
+      stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}, {"id": "repository-2"}] }')
+      provider_class.instances
+    end
+
+    it { instances.should have(2).items }
+  end
+
+  describe 'an instance' do
+    let :instance do
+      stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      provider_class.instances[0]
+    end
+
+    it { instance.name.should == 'repository-1' }
+  end
+
   describe "exists" do
     it "should return false if response is not found" do
       stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 404)
