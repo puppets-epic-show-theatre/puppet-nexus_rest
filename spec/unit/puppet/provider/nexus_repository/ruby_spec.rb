@@ -36,4 +36,24 @@ describe provider_class do
       expect { provider.exists? }.to raise_error
     end
   end
+
+  describe 'destroy' do
+    let :provider do
+      resource = Puppet::Type::Nexus_repository.new(
+        {
+            :name     => 'example',
+            :baseurl  => 'http://example.com',
+            :resource => "/api/users",
+            :timeout  => 10
+        }
+      )
+      provider_class.new(resource)
+    end
+
+    it 'should submit a DELETE to /service/local/repositories/example' do
+      provider.destroy
+
+      WebMock.should have_requested(:delete, 'example.com/service/local/repositories/example')
+    end
+  end
 end
