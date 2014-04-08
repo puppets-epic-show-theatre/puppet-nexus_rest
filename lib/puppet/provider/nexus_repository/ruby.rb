@@ -17,6 +17,20 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       end
     end
 
+    def update
+      uri = URI("http://example.com/service/local/repositories/example")
+      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+        request = Net::HTTP::Put.new uri.request_uri
+
+        response = http.request request
+        case response
+        when Net::HTTPSuccess then
+        else
+          raise Puppet::Error, "Failed to create nexus_repository #{resource[:name]}: " + response.code + " - " + response.msg
+        end
+      end
+    end
+
     def destroy
       uri = URI("http://example.com/service/local/repositories/#{resource[:name]}")
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
