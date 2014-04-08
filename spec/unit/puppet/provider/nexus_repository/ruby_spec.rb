@@ -4,20 +4,19 @@ include WebMock::API
 provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
+  let :provider do
+    resource = Puppet::Type::Nexus_repository.new(
+      {
+          :name     => 'example',
+          :baseurl  => 'http://example.com',
+          :resource => "/api/users",
+          :timeout  => 10
+      }
+    )
+    provider_class.new(resource)
+  end
 
   describe "exists" do
-    let :provider do
-      resource = Puppet::Type::Nexus_repository.new(
-        {
-            :name     => 'example',
-            :baseurl  => 'http://example.com',
-            :resource => "/api/users",
-            :timeout  => 10
-        }
-      )
-      provider_class.new(resource)
-    end
-
     it "should return false if response is not found" do
       stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 404)
 
@@ -38,18 +37,6 @@ describe provider_class do
   end
 
   describe 'create' do
-    let :provider do
-      resource = Puppet::Type::Nexus_repository.new(
-        {
-            :name     => 'example',
-            :baseurl  => 'http://example.com',
-            :resource => "/api/users",
-            :timeout  => 10
-        }
-      )
-      provider_class.new(resource)
-    end
-
     it 'should submit a POST to /service/local/repositories' do
       stub = stub_request(:post, 'example.com/service/local/repositories').to_return(:status => 200)
       provider.create
@@ -63,18 +50,6 @@ describe provider_class do
   end
 
   describe 'destroy' do
-    let :provider do
-      resource = Puppet::Type::Nexus_repository.new(
-        {
-            :name     => 'example',
-            :baseurl  => 'http://example.com',
-            :resource => "/api/users",
-            :timeout  => 10
-        }
-      )
-      provider_class.new(resource)
-    end
-
     it 'should submit a DELETE to /service/local/repositories/example' do
       stub = stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 200)
       provider.destroy
