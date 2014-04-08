@@ -14,7 +14,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
         response = http.request request
         case response
-        when !Net::HTTPSuccess || !Net::HTTPNotFound then
+        when Net::HTTPSuccess then
+        when Net::HTTPNotFound then
+        else
           raise Puppet::Error, "Failed to delete nexus_repository #{resource[:name]}: " + response.code + " - " + response.msg
         end
       end

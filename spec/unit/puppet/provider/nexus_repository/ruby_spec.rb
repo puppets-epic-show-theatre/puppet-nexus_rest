@@ -51,9 +51,21 @@ describe provider_class do
     end
 
     it 'should submit a DELETE to /service/local/repositories/example' do
-      provider.destroy
+      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 200)
 
-      WebMock.should have_requested(:delete, 'example.com/service/local/repositories/example')
+      provider.destroy
+    end
+
+    it 'should not fail if resource already deleted' do
+      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 404)
+
+      provider.destroy
+    end
+
+    it 'should raise an error if response is not expected' do
+      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 503)
+
+      expect { provider.destroy }.to raise_error
     end
   end
 end
