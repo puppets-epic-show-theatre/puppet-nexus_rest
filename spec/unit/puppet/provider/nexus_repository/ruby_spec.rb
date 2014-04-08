@@ -37,6 +37,32 @@ describe provider_class do
     end
   end
 
+  describe 'create' do
+    let :provider do
+      resource = Puppet::Type::Nexus_repository.new(
+        {
+            :name     => 'example',
+            :baseurl  => 'http://example.com',
+            :resource => "/api/users",
+            :timeout  => 10
+        }
+      )
+      provider_class.new(resource)
+    end
+
+    it 'should submit a POST to /service/local/repositories' do
+      stub = stub_request(:post, 'example.com/service/local/repositories').to_return(:status => 200)
+      provider.create
+      stub.should have_been_requested
+    end
+
+    it 'should raise an error if response is not expected' do
+      stub = stub_request(:any, 'example.com/service/local/repositories').to_return(:status => 503)
+      provider.create
+      stub.should have_been_requested
+    end
+  end
+
   describe 'destroy' do
     let :provider do
       resource = Puppet::Type::Nexus_repository.new(
