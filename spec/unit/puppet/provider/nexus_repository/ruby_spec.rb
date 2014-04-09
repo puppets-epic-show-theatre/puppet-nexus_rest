@@ -32,25 +32,13 @@ describe provider_class do
     end
 
     it { instance.name.should == 'repository-1' }
+    it { instance.exists?.should be_true }
   end
 
   describe "exists" do
-    it "should return false if response is not found" do
-      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 404)
-
+    it "should return false if resource is not existing" do
+      # the dummy example isn't returned by self.instances
       provider.exists?.should be_false
-    end
-
-    it "should return true if response is ok" do
-      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 200)
-
-      provider.exists?.should be_true
-    end
-
-    it "should raise an error if response is not expected" do
-      stub_request(:any, 'example.com/service/local/repositories/example').to_return(:status => 503)
-
-      expect { provider.exists? }.to raise_error
     end
   end
 
