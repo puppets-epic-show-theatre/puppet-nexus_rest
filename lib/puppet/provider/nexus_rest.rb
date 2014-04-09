@@ -2,8 +2,8 @@ require 'net/http'
 require 'json'
 
 module Nexus
-  module Resources
-    def self.get(resource_name)
+  module Rest
+    def self.get_all(resource_name)
       uri = URI("http://example.com#{resource_name}")
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Get.new uri.request_uri
@@ -22,9 +22,7 @@ module Nexus
         end
       end
     end
-  end
 
-  module Resource
     def self.create(resource_name)
       uri = URI("http://example.com#{resource_name}")
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
