@@ -73,7 +73,9 @@ describe Nexus::Rest do
       }.to raise_error(RuntimeError, /Failed to submit DELETE/)
     end
   end
+end
 
+describe Nexus::Config do
   describe 'read_config' do
     it 'should raise an error if file is not existing' do
       YAML.should_receive(:load_file).and_raise('file not found')
