@@ -88,7 +88,7 @@ module Nexus
         case response
         when Net::HTTPSuccess then
         else
-          raise Puppet::Error, "Failed to create nexus_repository #{resource[:name]}: " + response.code + " - " + response.msg
+          raise "Failed to submit PUT to #{uri}: #{response.msg} (response code #{response.code})"
         end
       end
     end
