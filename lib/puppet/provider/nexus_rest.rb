@@ -1,6 +1,7 @@
 require 'net/http'
 require 'json'
 require 'yaml'
+require 'rest_client'
 
 module Nexus
   class Config
@@ -73,17 +74,20 @@ module Nexus
       end
     end
 
-    def self.create(resource_name)
-      uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Post.new uri.request_uri
-        request.basic_auth Nexus::Config.admin_username, Nexus::Config.admin_password
-        response = http.request request
-        case response
-        when Net::HTTPSuccess then
-        else
-          raise "Failed to submit POST to #{uri}: #{response.msg} (response code #{response.code})"
-        end
+    def self.create(resource_name, data)
+      base_url = Nexus::Config.base_url
+      url = "#{base_url}#{resource_name}"
+      begin
+        response = RestClient::Request.new(
+          :method   => :post,
+          :url      => url,
+          :user     => Nexus::Config.admin_username,
+          :password => Nexus::Config.admin_password,
+          :headers  => {:accept => :json, :content_type => :json },
+          :payload  => JSON.generate(data)
+        ).execute
+      rescue Exception => e
+        raise "Failed to submit POST to #{url}: #{e}"
       end
     end
 

@@ -4,7 +4,7 @@ provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
   let :provider do
-    resource = Puppet::Type::Nexus_repository.new({:name     => 'example'})
+    resource = Puppet::Type::Nexus_repository.new({:name => 'example'})
     provider_class.new(resource)
   end
 
@@ -29,7 +29,7 @@ describe provider_class do
 
   describe 'create' do
     it 'should use /service/local/repositories to create a new resource' do
-      Nexus::Rest.should_receive(:create).with('/service/local/repositories')
+      Nexus::Rest.should_receive(:create).with('/service/local/repositories', {})
       provider.create
     end
     it 'should raise a human readable error message if the operation failed' do
