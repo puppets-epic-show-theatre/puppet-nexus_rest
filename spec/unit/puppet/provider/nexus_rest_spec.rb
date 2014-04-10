@@ -15,14 +15,18 @@ describe Nexus::Rest do
   describe 'create' do
     it 'should submit a POST to /service/local/repositories' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      stub = stub_request(:post, 'example.com/service/local/repositories').to_return(:status => 200)
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub = stub_request(:post, /example.com\/service\/local\/repositories/).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories')
       stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      stub_request(:any, 'example.com/service/local/repositories').to_return(:status => 503)
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.create('/service/local/repositories')
       }.to raise_error(RuntimeError, /Failed to submit POST/)

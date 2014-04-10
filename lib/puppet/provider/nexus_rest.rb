@@ -13,6 +13,14 @@ module Nexus
       return config[CONFIG_BASE_URL].chomp('/')
     end
 
+    def self.admin_username
+      return config[CONFIG_ADMIN_USERNAME]
+    end
+
+    def self.admin_password
+      return config[CONFIG_ADMIN_PASSWORD]
+    end
+
     def self.config
       @config  ||= read_config
     end
@@ -69,7 +77,7 @@ module Nexus
       uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Post.new uri.request_uri
-
+        request.basic_auth Nexus::Config.admin_username, Nexus::Config.admin_password
         response = http.request request
         case response
         when Net::HTTPSuccess then
