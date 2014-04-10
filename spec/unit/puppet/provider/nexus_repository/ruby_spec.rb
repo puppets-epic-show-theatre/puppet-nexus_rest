@@ -27,13 +27,20 @@ describe provider_class do
     it { instance.exists?.should be_true }
   end
 
+  describe 'create' do
+    it 'should use /service/local/repositories to create a new resource' do
+      Nexus::Rest.should_receive(:create).with('/service/local/repositories')
+      provider.create
+    end
+    it 'should raise a nice the operation failed' do
+      Nexus::Rest.should_receive(:create).and_raise('Operation failed')
+      expect { provider.create }.to raise_error(Puppet::Error, /Error while creating nexus_repository example/)
+    end
+  end
+
   it "should return false if it is not existing" do
     # the dummy example isn't returned by self.instances
     provider.exists?.should be_false
-  end
-  it 'should use /service/local/repositories to create a new resource' do
-    Nexus::Rest.should_receive(:create).with('/service/local/repositories')
-    provider.create
   end
   it 'should use /service/local/repositories/example to update an existing resource' do
     Nexus::Rest.should_receive(:update).with('/service/local/repositories/example')

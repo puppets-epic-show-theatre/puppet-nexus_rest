@@ -25,7 +25,7 @@ describe Nexus::Rest do
       stub_request(:any, 'example.com/service/local/repositories').to_return(:status => 503)
       expect {
         Nexus::Rest.create('/service/local/repositories')
-      }.to raise_error
+      }.to raise_error(RuntimeError, /Failed to submit POST/)
     end
   end
 

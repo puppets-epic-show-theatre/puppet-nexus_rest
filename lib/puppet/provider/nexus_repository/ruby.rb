@@ -22,7 +22,11 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
     def create
-      Nexus::Rest.create('/service/local/repositories')
+      begin
+        Nexus::Rest.create('/service/local/repositories')
+      rescue Exception=>e
+        raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
+      end
     end
 
     def update
