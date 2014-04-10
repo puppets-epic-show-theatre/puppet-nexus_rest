@@ -47,7 +47,7 @@ module Nexus
 
     def self.get_all(resource_name)
       uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Get.new uri.request_uri
 
         response = http.request request
@@ -67,7 +67,7 @@ module Nexus
 
     def self.create(resource_name)
       uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Post.new uri.request_uri
 
         response = http.request request
@@ -81,7 +81,7 @@ module Nexus
 
     def self.update(resource_name)
       uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Put.new uri.request_uri
 
         response = http.request request
@@ -95,7 +95,7 @@ module Nexus
 
     def self.destroy(resource_name)
       uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
+      Net::HTTP.start(uri.host, uri.port) do |http|
         request = Net::HTTP::Delete.new uri.request_uri
 
         response = http.request request
