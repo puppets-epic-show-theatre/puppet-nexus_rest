@@ -10,7 +10,7 @@ module Nexus
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
     def self.base_url
-      return config[CONFIG_BASE_URL]
+      return config[CONFIG_BASE_URL].chomp('/')
     end
 
     def self.config
@@ -40,8 +40,13 @@ module Nexus
   end
 
   class Rest
+    def self.generate_url(resource_name)
+      base_url = Nexus::Config.base_url
+      URI("#{base_url}#{resource_name}")
+    end
+
     def self.get_all(resource_name)
-      uri = URI("http://example.com#{resource_name}")
+      uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Get.new uri.request_uri
 
@@ -61,7 +66,7 @@ module Nexus
     end
 
     def self.create(resource_name)
-      uri = URI("http://example.com#{resource_name}")
+      uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Post.new uri.request_uri
 
@@ -75,7 +80,7 @@ module Nexus
     end
 
     def self.update(resource_name)
-      uri = URI("http://example.com#{resource_name}")
+      uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Put.new uri.request_uri
 
@@ -89,7 +94,7 @@ module Nexus
     end
 
     def self.destroy(resource_name)
-      uri = URI("http://example.com#{resource_name}")
+      uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port, :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Delete.new uri.request_uri
 
