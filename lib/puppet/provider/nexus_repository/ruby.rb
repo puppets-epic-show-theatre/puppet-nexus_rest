@@ -33,12 +33,16 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       begin
         Nexus::Rest.update("/service/local/repositories/#{resource[:name]}")
       rescue Exception => e
-        raise Puppet::Error, "Error while updating nexus_respository #{resource[:name]}: #{e}"
+        raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
       end
     end
 
     def destroy
-      Nexus::Rest.destroy("/service/local/repositories/#{resource[:name]}")
+      begin
+        Nexus::Rest.destroy("/service/local/repositories/#{resource[:name]}")
+      rescue Exception => e
+        raise Puppet::Error, "Error while deleting nexus_repository #{resource[:name]}: #{e}"
+      end
     end
 
     def exists?

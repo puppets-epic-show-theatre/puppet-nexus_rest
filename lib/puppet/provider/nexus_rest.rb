@@ -103,7 +103,7 @@ module Nexus
         when Net::HTTPSuccess then
         when Net::HTTPNotFound then
         else
-          raise Puppet::Error, "Failed to delete nexus_repository #{resource[:name]}: " + response.code + " - " + response.msg
+          raise "Failed to submit DELETE to #{uri}: #{response.msg} (response code #{response.code})"
         end
       end
     end

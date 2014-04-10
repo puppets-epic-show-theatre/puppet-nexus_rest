@@ -66,7 +66,7 @@ describe Nexus::Rest do
       stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 503)
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')
-      }.to raise_error
+      }.to raise_error(RuntimeError, /Failed to submit DELETE/)
     end
   end
 
