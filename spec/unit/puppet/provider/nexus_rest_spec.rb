@@ -80,23 +80,23 @@ describe Nexus::Rest do
       expect { Nexus::Config.read_config }.to raise_error
     end
     it 'should raise an error if admin username is missing' do
-      YAML.should_receive(:load_file).and_return({'baseurl' => 'http://example.com', 'admin_password' => 'secret'})
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_password' => 'secret'})
       expect { Nexus::Config.read_config }.to raise_error
     end
     it 'should raise an error if admin password is missing' do
-      YAML.should_receive(:load_file).and_return({'baseurl' => 'http://example.com', 'admin_username' => 'foobar'})
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar'})
       expect { Nexus::Config.read_config }.to raise_error
     end
     it 'should read base url' do
-      YAML.should_receive(:load_file).and_return({'baseurl' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config['baseurl'].should == 'http://example.com'
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
+      Nexus::Config.read_config['base_url'].should == 'http://example.com'
     end
     it 'should read admin username' do
-      YAML.should_receive(:load_file).and_return({'baseurl' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
       Nexus::Config.read_config['admin_username'].should == 'foobar'
     end
     it 'should read admin password' do
-      YAML.should_receive(:load_file).and_return({'baseurl' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
       Nexus::Config.read_config['admin_password'].should == 'secret'
     end
   end

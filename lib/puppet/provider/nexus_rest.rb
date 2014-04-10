@@ -5,7 +5,7 @@ require 'yaml'
 module Nexus
   class Config
     CONFIG_FILE_NAME = '/etc/puppet/nexus_rest.conf'
-    CONFIG_BASE_URL = 'baseurl'
+    CONFIG_BASE_URL = 'base_url'
     CONFIG_ADMIN_USERNAME = 'admin_username'
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
