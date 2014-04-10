@@ -1,5 +1,4 @@
 require 'spec_helper'
-include WebMock::API
 
 provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
@@ -18,7 +17,7 @@ describe provider_class do
 
   describe 'instances' do
     let :instances do
-      stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}, {"id": "repository-2"}] }')
+      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]})
       provider_class.instances
     end
 
@@ -27,7 +26,7 @@ describe provider_class do
 
   describe 'an instance' do
     let :instance do
-      stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}]})
       provider_class.instances[0]
     end
 
