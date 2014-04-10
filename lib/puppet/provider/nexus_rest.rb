@@ -25,13 +25,13 @@ module Nexus
         raise Puppet::ParseError, "Could not parse YAML configuration file " + CONFIG_FILE_NAME + " " + $!.inspect
       end
 
-      if conf[CONFIG_BASE_URL].nil?
+      if config[CONFIG_BASE_URL].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_BASE_URL}'."
       end
-      if conf[CONFIG_ADMIN_USERNAME].nil?
+      if config[CONFIG_ADMIN_USERNAME].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_USERNAME}'."
       end
-      if conf[CONFIG_ADMIN_PASSWORD].nil?
+      if config[CONFIG_ADMIN_PASSWORD].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
 
