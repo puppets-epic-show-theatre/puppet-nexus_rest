@@ -61,4 +61,23 @@ describe Nexus::Rest do
       }.to raise_error
     end
   end
+
+  describe 'read_config' do
+    it 'should raise an error if file is not existing' do
+      YAML.should_receive(:load_file).and_raise('file not found')
+      expect { Nexus::Config.read_config }.to raise_error
+    end
+    it 'should raise an error if base url is missing' do
+      YAML.should_receive(:load_file).and_return(['admin_username' => 'foobar', 'admin_password' => 'secret'])
+      expect { Nexus::Config.read_config }.to raise_error
+    end
+    it 'should raise an error if admin username is missing' do
+      YAML.should_receive(:load_file).and_return(['baseurl' => 'http://example.com', 'admin_password' => 'secret'])
+      expect { Nexus::Config.read_config }.to raise_error
+    end
+    it 'should raise an error if admin password is missing' do
+      YAML.should_receive(:load_file).and_return(['baseurl' => 'http://example.com', 'admin_username' => 'foobar'])
+      expect { Nexus::Config.read_config }.to raise_error
+    end
+  end
 end

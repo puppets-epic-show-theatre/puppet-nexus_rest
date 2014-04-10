@@ -1,7 +1,44 @@
 require 'net/http'
 require 'json'
+require 'yaml'
 
 module Nexus
+  class Config
+    CONFIG_FILE_NAME = '/etc/puppet/nexus_rest.conf'
+    CONFIG_BASE_URL = 'baseurl'
+    CONFIG_ADMIN_USERNAME = 'admin_username'
+    CONFIG_ADMIN_PASSWORD = 'admin_password'
+
+    def self.base_url
+      return config[CONFIG_BASE_URL]
+    end
+
+    def self.config
+      @config  ||= read_config
+    end
+
+    def self.read_config
+      # todo: add autorequire soft dependency
+      begin
+        config = YAML.load_file(CONFIG_FILE_NAME)
+      rescue
+        raise Puppet::ParseError, "Could not parse YAML configuration file " + CONFIG_FILE_NAME + " " + $!.inspect
+      end
+
+      if conf[CONFIG_BASE_URL].nil?
+        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_BASE_URL}'."
+      end
+      if conf[CONFIG_ADMIN_USERNAME].nil?
+        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_USERNAME}'."
+      end
+      if conf[CONFIG_ADMIN_PASSWORD].nil?
+        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
+      end
+
+      config
+    end
+  end
+
   class Rest
     def self.get_all(resource_name)
       uri = URI("http://example.com#{resource_name}")
