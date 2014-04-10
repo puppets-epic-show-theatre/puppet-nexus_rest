@@ -4,14 +4,7 @@ provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
   let :provider do
-    resource = Puppet::Type::Nexus_repository.new(
-      {
-          :name     => 'example',
-          :baseurl  => 'http://example.com',
-          :resource => "/api/users",
-          :timeout  => 10
-      }
-    )
+    resource = Puppet::Type::Nexus_repository.new({:name     => 'example'})
     provider_class.new(resource)
   end
 
