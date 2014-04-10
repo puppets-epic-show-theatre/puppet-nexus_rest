@@ -12,6 +12,15 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       end
     end
 
+  def self.prefetch(resources)
+    repositories = instances
+    resources.keys.each do |name|
+      if provider = repositories.find { |repository| repository.name == name }
+        resources[name].provider = provider
+      end
+    end
+  end
+
     def create
       Nexus::Rest.create('/service/local/repositories')
     end
