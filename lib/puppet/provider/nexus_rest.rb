@@ -48,7 +48,7 @@ module Nexus
     def self.get_all(resource_name)
       uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Get.new uri.request_uri
+        request = Net::HTTP::Get.new uri.request_uri, {'Accept' => 'application/json'}
 
         response = http.request request
         case response
