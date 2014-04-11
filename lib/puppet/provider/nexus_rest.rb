@@ -79,10 +79,10 @@ module Nexus
       admin_username = Nexus::Config.admin_username
       admin_password = Nexus::Config.admin_password
       begin
-        site = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
-        site[resource_name].post JSON.generate(data), :content_type => :json
+        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
+        nexus[resource_name].post JSON.generate(data), :content_type => :json
       rescue Exception => e
-        raise "Failed to submit POST to #{url}: #{e}"
+        raise "Failed to submit POST to #{base_url}#{resource_name}: #{e}"
       end
     end
 
