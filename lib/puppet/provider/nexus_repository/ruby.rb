@@ -8,7 +8,11 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       repositories = Nexus::Rest.get_all('/service/local/repositories')
       return repositories['data'].collect do |repository|
         name = repository['id']
-        new(:name => name, :ensure => :present)
+        new(
+          :name          => name,
+          :ensure        => :present,
+          :provider_type => repository['provider']
+        )
       end
     end
 
@@ -30,7 +34,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           'id'                      => resource[:name],
           'name'                    => resource[:name],
           'repoType'                => 'hosted',
-          'provider'                => 'maven2',
+          'provider'                => resource[:provider_type],
           'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
           'format'                  => 'maven2',
           'repoPolicy'              => 'SNAPSHOT',
@@ -70,4 +74,6 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     def exists?
       @property_hash[:ensure] == :present
     end
+
+  mk_resource_methods
 end
