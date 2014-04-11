@@ -52,7 +52,7 @@ module Nexus
       base_url = Nexus::Config.base_url
       admin_username = Nexus::Config.admin_username
       admin_password = Nexus::Config.admin_password
-      RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
+      RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
     end
 
     def self.get_all(resource_name)
