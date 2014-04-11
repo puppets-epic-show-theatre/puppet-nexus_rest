@@ -31,6 +31,15 @@ describe Nexus::Rest do
       stub.should have_been_requested
     end
 
+    it 'should accept only application/json' do
+      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub = stub_request(:post, /.*/).with(:headers => {'Accept' => 'application/json'}, :body => {}).to_return(:status => 200)
+      Nexus::Rest.create('/service/local/repositories', {})
+      stub.should have_been_requested
+    end
+
     it 'should use send admin credentials' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
       Nexus::Config.should_receive(:admin_username).and_return('foobar')
