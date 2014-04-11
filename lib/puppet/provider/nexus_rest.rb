@@ -116,6 +116,8 @@ module Nexus
           :password => Nexus::Config.admin_password,
           :headers  => {:accept => :json}
         ).execute
+      rescue RestClient::ResourceNotFound
+        # resource already deleted, nothing to do
       rescue Exception => e
         raise "Failed to submit DELETE to #{url}: #{e}"
       end
