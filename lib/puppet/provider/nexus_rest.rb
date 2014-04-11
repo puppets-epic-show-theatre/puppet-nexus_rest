@@ -105,19 +105,15 @@ module Nexus
 
     def self.destroy(resource_name)
       base_url = Nexus::Config.base_url
-      url = "#{base_url}#{resource_name}"
+      admin_username = Nexus::Config.admin_username
+      admin_password = Nexus::Config.admin_password
       begin
-        response = RestClient::Request.new(
-          :method   => :delete,
-          :url      => url,
-          :user     => Nexus::Config.admin_username,
-          :password => Nexus::Config.admin_password,
-          :headers  => {:accept => :json}
-        ).execute
+        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
+        nexus[resource_name].delete
       rescue RestClient::ResourceNotFound
         # resource already deleted, nothing to do
       rescue Exception => e
-        raise "Failed to submit DELETE to #{url}: #{e}"
+        raise "Failed to submit DELETE to #{base_url}#{resource_name}: #{e}"
       end
     end
   end
