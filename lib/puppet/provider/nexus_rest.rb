@@ -48,7 +48,7 @@ module Nexus
   end
 
   class Rest
-    def self.client
+    def self.protected_resource
       base_url = Nexus::Config.base_url
       admin_username = Nexus::Config.admin_username
       admin_password = Nexus::Config.admin_password
@@ -73,7 +73,7 @@ module Nexus
 
     def self.create(resource_name, data)
       begin
-        client[resource_name].post JSON.generate(data), :content_type => :json
+        protected_resource[resource_name].post JSON.generate(data), :content_type => :json
       rescue Exception => e
         raise "Failed to submit POST to #{resource_name}: #{e}"
       end
@@ -81,7 +81,7 @@ module Nexus
 
     def self.update(resource_name, data)
       begin
-        client[resource_name].put JSON.generate(data), :content_type => :json
+        protected_resource[resource_name].put JSON.generate(data), :content_type => :json
       rescue Exception => e
         raise "Failed to submit PUT to #{resource_name}: #{e}"
       end
@@ -89,7 +89,7 @@ module Nexus
 
     def self.destroy(resource_name)
       begin
-        client[resource_name].delete
+        protected_resource[resource_name].delete
       rescue RestClient::ResourceNotFound
         # resource already deleted, nothing to do
       rescue Exception => e
