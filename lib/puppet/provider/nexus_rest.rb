@@ -1,4 +1,3 @@
-require 'net/http'
 require 'json'
 require 'yaml'
 require 'rest_client'
@@ -49,11 +48,6 @@ module Nexus
   end
 
   class Rest
-    def self.generate_url(resource_name)
-      base_url = Nexus::Config.base_url
-      URI("#{base_url}#{resource_name}")
-    end
-
     def self.client
       base_url = Nexus::Config.base_url
       admin_username = Nexus::Config.admin_username
@@ -62,22 +56,18 @@ module Nexus
     end
 
     def self.get_all(resource_name)
-      uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Get.new uri.request_uri, {'Accept' => 'application/json'}
+      base_url = Nexus::Config.base_url
+      begin
+        nexus = RestClient::Resource.new(base_url)
+        response = nexus[resource_name].get(:accept => :json)
+      rescue => e
+        []
+      end
 
-        response = http.request request
-        case response
-        when Net::HTTPSuccess then
-          begin
-            return responseJson = JSON.parse(response.body)
-          rescue
-            raise Puppet::Error,"Could not parse the JSON response from Nexus: " + response.body
-          end
-        else
-          # todo notice
-          return []
-        end
+      begin
+        JSON.parse(response)
+      rescue => e
+        raise Puppet::Error,"Could not parse the JSON response from Nexus: " + response
       end
     end
 
