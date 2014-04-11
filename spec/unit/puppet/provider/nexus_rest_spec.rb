@@ -80,21 +80,36 @@ describe Nexus::Rest do
   describe 'destroy' do
     it 'should submit a DELETE to /service/local/repositories/example' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      stub = stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 200)
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub = stub_request(:delete, /example.com\/service\/local\/repositories\/example/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
     end
 
     it 'should not fail if resource already deleted' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      stub = stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 404)
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub = stub_request(:delete, /.*/).to_return(:status => 404)
+      Nexus::Rest.destroy('/service/local/repositories/example')
+      stub.should have_been_requested
+    end
+
+    it 'should use send admin credentials' do
+      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub = stub_request(:delete, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
       Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      stub_request(:delete, 'example.com/service/local/repositories/example').to_return(:status => 503)
+      Nexus::Config.should_receive(:admin_username).and_return('foobar')
+      Nexus::Config.should_receive(:admin_password).and_return('secret')
+      stub_request(:delete, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')
       }.to raise_error(RuntimeError, /Failed to submit DELETE/)

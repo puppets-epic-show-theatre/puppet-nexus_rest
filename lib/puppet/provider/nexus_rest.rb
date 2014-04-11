@@ -106,17 +106,18 @@ module Nexus
     end
 
     def self.destroy(resource_name)
-      uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Delete.new uri.request_uri
-
-        response = http.request request
-        case response
-        when Net::HTTPSuccess then
-        when Net::HTTPNotFound then
-        else
-          raise "Failed to submit DELETE to #{uri}: #{response.msg} (response code #{response.code})"
-        end
+      base_url = Nexus::Config.base_url
+      url = "#{base_url}#{resource_name}"
+      begin
+        response = RestClient::Request.new(
+          :method   => :delete,
+          :url      => url,
+          :user     => Nexus::Config.admin_username,
+          :password => Nexus::Config.admin_password,
+          :headers  => {:accept => :json}
+        ).execute
+      rescue Exception => e
+        raise "Failed to submit DELETE to #{url}: #{e}"
       end
     end
   end
