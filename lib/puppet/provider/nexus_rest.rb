@@ -54,6 +54,13 @@ module Nexus
       URI("#{base_url}#{resource_name}")
     end
 
+    def self.client
+      base_url = Nexus::Config.base_url
+      admin_username = Nexus::Config.admin_username
+      admin_password = Nexus::Config.admin_password
+      RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
+    end
+
     def self.get_all(resource_name)
       uri = generate_url(resource_name)
       Net::HTTP.start(uri.host, uri.port) do |http|
@@ -75,40 +82,28 @@ module Nexus
     end
 
     def self.create(resource_name, data)
-      base_url = Nexus::Config.base_url
-      admin_username = Nexus::Config.admin_username
-      admin_password = Nexus::Config.admin_password
       begin
-        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
-        nexus[resource_name].post JSON.generate(data), :content_type => :json
+        client[resource_name].post JSON.generate(data), :content_type => :json
       rescue Exception => e
-        raise "Failed to submit POST to #{base_url}#{resource_name}: #{e}"
+        raise "Failed to submit POST to #{resource_name}: #{e}"
       end
     end
 
     def self.update(resource_name, data)
-      base_url = Nexus::Config.base_url
-      admin_username = Nexus::Config.admin_username
-      admin_password = Nexus::Config.admin_password
       begin
-        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
-        nexus[resource_name].put JSON.generate(data), :content_type => :json
+        client[resource_name].put JSON.generate(data), :content_type => :json
       rescue Exception => e
-        raise "Failed to submit PUT to #{base_url}#{resource_name}: #{e}"
+        raise "Failed to submit PUT to #{resource_name}: #{e}"
       end
     end
 
     def self.destroy(resource_name)
-      base_url = Nexus::Config.base_url
-      admin_username = Nexus::Config.admin_username
-      admin_password = Nexus::Config.admin_password
       begin
-        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
-        nexus[resource_name].delete
+        client[resource_name].delete
       rescue RestClient::ResourceNotFound
         # resource already deleted, nothing to do
       rescue Exception => e
-        raise "Failed to submit DELETE to #{base_url}#{resource_name}: #{e}"
+        raise "Failed to submit DELETE to #{resource_name}: #{e}"
       end
     end
   end
