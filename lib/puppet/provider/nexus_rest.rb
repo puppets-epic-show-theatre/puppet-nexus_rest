@@ -91,17 +91,20 @@ module Nexus
       end
     end
 
-    def self.update(resource_name)
-      uri = generate_url(resource_name)
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        request = Net::HTTP::Put.new uri.request_uri
-
-        response = http.request request
-        case response
-        when Net::HTTPSuccess then
-        else
-          raise "Failed to submit PUT to #{uri}: #{response.msg} (response code #{response.code})"
-        end
+    def self.update(resource_name, data)
+      base_url = Nexus::Config.base_url
+      url = "#{base_url}#{resource_name}"
+      begin
+        response = RestClient::Request.new(
+          :method   => :put,
+          :url      => url,
+          :user     => Nexus::Config.admin_username,
+          :password => Nexus::Config.admin_password,
+          :headers  => {:accept => :json, :content_type => :json },
+          :payload  => JSON.generate(data)
+        ).execute
+      rescue Exception => e
+        raise "Failed to submit PUT to #{url}: #{e}"
       end
     end
 
