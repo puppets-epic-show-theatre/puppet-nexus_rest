@@ -88,18 +88,13 @@ module Nexus
 
     def self.update(resource_name, data)
       base_url = Nexus::Config.base_url
-      url = "#{base_url}#{resource_name}"
+      admin_username = Nexus::Config.admin_username
+      admin_password = Nexus::Config.admin_password
       begin
-        response = RestClient::Request.new(
-          :method   => :put,
-          :url      => url,
-          :user     => Nexus::Config.admin_username,
-          :password => Nexus::Config.admin_password,
-          :headers  => {:accept => :json, :content_type => :json },
-          :payload  => JSON.generate(data)
-        ).execute
+        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password, :headers => {:accept => :json})
+        nexus[resource_name].put JSON.generate(data), :content_type => :json
       rescue Exception => e
-        raise "Failed to submit PUT to #{url}: #{e}"
+        raise "Failed to submit PUT to #{base_url}#{resource_name}: #{e}"
       end
     end
 
