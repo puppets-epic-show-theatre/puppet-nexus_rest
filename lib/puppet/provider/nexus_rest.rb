@@ -9,16 +9,20 @@ module Nexus
     CONFIG_ADMIN_USERNAME = 'admin_username'
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
-    def self.base_url
-      return config[CONFIG_BASE_URL].chomp('/')
+    def initialize(options = {})
+      @options = options
     end
 
-    def self.admin_username
-      return config[CONFIG_ADMIN_USERNAME]
+    def base_url
+      @options[:base_url]
     end
 
-    def self.admin_password
-      return config[CONFIG_ADMIN_PASSWORD]
+    def admin_username
+      @options[:admin_username]
+    end
+
+    def admin_password
+      @options[:admin_password]
     end
 
     def self.config
@@ -43,7 +47,11 @@ module Nexus
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
 
-      config
+      Nexus::Config.new({
+        :base_url       => config[CONFIG_BASE_URL].chomp('/'),
+        :admin_username => config[CONFIG_ADMIN_USERNAME],
+        :admin_password => config[CONFIG_ADMIN_PASSWORD],
+      })
     end
   end
 

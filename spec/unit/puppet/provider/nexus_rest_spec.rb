@@ -147,15 +147,15 @@ describe Nexus::Config do
     end
     it 'should read base url' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config['base_url'].should == 'http://example.com'
+      Nexus::Config.read_config.base_url.should == 'http://example.com'
     end
     it 'should read admin username' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config['admin_username'].should == 'foobar'
+      Nexus::Config.read_config.admin_username.should == 'foobar'
     end
     it 'should read admin password' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config['admin_password'].should == 'secret'
+      Nexus::Config.read_config.admin_password.should == 'secret'
     end
   end
 end
