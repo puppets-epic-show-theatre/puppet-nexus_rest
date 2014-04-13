@@ -23,29 +23,30 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
     def create
       begin
-        base_url = Nexus::Config.base_url
-        Nexus::Rest.create('/service/local/repositories', {
-        'data' => {
-          'contentResourceURI'      => "#{base_url}/content/repositories/#{resource[:name]}",
-          'id'                      => resource[:name],
-          'name'                    => resource[:name],
-          'repoType'                => 'hosted',
-          'provider'                => 'maven2',
-          'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
-          'format'                  => 'maven2',
-          'repoPolicy'              => 'SNAPSHOT',
+        Nexus::Config.configure { |base_url|
+          Nexus::Rest.create('/service/local/repositories', {
+          'data' => {
+            'contentResourceURI'      => "#{base_url}/content/repositories/#{resource[:name]}",
+            'id'                      => resource[:name],
+            'name'                    => resource[:name],
+            'repoType'                => 'hosted',
+            'provider'                => 'maven2',
+            'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
+            'format'                  => 'maven2',
+            'repoPolicy'              => 'SNAPSHOT',
 
-          'writePolicy'             => 'READ_ONLY',
-          'browseable'              => true,
-          'indexable'               => true,
-          'exposed'                 => true,
-          'downloadRemoteIndexes'   => false,
-          'notFoundCacheTTL'        => 1440,
+            'writePolicy'             => 'READ_ONLY',
+            'browseable'              => true,
+            'indexable'               => true,
+            'exposed'                 => true,
+            'downloadRemoteIndexes'   => false,
+            'notFoundCacheTTL'        => 1440,
 
-          'defaultLocalStorageUrl'  => '',
-          'overrideLocalStorageUrl' => '',
-        }
-      })
+            'defaultLocalStorageUrl'  => '',
+            'overrideLocalStorageUrl' => '',
+          }
+        })
+      }
       rescue Exception => e
         raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
       end

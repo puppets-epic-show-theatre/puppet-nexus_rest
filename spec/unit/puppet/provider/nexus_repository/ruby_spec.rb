@@ -29,12 +29,20 @@ describe provider_class do
 
   describe 'create' do
     it 'should use /service/local/repositories to create a new resource' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
+      Nexus::Config.stub(:read_config).and_return(Nexus::Config.new(
+        :base_url       => 'http://example.com',
+        :admin_username => 'foobar',
+        :admin_password => 'secret'
+      ))
       Nexus::Rest.should_receive(:create).with('/service/local/repositories', anything())
       provider.create
     end
     it 'should raise a human readable error message if the operation failed' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
+      Nexus::Config.stub(:read_config).and_return(Nexus::Config.new(
+        :base_url       => 'http://example.com',
+        :admin_username => 'foobar',
+        :admin_password => 'secret'
+      ))
       Nexus::Rest.should_receive(:create).and_raise('Operation failed')
       expect { provider.create }.to raise_error(Puppet::Error, /Error while creating nexus_repository example/)
     end
