@@ -1,5 +1,5 @@
 require 'json'
-require File.join(File.dirname(__FILE__), '..', 'nexus_rest')
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'nexus_rest.rb'))
 
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
     desc "Uses Ruby's rest library"
