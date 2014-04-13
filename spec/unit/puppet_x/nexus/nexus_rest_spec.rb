@@ -11,7 +11,7 @@ describe Nexus::Rest do
   end
 
   after(:each) do
-    Nexus::Config.reset
+    Nexus::Rest.reset
   end
 
   describe 'get_all' do

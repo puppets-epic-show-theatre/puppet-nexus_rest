@@ -9,15 +9,6 @@ module Nexus
     CONFIG_ADMIN_USERNAME = 'admin_username'
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
-    def self.configure
-      @config  ||= read_config
-      yield @config[:base_url], @config[:admin_username], @config[:admin_password]
-    end
-
-    def self.reset
-      @config = nil
-    end
-
     def self.read_config
       # todo: add autorequire soft dependency
       begin
@@ -46,15 +37,24 @@ module Nexus
   end
 
   class Rest
+    def self.configure
+      @config  ||= Nexus::Config.read_config
+      yield @config[:base_url], @config[:admin_username], @config[:admin_password]
+    end
+
+    def self.reset
+      @config = nil
+    end
+
     def self.anonymous_request
-      Nexus::Config.configure { |base_url, admin_username, admin_password|
+      configure { |base_url, admin_username, admin_password|
         nexus = RestClient::Resource.new(base_url)
         yield nexus
       }
     end
 
     def self.authenticated_request
-      Nexus::Config.configure { |base_url, admin_username, admin_password|
+      configure { |base_url, admin_username, admin_password|
         nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
         yield nexus
       }
