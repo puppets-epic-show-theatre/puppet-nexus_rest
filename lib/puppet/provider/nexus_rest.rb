@@ -32,6 +32,7 @@ module Nexus
     def self.read_config
       # todo: add autorequire soft dependency
       begin
+        Puppet::notice("Parsing configuration file #{CONFIG_FILE_NAME}")
         config = YAML.load_file(CONFIG_FILE_NAME)
       rescue
         raise Puppet::ParseError, "Could not parse YAML configuration file " + CONFIG_FILE_NAME + " " + $!.inspect
