@@ -48,11 +48,12 @@ module Nexus
   end
 
   class Rest
-    def self.protected_resource
+    def self.authenticated_request
       base_url = Nexus::Config.base_url
       admin_username = Nexus::Config.admin_username
       admin_password = Nexus::Config.admin_password
-      RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
+      nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
+      yield nexus
     end
 
     def self.get_all(resource_name)
@@ -72,29 +73,35 @@ module Nexus
     end
 
     def self.create(resource_name, data)
-      begin
-        protected_resource[resource_name].post JSON.generate(data), :content_type => :json
-      rescue Exception => e
-        raise "Failed to submit POST to #{resource_name}: #{e}"
-      end
+      authenticated_request { |nexus|
+        begin
+          nexus[resource_name].post JSON.generate(data), :content_type => :json
+        rescue Exception => e
+          raise "Failed to submit POST to #{resource_name}: #{e}"
+        end
+      }
     end
 
     def self.update(resource_name, data)
-      begin
-        protected_resource[resource_name].put JSON.generate(data), :content_type => :json
-      rescue Exception => e
-        raise "Failed to submit PUT to #{resource_name}: #{e}"
-      end
+      authenticated_request { |nexus|
+        begin
+          nexus[resource_name].put JSON.generate(data), :content_type => :json
+        rescue Exception => e
+          raise "Failed to submit PUT to #{resource_name}: #{e}"
+        end
+      }
     end
 
     def self.destroy(resource_name)
-      begin
-        protected_resource[resource_name].delete
-      rescue RestClient::ResourceNotFound
-        # resource already deleted, nothing to do
-      rescue Exception => e
-        raise "Failed to submit DELETE to #{resource_name}: #{e}"
-      end
+      authenticated_request { |nexus|
+        begin
+          nexus[resource_name].delete
+        rescue RestClient::ResourceNotFound
+          # resource already deleted, nothing to do
+        rescue Exception => e
+          raise "Failed to submit DELETE to #{resource_name}: #{e}"
+        end
+      }
     end
   end
 end
