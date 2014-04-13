@@ -2,16 +2,22 @@ require 'spec_helper'
 include WebMock::API
 
 describe Nexus::Rest do
+  before(:all) do
+    Nexus::Config.stub(:read_config).and_return(Nexus::Config.new(
+      :base_url       => 'http://example.com',
+      :admin_username => 'foobar',
+      :admin_password => 'secret'
+    ))
+  end
+
   describe 'get_all' do
     it 'should parse JSON response' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
       stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}, {"id": "repository-2"}] }')
       instances = Nexus::Rest.get_all('/service/local/repositories')
       instances['data'].should have(2).items
     end
 
     it 'should accept only application/json' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
       stub = stub_request(:get, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
       Nexus::Rest.get_all('/service/local/repositories')
       stub.should have_been_requested
@@ -20,45 +26,30 @@ describe Nexus::Rest do
 
   describe 'create' do
     it 'should submit a POST to /service/local/repositories' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:post, /example.com\/service\/local\/repositories/).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {})
       stub.should have_been_requested
     end
 
     it 'should use content type application/json' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:post, /.*/).with(:headers => {'Content-Type' => 'application/json'}, :body => {}).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {})
       stub.should have_been_requested
     end
 
     it 'should use send admin credentials' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:post, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {'data' => {'id' => 'foobar'}})
       stub.should have_been_requested
     end
 
     it 'should submit the passed data' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:post, /.*/).with(:body => {:data => {:a => '1', :b => 'five'}}).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {'data' => {:a => '1', :b => 'five'}})
       stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.create('/service/local/repositories', {})
@@ -68,18 +59,12 @@ describe Nexus::Rest do
 
   describe 'update' do
     it 'should submit a PUT to /service/local/repositories/example' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:put, /example.com\/service\/local\/repositories/).to_return(:status => 200)
       Nexus::Rest.update('/service/local/repositories/example', {})
       stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.update('/service/local/repositories/example', {})
@@ -89,36 +74,24 @@ describe Nexus::Rest do
 
   describe 'destroy' do
     it 'should submit a DELETE to /service/local/repositories/example' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:delete, /example.com\/service\/local\/repositories\/example/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
     end
 
     it 'should not fail if resource already deleted' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:delete, /.*/).to_return(:status => 404)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
     end
 
     it 'should use send admin credentials' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub = stub_request(:delete, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
     end
 
     it 'should raise an error if response is not expected' do
-      Nexus::Config.should_receive(:base_url).and_return('http://example.com')
-      Nexus::Config.should_receive(:admin_username).and_return('foobar')
-      Nexus::Config.should_receive(:admin_password).and_return('secret')
       stub_request(:delete, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')

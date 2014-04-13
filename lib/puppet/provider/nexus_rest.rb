@@ -25,8 +25,9 @@ module Nexus
       @options[:admin_password]
     end
 
-    def self.config
+    def self.configure
       @config  ||= read_config
+      yield @config.base_url, @config.admin_username, @config.admin_password
     end
 
     def self.read_config
@@ -58,17 +59,17 @@ module Nexus
 
   class Rest
     def self.anonymous_request
-      base_url = Nexus::Config.base_url
-      nexus = RestClient::Resource.new(base_url)
-      yield nexus
+      Nexus::Config.configure { |base_url, admin_username, admin_password|
+        nexus = RestClient::Resource.new(base_url)
+        yield nexus
+      }
     end
 
     def self.authenticated_request
-      base_url = Nexus::Config.base_url
-      admin_username = Nexus::Config.admin_username
-      admin_password = Nexus::Config.admin_password
-      nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
-      yield nexus
+      Nexus::Config.configure { |base_url, admin_username, admin_password|
+        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
+        yield nexus
+      }
     end
 
     def self.get_all(resource_name)
