@@ -48,6 +48,12 @@ module Nexus
   end
 
   class Rest
+    def self.anonymous_request
+      base_url = Nexus::Config.base_url
+      nexus = RestClient::Resource.new(base_url)
+      yield nexus
+    end
+
     def self.authenticated_request
       base_url = Nexus::Config.base_url
       admin_username = Nexus::Config.admin_username
@@ -57,19 +63,19 @@ module Nexus
     end
 
     def self.get_all(resource_name)
-      base_url = Nexus::Config.base_url
-      begin
-        nexus = RestClient::Resource.new(base_url)
-        response = nexus[resource_name].get(:accept => :json)
-      rescue => e
-        []
-      end
+      anonymous_request { |nexus|
+        begin
+          response = nexus[resource_name].get(:accept => :json)
+        rescue => e
+          []
+        end
 
-      begin
-        JSON.parse(response)
-      rescue => e
-        raise Puppet::Error,"Could not parse the JSON response from Nexus: " + response
-      end
+        begin
+          JSON.parse(response)
+        rescue => e
+          raise Puppet::Error,"Could not parse the JSON response from Nexus: " + response
+        end
+      }
     end
 
     def self.create(resource_name, data)
