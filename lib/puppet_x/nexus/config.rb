@@ -9,6 +9,15 @@ module Nexus
     CONFIG_ADMIN_USERNAME = 'admin_username'
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
+    def self.configure
+      @config ||= read_config
+      yield @config[:base_url], @config[:admin_username], @config[:admin_password]
+    end
+
+    def self.reset
+      @config = nil
+    end
+
     def self.read_config
       # todo: add autorequire soft dependency
       begin

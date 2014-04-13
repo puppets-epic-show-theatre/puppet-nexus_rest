@@ -24,7 +24,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
     def create
       begin
-        Nexus::Rest.configure { |base_url|
+        Nexus::Config.configure { |base_url|
           Nexus::Rest.create('/service/local/repositories', {
           'data' => {
             'contentResourceURI'      => "#{base_url}/content/repositories/#{resource[:name]}",

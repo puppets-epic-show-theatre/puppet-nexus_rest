@@ -4,24 +4,15 @@ require 'rest_client'
 
 module Nexus
   class Rest
-    def self.configure
-      @config  ||= Nexus::Config.read_config
-      yield @config[:base_url], @config[:admin_username], @config[:admin_password]
-    end
-
-    def self.reset
-      @config = nil
-    end
-
     def self.anonymous_request
-      configure { |base_url, admin_username, admin_password|
+      Nexus::Config.configure { |base_url, admin_username, admin_password|
         nexus = RestClient::Resource.new(base_url)
         yield nexus
       }
     end
 
     def self.authenticated_request
-      configure { |base_url, admin_username, admin_password|
+      Nexus::Config.configure { |base_url, admin_username, admin_password|
         nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
         yield nexus
       }
