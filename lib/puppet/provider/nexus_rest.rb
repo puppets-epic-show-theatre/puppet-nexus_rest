@@ -9,22 +9,6 @@ module Nexus
     CONFIG_ADMIN_USERNAME = 'admin_username'
     CONFIG_ADMIN_PASSWORD = 'admin_password'
 
-    def initialize(options = {})
-      @options = options
-    end
-
-    def base_url
-      @options[:base_url]
-    end
-
-    def admin_username
-      @options[:admin_username]
-    end
-
-    def admin_password
-      @options[:admin_password]
-    end
-
     def self.configure
       @config  ||= read_config
       yield @config[:base_url], @config[:admin_username], @config[:admin_password]
