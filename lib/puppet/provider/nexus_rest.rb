@@ -27,7 +27,11 @@ module Nexus
 
     def self.configure
       @config  ||= read_config
-      yield @config.base_url, @config.admin_username, @config.admin_password
+      yield @config[:base_url], @config[:admin_username], @config[:admin_password]
+    end
+
+    def self.reset
+      @config = nil
     end
 
     def self.read_config
@@ -49,11 +53,11 @@ module Nexus
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
 
-      Nexus::Config.new({
+      {
         :base_url       => config[CONFIG_BASE_URL].chomp('/'),
         :admin_username => config[CONFIG_ADMIN_USERNAME],
         :admin_password => config[CONFIG_ADMIN_PASSWORD],
-      })
+      }
     end
   end
 

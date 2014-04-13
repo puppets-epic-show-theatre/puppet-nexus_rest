@@ -2,12 +2,16 @@ require 'spec_helper'
 include WebMock::API
 
 describe Nexus::Rest do
-  before(:all) do
-    Nexus::Config.stub(:read_config).and_return(Nexus::Config.new(
+  before(:each) do
+    Nexus::Config.stub(:read_config).and_return({
       :base_url       => 'http://example.com',
       :admin_username => 'foobar',
       :admin_password => 'secret'
-    ))
+    })
+  end
+
+  after(:each) do
+    Nexus::Config.reset
   end
 
   describe 'get_all' do
@@ -37,7 +41,7 @@ describe Nexus::Rest do
       stub.should have_been_requested
     end
 
-    it 'should use send admin credentials' do
+    it 'should send admin credentials' do
       stub = stub_request(:post, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {'data' => {'id' => 'foobar'}})
       stub.should have_been_requested
@@ -85,7 +89,7 @@ describe Nexus::Rest do
       stub.should have_been_requested
     end
 
-    it 'should use send admin credentials' do
+    it 'should send admin credentials' do
       stub = stub_request(:delete, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested
@@ -120,15 +124,15 @@ describe Nexus::Config do
     end
     it 'should read base url' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config.base_url.should == 'http://example.com'
+      Nexus::Config.read_config[:base_url].should == 'http://example.com'
     end
     it 'should read admin username' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config.admin_username.should == 'foobar'
+      Nexus::Config.read_config[:admin_username].should == 'foobar'
     end
     it 'should read admin password' do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'admin_username' => 'foobar', 'admin_password' => 'secret'})
-      Nexus::Config.read_config.admin_password.should == 'secret'
+      Nexus::Config.read_config[:admin_password].should == 'secret'
     end
   end
 end
