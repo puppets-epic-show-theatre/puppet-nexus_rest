@@ -21,7 +21,7 @@ module Nexus
 
     def self.resolve(url)
       unless url.start_with?('http')
-        configure { |base_url, username, password|
+        configure { |base_url, username, password, timeout|
           URI.join(base_url, url).to_s
         }
       else
