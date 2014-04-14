@@ -4,14 +4,7 @@ require 'rest_client'
 
 module Nexus
   class Rest
-    def self.anonymous_request
-      Nexus::Config.configure { |base_url, admin_username, admin_password|
-        nexus = RestClient::Resource.new(base_url)
-        yield nexus
-      }
-    end
-
-    def self.authenticated_request
+    def self.request
       Nexus::Config.configure { |base_url, admin_username, admin_password|
         nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
         yield nexus
@@ -19,7 +12,7 @@ module Nexus
     end
 
     def self.get_all(resource_name)
-      anonymous_request { |nexus|
+      request { |nexus|
         begin
           response = nexus[resource_name].get(:accept => :json)
         rescue => e
@@ -29,13 +22,13 @@ module Nexus
         begin
           JSON.parse(response)
         rescue => e
-          raise Puppet::Error,"Could not parse the JSON response from Nexus: " + response
+          raise Puppet::Error,"Could not parse the JSON response from Nexus: #{response}"
         end
       }
     end
 
     def self.create(resource_name, data)
-      authenticated_request { |nexus|
+      request { |nexus|
         begin
           nexus[resource_name].post JSON.generate(data), :content_type => :json
         rescue Exception => e
@@ -45,7 +38,7 @@ module Nexus
     end
 
     def self.update(resource_name, data)
-      authenticated_request { |nexus|
+      request { |nexus|
         begin
           nexus[resource_name].put JSON.generate(data), :content_type => :json
         rescue Exception => e
@@ -55,7 +48,7 @@ module Nexus
     end
 
     def self.destroy(resource_name)
-      authenticated_request { |nexus|
+      request { |nexus|
         begin
           nexus[resource_name].delete
         rescue RestClient::ResourceNotFound
