@@ -7,6 +7,6 @@ describe Puppet::Type.type(:nexus_repository) do
         :name          => 'example',
         :provider_type => 'invalid'
       )
-    }.to raise_error(Puppet::Error, /value is not supported \'invalid\'/)
+    }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
   end
 end
