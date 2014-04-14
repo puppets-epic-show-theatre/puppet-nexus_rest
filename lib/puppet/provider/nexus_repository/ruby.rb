@@ -3,19 +3,19 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
 
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
-    desc "Uses Ruby's rest library"
+  desc "Uses Ruby's rest library"
 
-    def self.instances
-      repositories = Nexus::Rest.get_all('/service/local/repositories')
-      return repositories['data'].collect do |repository|
-        name = repository['id']
-        new(
-          :name          => name,
-          :ensure        => :present,
-          :provider_type => repository['provider']
-        )
-      end
+  def self.instances
+    repositories = Nexus::Rest.get_all('/service/local/repositories')
+    return repositories['data'].collect do |repository|
+      name = repository['id']
+      new(
+        :name          => name,
+        :ensure        => :present,
+        :provider_type => repository['provider']
+      )
     end
+  end
 
   def self.prefetch(resources)
     repositories = instances
@@ -26,54 +26,54 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     end
   end
 
-    def create
-      begin
-        Nexus::Rest.create('/service/local/repositories', {
-          'data' => {
-            'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
-            'id'                      => resource[:name],
-            'name'                    => resource[:name],
-            'repoType'                => 'hosted',
-            'provider'                => resource[:provider_type],
-            'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
-            'format'                  => 'maven2',
-            'repoPolicy'              => 'SNAPSHOT',
+  def create
+    begin
+      Nexus::Rest.create('/service/local/repositories', {
+        'data' => {
+          'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
+          'id'                      => resource[:name],
+          'name'                    => resource[:name],
+          'repoType'                => 'hosted',
+          'provider'                => resource[:provider_type],
+          'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
+          'format'                  => 'maven2',
+          'repoPolicy'              => 'SNAPSHOT',
 
-            'writePolicy'             => 'READ_ONLY',
-            'browseable'              => true,
-            'indexable'               => true,
-            'exposed'                 => true,
-            'downloadRemoteIndexes'   => false,
-            'notFoundCacheTTL'        => 1440,
+          'writePolicy'             => 'READ_ONLY',
+          'browseable'              => true,
+          'indexable'               => true,
+          'exposed'                 => true,
+          'downloadRemoteIndexes'   => false,
+          'notFoundCacheTTL'        => 1440,
 
-            'defaultLocalStorageUrl'  => '',
-            'overrideLocalStorageUrl' => '',
-          }
-        })
-      rescue Exception => e
-        raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
-      end
+          'defaultLocalStorageUrl'  => '',
+          'overrideLocalStorageUrl' => '',
+        }
+      })
+    rescue Exception => e
+      raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
     end
+  end
 
-    def update
-      begin
-        Nexus::Rest.update("/service/local/repositories/#{resource[:name]}")
-      rescue Exception => e
-        raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
-      end
+  def update
+    begin
+      Nexus::Rest.update("/service/local/repositories/#{resource[:name]}")
+    rescue Exception => e
+      raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
     end
+  end
 
-    def destroy
-      begin
-        Nexus::Rest.destroy("/service/local/repositories/#{resource[:name]}")
-      rescue Exception => e
-        raise Puppet::Error, "Error while deleting nexus_repository #{resource[:name]}: #{e}"
-      end
+  def destroy
+    begin
+      Nexus::Rest.destroy("/service/local/repositories/#{resource[:name]}")
+    rescue Exception => e
+      raise Puppet::Error, "Error while deleting nexus_repository #{resource[:name]}: #{e}"
     end
+  end
 
-    def exists?
-      @property_hash[:ensure] == :present
-    end
+  def exists?
+    @property_hash[:ensure] == :present
+  end
 
   mk_resource_methods
 end
