@@ -16,13 +16,13 @@ module Nexus
         begin
           response = nexus[resource_name].get(:accept => :json)
         rescue => e
-          raise "Failed to submit GET to #{resource_name}"
+          raise "Could not request #{resource_name} from #{nexus.url}: #{e}"
         end
 
         begin
           JSON.parse(response)
         rescue => e
-          raise "Could not parse the JSON response from Nexus (url: #{nexus.url}, resource: #{resource_name}): #{response}"
+          raise "Could not parse the JSON response from Nexus (url: #{nexus.url}, resource: #{resource_name}): #{e} (response: #{response})"
         end
       }
     end
@@ -32,7 +32,7 @@ module Nexus
         begin
           nexus[resource_name].post JSON.generate(data), :content_type => :json
         rescue Exception => e
-          raise "Failed to submit POST to #{resource_name}: #{e}"
+          raise "Could not create #{resource_name} at #{nexus.url}: #{e}"
         end
       }
     end
@@ -42,7 +42,7 @@ module Nexus
         begin
           nexus[resource_name].put JSON.generate(data), :content_type => :json
         rescue Exception => e
-          raise "Failed to submit PUT to #{resource_name}: #{e}"
+          raise "Could not update #{resource_name} at #{nexus.url}: #{e}"
         end
       }
     end
@@ -54,7 +54,7 @@ module Nexus
         rescue RestClient::ResourceNotFound
           # resource already deleted, nothing to do
         rescue Exception => e
-          raise "Failed to submit DELETE to #{resource_name}: #{e}"
+          raise "Could not delete #{resource_name} at #{nexus.url}: #{e}"
         end
       }
     end

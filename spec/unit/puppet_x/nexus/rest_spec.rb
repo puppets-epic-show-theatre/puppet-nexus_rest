@@ -37,7 +37,7 @@ describe Nexus::Rest do
       stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.get_all('/service/local/repositories')
-      }.to raise_error(RuntimeError, /Failed to submit GET/)
+      }.to raise_error(RuntimeError, /Could not request/)
     end
 
     it 'should raise an error if response is not parsable' do
@@ -77,7 +77,7 @@ describe Nexus::Rest do
       stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.create('/service/local/repositories', {})
-      }.to raise_error(RuntimeError, /Failed to submit POST/)
+      }.to raise_error(RuntimeError, /Could not create/)
     end
   end
 
@@ -92,7 +92,7 @@ describe Nexus::Rest do
       stub_request(:any, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.update('/service/local/repositories/example', {})
-      }.to raise_error(RuntimeError, /Failed to submit PUT/)
+      }.to raise_error(RuntimeError, /Could not update/)
     end
   end
 
@@ -119,7 +119,7 @@ describe Nexus::Rest do
       stub_request(:delete, /.*/).to_return(:status => 503)
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')
-      }.to raise_error(RuntimeError, /Failed to submit DELETE/)
+      }.to raise_error(RuntimeError, /Could not delete/)
     end
   end
 end
