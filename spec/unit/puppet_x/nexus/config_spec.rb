@@ -34,6 +34,14 @@ describe Nexus::Config do
       YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'username' => 'foobar', 'password' => 'secret'})
       Nexus::Config.read_config[:password].should == 'secret'
     end
+    it 'should use default timeout if not specified' do
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'username' => 'foobar', 'password' => 'secret'})
+      Nexus::Config.read_config[:timeout].should == 10
+    end
+    it 'should read timeout' do
+      YAML.should_receive(:load_file).and_return({'base_url' => 'http://example.com', 'username' => 'foobar', 'password' => 'secret', 'timeout' => '60'})
+      Nexus::Config.read_config[:timeout].should == 60
+    end
   end
 
   describe 'resolve' do

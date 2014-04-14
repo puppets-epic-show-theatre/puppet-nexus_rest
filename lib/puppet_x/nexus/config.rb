@@ -8,10 +8,11 @@ module Nexus
     CONFIG_BASE_URL = 'base_url'
     CONFIG_USERNAME = 'username'
     CONFIG_PASSWORD = 'password'
+    CONFIG_TIMEOUT = 'timeout'
 
     def self.configure
       @config ||= read_config
-      yield @config[:base_url], @config[:username], @config[:password]
+      yield @config[:base_url], @config[:username], @config[:password], @config[:timeout]
     end
 
     def self.reset
@@ -46,11 +47,13 @@ module Nexus
       if config[CONFIG_PASSWORD].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_PASSWORD}'."
       end
+      config[CONFIG_TIMEOUT] = 10 if config[CONFIG_TIMEOUT].nil?
 
       {
         :base_url => config[CONFIG_BASE_URL].chomp('/'),
         :username => config[CONFIG_USERNAME],
         :password => config[CONFIG_PASSWORD],
+        :timeout  => Integer(config[CONFIG_TIMEOUT]),
       }
     end
   end
