@@ -28,10 +28,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
     def create
       begin
-        Nexus::Config.configure { |base_url|
-          Nexus::Rest.create('/service/local/repositories', {
+        Nexus::Rest.create('/service/local/repositories', {
           'data' => {
-            'contentResourceURI'      => "#{base_url}/content/repositories/#{resource[:name]}",
+            'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
             'id'                      => resource[:name],
             'name'                    => resource[:name],
             'repoType'                => 'hosted',
@@ -51,7 +50,6 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
             'overrideLocalStorageUrl' => '',
           }
         })
-      }
       rescue Exception => e
         raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
       end

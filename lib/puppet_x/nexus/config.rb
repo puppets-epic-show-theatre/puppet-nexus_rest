@@ -18,6 +18,16 @@ module Nexus
       @config = nil
     end
 
+    def self.resolve(url)
+      unless url.start_with?('http')
+        configure { |base_url, username, password|
+          URI.join(base_url, url).to_s
+        }
+      else
+        url
+      end
+    end
+
     def self.read_config
       # todo: add autorequire soft dependency
       begin
