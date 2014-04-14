@@ -16,7 +16,7 @@ describe Nexus::Rest do
 
   describe 'get_all' do
     it 'should parse JSON response' do
-      stub_request(:any, 'example.com/service/local/repositories').to_return(:body => '{ "data": [{"id": "repository-1"}, {"id": "repository-2"}] }')
+      stub_request(:any, /.*/).to_return(:body => '{ "data": [{"id": "repository-1"}, {"id": "repository-2"}] }')
       instances = Nexus::Rest.get_all('/service/local/repositories')
       instances['data'].should have(2).items
     end
