@@ -4,7 +4,7 @@ require 'rest_client'
 
 module Nexus
   class Config
-    CONFIG_FILE_NAME = '/etc/puppet/nexus_rest.conf'
+    CONFIG_FILENAME = '/etc/puppet/nexus_rest.conf'
     CONFIG_BASE_URL = 'base_url'
     CONFIG_USERNAME = 'username'
     CONFIG_PASSWORD = 'password'
@@ -30,22 +30,21 @@ module Nexus
     end
 
     def self.read_config
-      # todo: add autorequire soft dependency
       begin
-        Puppet::notice("Parsing configuration file #{CONFIG_FILE_NAME}")
-        config = YAML.load_file(CONFIG_FILE_NAME)
+        Puppet::notice("Parsing configuration file #{CONFIG_FILENAME}")
+        config = YAML.load_file(CONFIG_FILENAME)
       rescue
         raise Puppet::ParseError, "Could not parse YAML configuration file " + CONFIG_FILE_NAME + " " + $!.inspect
       end
 
       if config[CONFIG_BASE_URL].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_BASE_URL}'."
+        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_BASE_URL}'."
       end
       if config[CONFIG_USERNAME].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_USERNAME}'."
+        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_USERNAME}'."
       end
       if config[CONFIG_PASSWORD].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILE_NAME} must contain a value for key '#{CONFIG_PASSWORD}'."
+        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_PASSWORD}'."
       end
       config[CONFIG_TIMEOUT] = 10 if config[CONFIG_TIMEOUT].nil?
 

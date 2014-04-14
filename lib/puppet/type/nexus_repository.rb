@@ -10,4 +10,8 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'The content provider of the repository'
     newvalues('maven1', 'maven2')
   end
+
+  autorequire(:file) do
+    Nexus::Config.CONFIG_FILENAME
+  end
 end
