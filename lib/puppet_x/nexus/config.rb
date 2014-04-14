@@ -34,7 +34,7 @@ module Nexus
         Puppet::notice("Parsing configuration file #{CONFIG_FILENAME}")
         config = YAML.load_file(CONFIG_FILENAME)
       rescue
-        raise Puppet::ParseError, "Could not parse YAML configuration file " + CONFIG_FILE_NAME + " " + $!.inspect
+        raise Puppet::ParseError, "Could not parse YAML configuration file #{CONFIG_FILENAME}" + $!.inspect
       end
 
       if config[CONFIG_BASE_URL].nil?
