@@ -6,14 +6,18 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
   def self.instances
-    repositories = Nexus::Rest.get_all('/service/local/repositories')
-    return repositories['data'].collect do |repository|
-      name = repository['id']
-      new(
-        :name          => name,
-        :ensure        => :present,
-        :provider_type => repository['provider']
-      )
+    begin
+      repositories = Nexus::Rest.get_all('/service/local/repositories')
+      repositories['data'].collect do |repository|
+        name = repository['id']
+        new(
+          :name          => name,
+          :ensure        => :present,
+          :provider_type => repository['provider']
+        )
+      end
+    rescue => e
+      raise Puppet::Error, "Error while retrieving all nexus_repository instances: #{e}"
     end
   end
 

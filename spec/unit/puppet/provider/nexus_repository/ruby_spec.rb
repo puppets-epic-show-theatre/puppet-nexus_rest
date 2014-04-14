@@ -17,6 +17,13 @@ describe provider_class do
     it { instances.should have(2).items }
   end
 
+  describe 'instances' do
+    it 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
+      expect { provider_class.instances }.to raise_error(Puppet::Error, /Error while retrieving all nexus_repository instances/)
+    end
+  end
+
   describe 'an instance' do
     let :instance do
       Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}]})
