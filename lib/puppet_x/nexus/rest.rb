@@ -5,8 +5,14 @@ require 'rest_client'
 module Nexus
   class Rest
     def self.request
-      Nexus::Config.configure { |base_url, username, password, timeout|
-        nexus = RestClient::Resource.new(base_url, :user => username, :password => password, :timeout => timeout)
+      Nexus::Config.configure { |base_url, options|
+        nexus = RestClient::Resource.new(
+          base_url,
+          :user         => options[:username],
+          :password     => options[:password],
+          :timeout      => options[:timeout],
+          :open_timeout => options[:open_timeout]
+        )
         yield nexus
       }
     end
