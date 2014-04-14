@@ -40,6 +40,7 @@ module Nexus
       if config[CONFIG_BASE_URL].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_BASE_URL}'."
       end
+      # TODO: add warning about insecure connection if protocol is http and host not localhost (credentials sent in plain text)
       if config[CONFIG_USERNAME].nil?
         raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_USERNAME}'."
       end
