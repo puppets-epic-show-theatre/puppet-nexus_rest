@@ -32,6 +32,20 @@ describe Nexus::Rest do
       Nexus::Rest.get_all('/service/local/repositories')
       stub.should have_been_requested
     end
+
+    it 'should raise an error if response is not expected' do
+      stub_request(:any, /.*/).to_return(:status => 503)
+      expect {
+        Nexus::Rest.get_all('/service/local/repositories')
+      }.to raise_error(RuntimeError, /Failed to submit GET/)
+    end
+
+    it 'should raise an error if response is not parsable' do
+      stub_request(:any, /.*/).to_return(:body => 'some non-json crap')
+      expect {
+        Nexus::Rest.get_all('/service/local/repositories')
+      }.to raise_error(RuntimeError, /Could not parse the JSON/)
+    end
   end
 
   describe 'create' do

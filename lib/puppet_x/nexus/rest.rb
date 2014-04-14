@@ -16,13 +16,13 @@ module Nexus
         begin
           response = nexus[resource_name].get(:accept => :json)
         rescue => e
-          []
+          raise "Failed to submit GET to #{resource_name}"
         end
 
         begin
           JSON.parse(response)
         rescue => e
-          raise Puppet::Error,"Could not parse the JSON response from Nexus: #{response}"
+          raise "Could not parse the JSON response from Nexus (url: #{nexus.url}, resource: #{resource_name}): #{response}"
         end
       }
     end
