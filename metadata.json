@@ -1,0 +1,13 @@
+{
+  "name": "nexus_rest",
+  "version": "0.1.0",
+  "summary": "Manage Nexus resources through a REST interface",
+  "author": "Atlassian",
+  "description": "Manage Nexus repositpry resources through a REST interface",
+  "dependencies": [],
+  "types": [],
+  "checksums": {},
+  "source": "git@bitbucket.org:atlassian/puppet-module-nexus_rest.git",
+  "project_page": "https://bitbucket.org/atlassian/puppet-module-nexus_rest",
+  "license": "Apache License, Version 2.0"
+}
