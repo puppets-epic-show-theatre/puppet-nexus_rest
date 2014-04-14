@@ -5,8 +5,8 @@ describe Nexus::Rest do
   before(:each) do
     Nexus::Config.stub(:read_config).and_return({
       :base_url       => 'http://example.com',
-      :admin_username => 'foobar',
-      :admin_password => 'secret'
+      :username => 'foobar',
+      :password => 'secret'
     })
   end
 
@@ -26,6 +26,12 @@ describe Nexus::Rest do
       Nexus::Rest.get_all('/service/local/repositories')
       stub.should have_been_requested
     end
+
+    it 'should send credentials' do
+      stub = stub_request(:get, /foobar:secret@example.com.*/).to_return(:body => '{}')
+      Nexus::Rest.get_all('/service/local/repositories')
+      stub.should have_been_requested
+    end
   end
 
   describe 'create' do
@@ -41,7 +47,7 @@ describe Nexus::Rest do
       stub.should have_been_requested
     end
 
-    it 'should send admin credentials' do
+    it 'should send credentials' do
       stub = stub_request(:post, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.create('/service/local/repositories', {'data' => {'id' => 'foobar'}})
       stub.should have_been_requested
@@ -89,7 +95,7 @@ describe Nexus::Rest do
       stub.should have_been_requested
     end
 
-    it 'should send admin credentials' do
+    it 'should send credentials' do
       stub = stub_request(:delete, /foobar:secret@example.com.*/).to_return(:status => 200)
       Nexus::Rest.destroy('/service/local/repositories/example')
       stub.should have_been_requested

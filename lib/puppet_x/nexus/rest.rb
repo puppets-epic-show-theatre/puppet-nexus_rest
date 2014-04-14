@@ -5,8 +5,8 @@ require 'rest_client'
 module Nexus
   class Rest
     def self.request
-      Nexus::Config.configure { |base_url, admin_username, admin_password|
-        nexus = RestClient::Resource.new(base_url, :user => admin_username, :password => admin_password)
+      Nexus::Config.configure { |base_url, username, password|
+        nexus = RestClient::Resource.new(base_url, :user => username, :password => password)
         yield nexus
       }
     end
