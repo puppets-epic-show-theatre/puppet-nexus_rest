@@ -31,7 +31,7 @@ module Nexus
 
     def self.read_config
       begin
-        Puppet::notice("Parsing configuration file #{CONFIG_FILENAME}")
+        Puppet::debug("Parsing configuration file #{CONFIG_FILENAME}")
         config = YAML.load_file(CONFIG_FILENAME)
       rescue
         raise Puppet::ParseError, "Could not parse YAML configuration file #{CONFIG_FILENAME}" + $!.inspect
