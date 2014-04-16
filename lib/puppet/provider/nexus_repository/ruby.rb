@@ -5,6 +5,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  def initialize(value={})
+    super(value)
+    @property_flush = {}
+  end
+
   def self.instances
     begin
       repositories = Nexus::Rest.get_all('/service/local/repositories')
@@ -60,11 +65,22 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     end
   end
 
-  def update
-    begin
-      Nexus::Rest.update("/service/local/repositories/#{resource[:name]}")
-    rescue Exception => e
-      raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
+  def flush
+    if @property_flush
+      data = {}
+      data[:repoPolicy] = resource[:policy].to_s if @property_flush[:policy]
+      unless data.empty?
+        # required values
+        data[:id] = resource[:name]
+        data[:repoType] = 'hosted'
+        data[:repoPolicy] = resource[:policy].to_s
+        begin
+          Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", {:data => data})
+        rescue Exception => e
+          raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
+        end
+      end
+      @property_hash = resource.to_hash
     end
   end
 
@@ -81,4 +97,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   mk_resource_methods
+
+  def policy=(value)
+    @property_flush[:policy] = true
+  end
 end

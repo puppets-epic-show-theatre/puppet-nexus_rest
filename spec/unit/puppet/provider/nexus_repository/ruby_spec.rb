@@ -80,14 +80,26 @@ describe provider_class do
     end
   end
 
-  describe 'update' do
+  describe 'flush' do
+    before(:each) do
+      # mark resources as 'dirty'
+      provider.policy = 'RELEASE'
+    end
     it 'should use /service/local/repositories/example to update an existing resource' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example')
-      provider.update
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', anything())
+      provider.flush
     end
     it 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:update).and_raise('Operation failed')
-      expect { provider.update }.to raise_error(Puppet::Error, /Error while updating nexus_repository example/)
+      expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_repository example/)
+    end
+    it 'should map name to id' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including({:id => 'example'}))
+      provider.flush
+    end
+    it 'should map policy to repoPolicy' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including({:repoPolicy => 'SNAPSHOT'}))
+      provider.flush
     end
   end
 
