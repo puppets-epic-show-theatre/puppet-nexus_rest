@@ -3,8 +3,16 @@ require 'spec_helper'
 provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 
 describe provider_class do
+  before(:each) do
+    Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
+  end
+
   let :provider do
-    resource = Puppet::Type::Nexus_repository.new({:name => 'example'})
+    resource = Puppet::Type::Nexus_repository.new({
+      :name          => 'example',
+      :label         => 'Example Repository',
+      :provider_type => :maven2,
+    })
     provider_class.new(resource)
   end
 
@@ -36,14 +44,24 @@ describe provider_class do
 
   describe 'create' do
     it 'should use /service/local/repositories to create a new resource' do
-      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
       Nexus::Rest.should_receive(:create).with('/service/local/repositories', anything())
       provider.create
     end
     it 'should raise a human readable error message if the operation failed' do
-      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
       Nexus::Rest.should_receive(:create).and_raise('Operation failed')
       expect { provider.create }.to raise_error(Puppet::Error, /Error while creating nexus_repository example/)
+    end
+    it 'should map name to id' do
+      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:id => 'example'}))
+      provider.create
+    end
+    it 'should map label to name' do
+      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:name => 'Example Repository'}))
+      provider.create
+    end
+    it 'should map provider_type to provider' do
+      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:provider => :maven2}))
+      provider.create
     end
   end
 

@@ -33,12 +33,12 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   def create
     begin
       Nexus::Rest.create('/service/local/repositories', {
-        'data' => {
+        :data => {
           'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
-          'id'                      => resource[:name],
-          'name'                    => resource[:label],
+          :id                       => resource[:name],
+          :name                     => resource[:label],
           'repoType'                => 'hosted',
-          'provider'                => resource[:provider_type],
+          :provider                 => resource[:provider_type],
           'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
           'format'                  => 'maven2',
           'repoPolicy'              => 'SNAPSHOT',
