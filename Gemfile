@@ -1,11 +1,8 @@
 source 'http://rubygems.org'
 
-if puppetversion = ENV['PUPPET_VERSION']
-  gem 'puppet', puppetversion
-else
-  gem 'puppet', '~> 3.4.0'
-end
+puppetversion = ENV['PUPPET_VERSION'] || '~> 3.4.0'
 
+gem 'puppet', puppetversion
 gem 'json', '~> 1.8.1'
 gem 'rest-client', '~> 1.6.7'
 gem 'mime-types', '< 2.0'
