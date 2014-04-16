@@ -34,12 +34,20 @@ describe provider_class do
 
   describe 'an instance' do
     let :instance do
-      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}]})
+      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({
+        'data' => [{
+          'id'       => 'repository-1',
+          'name'     => 'repository name',
+          'provider' => 'maven2',
+        }]
+      })
       provider_class.instances[0]
     end
 
-    it { instance.name.should == 'repository-1' }
-    it { instance.exists?.should be_true }
+    it { expect(instance.name).to eq('repository-1') }
+    it { expect(instance.label).to eq('repository name') }
+    it { expect(instance.provider_type).to eq('maven2') }
+    it { expect(instance.exists?).to be_true }
   end
 
   describe 'create' do
@@ -89,6 +97,6 @@ describe provider_class do
 
   it "should return false if it is not existing" do
     # the dummy example isn't returned by self.instances
-    provider.exists?.should be_false
+    expect(provider.exists?).to be_false
   end
 end
