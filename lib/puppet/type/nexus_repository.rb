@@ -1,16 +1,17 @@
 Puppet::Type.newtype(:nexus_repository) do
   @doc = "Manages Nexus Repository through a REST API"
 
+  ensurable
+
   newparam(:name, :namevar => true) do
   end
-  newproperty(:baseurl) do
-    desc "Base URL of service managing the resource"
+
+  newproperty(:provider_type) do
+    desc 'The content provider of the repository'
+    newvalues('maven1', 'maven2')
   end
-  newproperty(:resource) do
-    desc "Path to the REST resource, eg. '/api/users'"
-  end
-  newproperty(:timeout) do
-    desc "Time in seconds to wait for a response"
-    defaultto 60
+
+  autorequire(:file) do
+    Nexus::Config::CONFIG_FILENAME
   end
 end
