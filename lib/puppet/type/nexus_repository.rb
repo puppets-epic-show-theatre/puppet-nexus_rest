@@ -16,6 +16,11 @@ Puppet::Type.newtype(:nexus_repository) do
     newvalues('maven1', 'maven2')
   end
 
+  newproperty(:policy) do
+    desc 'Repositories can store either only release or snapshot artefacts.'
+    newvalues('SNAPSHOT', 'RELEASE')
+  end
+
   autorequire(:file) do
     Nexus::Config::CONFIG_FILENAME
   end

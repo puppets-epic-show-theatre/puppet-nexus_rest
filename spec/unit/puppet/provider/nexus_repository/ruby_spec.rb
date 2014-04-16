@@ -11,7 +11,8 @@ describe provider_class do
     resource = Puppet::Type::Nexus_repository.new({
       :name          => 'example',
       :label         => 'Example Repository',
-      :provider_type => :maven2,
+      :provider_type => 'maven2',
+      :policy        => 'SNAPSHOT',
     })
     provider_class.new(resource)
   end
@@ -36,9 +37,10 @@ describe provider_class do
     let :instance do
       Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({
         'data' => [{
-          'id'       => 'repository-1',
-          'name'     => 'repository name',
-          'provider' => 'maven2',
+          'id'         => 'repository-1',
+          'name'       => 'repository name',
+          'provider'   => 'maven2',
+          'repoPolicy' => 'SNAPSHOT',
         }]
       })
       provider_class.instances[0]
@@ -47,6 +49,7 @@ describe provider_class do
     it { expect(instance.name).to eq('repository-1') }
     it { expect(instance.label).to eq('repository name') }
     it { expect(instance.provider_type).to eq('maven2') }
+    it { expect(instance.policy).to eq('SNAPSHOT') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -68,7 +71,11 @@ describe provider_class do
       provider.create
     end
     it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:provider => :maven2}))
+      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:provider => 'maven2'}))
+      provider.create
+    end
+    it 'should map policy to repoPolicy' do
+      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:repoPolicy => 'SNAPSHOT'}))
       provider.create
     end
   end

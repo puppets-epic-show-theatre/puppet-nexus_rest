@@ -13,7 +13,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :name          => repository['id'],
           :label         => repository['name'],
           :ensure        => :present,
-          :provider_type => repository['provider']
+          :provider_type => repository['provider'],
+          :policy        => repository['repoPolicy']
         )
       end
     rescue => e
@@ -38,10 +39,10 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :id                       => resource[:name],
           :name                     => resource[:label],
           'repoType'                => 'hosted',
-          :provider                 => resource[:provider_type],
+          :provider                 => resource[:provider_type].to_s,
           'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
           'format'                  => 'maven2',
-          'repoPolicy'              => 'SNAPSHOT',
+          :repoPolicy               => resource[:policy].to_s,
 
           'writePolicy'             => 'READ_ONLY',
           'browseable'              => true,
