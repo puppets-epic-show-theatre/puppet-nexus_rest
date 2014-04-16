@@ -9,9 +9,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     begin
       repositories = Nexus::Rest.get_all('/service/local/repositories')
       repositories['data'].collect do |repository|
-        name = repository['id']
         new(
-          :name          => name,
+          :name          => repository['id'],
+          :label         => repository['name'],
           :ensure        => :present,
           :provider_type => repository['provider']
         )
@@ -36,7 +36,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
         'data' => {
           'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
           'id'                      => resource[:name],
-          'name'                    => resource[:name],
+          'name'                    => resource[:label],
           'repoType'                => 'hosted',
           'provider'                => resource[:provider_type],
           'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
