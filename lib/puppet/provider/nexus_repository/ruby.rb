@@ -5,6 +5,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  WRITE_ONCE_ERROR_MESSAGE = "%s is write-once only and cannot be changed without force."
   PROVIDER_ROLE_MAPPING = {
     :hosted  => 'org.sonatype.nexus.proxy.repository.Repository',
     :proxy   => 'org.sonatype.nexus.proxy.repository.Repository',
@@ -107,7 +108,11 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   mk_resource_methods
 
   def type=(value)
-    raise Puppet::Error, "type is write-once only and cannot be changed without force."
+    raise Puppet::Error, WRITE_ONCE_ERROR_MESSAGE % 'type'
+  end
+
+  def provider_type=(value)
+    raise Puppet::Error, WRITE_ONCE_ERROR_MESSAGE % 'provider_type'
   end
 
   def policy=(value)

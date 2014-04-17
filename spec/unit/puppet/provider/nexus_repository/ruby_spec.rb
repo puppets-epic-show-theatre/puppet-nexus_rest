@@ -112,6 +112,10 @@ describe provider_class do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_excluding(:type => anything))
       provider.flush
     end
+    it 'should not update provider_type' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_excluding(:provider => anything))
+      provider.flush
+    end
     it 'should map policy to repoPolicy' do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:repoPolicy => 'SNAPSHOT'))
       provider.flush
@@ -135,5 +139,8 @@ describe provider_class do
   end
   it 'should raise an error when the type is changed' do
     expect { provider.type = 'virtual' }.to raise_error(Puppet::Error, /type is write-once only/)
+  end
+  it 'should raise an error when the provider_type is changed' do
+    expect { provider.provider_type = 'different' }.to raise_error(Puppet::Error, /provider_type is write-once only/)
   end
 end
