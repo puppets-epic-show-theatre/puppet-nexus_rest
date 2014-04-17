@@ -23,7 +23,7 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
-    newvalues('SNAPSHOT', 'RELEASE')
+    newvalues('SNAPSHOT', 'RELEASE', '')
   end
 
   autorequire(:file) do

@@ -78,7 +78,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :provider                 => content_type_details[:provider],
           :providerRole             => content_type_details[:providerRole],
           :format                   => content_type_details[:format],
-          :repoPolicy               => resource[:policy].to_s,
+          :repoPolicy               => resource[:policy].to_s, # TODO repoPolicy only required for maven1/maven2
 
           'writePolicy'             => 'READ_ONLY',
           'browseable'              => true,
