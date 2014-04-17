@@ -36,7 +36,7 @@ module Nexus
     def self.create(resource_name, data)
       request { |nexus|
         begin
-          nexus[resource_name].post JSON.generate(data), :content_type => :json
+          nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
         rescue Exception => e
           raise "Could not create #{resource_name} at #{nexus.url}: #{e}"
         end
