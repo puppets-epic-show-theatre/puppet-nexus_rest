@@ -77,6 +77,10 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.create
     end
+    it 'should auto-detect providerRole based on type' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
+      provider.create
+    end
     it 'should map type to repoType' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoType => 'hosted'))
       provider.create

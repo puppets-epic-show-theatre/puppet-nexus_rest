@@ -5,6 +5,12 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  PROVIDER_ROLE_MAPPING = {
+    :hosted  => 'org.sonatype.nexus.proxy.repository.Repository',
+    :proxy   => 'org.sonatype.nexus.proxy.repository.Repository',
+    :virtual => 'org.sonatype.nexus.proxy.repository.ShadowRepository',
+  }
+
   def initialize(value={})
     super(value)
     @property_flush = {}
@@ -15,9 +21,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       repositories = Nexus::Rest.get_all('/service/local/repositories')
       repositories['data'].collect do |repository|
         new(
+          :ensure        => :present,
           :name          => repository['id'],
           :label         => repository['name'],
-          :ensure        => :present,
           :provider_type => repository['provider'],
           :type          => repository['repoType'],
           :policy        => repository['repoPolicy']
@@ -38,6 +44,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def create
+    provider_Role = PROVIDER_ROLE_MAPPING[resource[:type]] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable provider role for type #{resource[:type]}"
     begin
       Nexus::Rest.create('/service/local/repositories', {
         :data => {
@@ -46,7 +53,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :name                     => resource[:label],
           :repoType                 => resource[:type].to_s,
           :provider                 => resource[:provider_type].to_s,
-          'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
+          :providerRole             => provider_Role,
           'format'                  => 'maven2',
           :repoPolicy               => resource[:policy].to_s,
 
