@@ -79,6 +79,12 @@ describe Nexus::Rest do
         Nexus::Rest.create('/service/local/repositories', {})
       }.to raise_error(RuntimeError, /Could not create/)
     end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.create('/service/local/repositories', {})
+      stub.should have_been_requested
+    end
   end
 
   describe 'update' do
