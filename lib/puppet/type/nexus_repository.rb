@@ -18,7 +18,7 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:provider_type) do
     desc 'The content provider of the repository'
-    newvalues('maven1', 'maven2')
+    newvalues('maven1', 'maven2', 'nuget', 'site', 'obr')
   end
 
   newproperty(:policy) do

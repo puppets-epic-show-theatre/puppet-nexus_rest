@@ -77,10 +77,6 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.create
     end
-    it 'should auto-detect providerRole based on type' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
-      provider.create
-    end
     it 'should map type to repoType' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoType => 'hosted'))
       provider.create
@@ -89,7 +85,122 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoPolicy => 'SNAPSHOT'))
       provider.create
     end
-  end
+
+    describe do
+      let :provider do
+        resource = Puppet::Type::Nexus_repository.new({
+          :name          => 'example',
+          :provider_type => 'maven1',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should auto-detect provider for provider_type => maven1' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven1'))
+        provider.create
+      end
+      it 'should auto-detect providerRole for provider_type => maven1' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
+        provider.create
+      end
+      it 'should auto-detect format for provider_type => maven1' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format  => 'maven1'))
+        provider.create
+      end
+    end
+
+    describe do
+      let(:provider) do
+        resource = Puppet::Type::Nexus_repository.new({
+          :name          => 'example',
+          :provider_type => 'maven2',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should auto-detect provider for provider_type => maven2' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
+        provider.create
+      end
+      it 'should auto-detect providerRole for provider_type => maven2' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
+        provider.create
+      end
+      it 'should auto-detect format for provider_type => maven2' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format => 'maven2'))
+        provider.create
+      end
+    end
+
+    describe do
+      let(:provider) do
+        resource = Puppet::Type::Nexus_repository.new({
+          :name          => 'example',
+          :provider_type => 'nuget',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should auto-detect provider for provider_type => nuget' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'nuget-proxy'))
+        provider.create
+      end
+      it 'should auto-detect providerRole for provider_type => nuget' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
+        provider.create
+      end
+      it 'should auto-detect format for provider_type => nuget' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format => 'nuget'))
+        provider.create
+      end
+    end
+
+    describe do
+      let(:provider) do
+        resource = Puppet::Type::Nexus_repository.new({
+          :name          => 'example',
+          :provider_type => 'obr',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should auto-detect provider for provider_type => obr' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'obr-proxy'))
+        provider.create
+      end
+      it 'should auto-detect providerRole for provider_type => obr' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.Repository'))
+        provider.create
+      end
+      it 'should auto-detect format for provider_type => obr' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format => 'obr'))
+        provider.create
+      end
+    end
+
+    describe do
+      let(:provider) do
+        resource = Puppet::Type::Nexus_repository.new({
+          :name          => 'example',
+          :provider_type => 'site',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should auto-detect provider for provider_type => site' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'site'))
+        provider.create
+      end
+      it 'should auto-detect providerRole for provider_type => site' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:providerRole => 'org.sonatype.nexus.proxy.repository.WebSiteRepository'))
+        provider.create
+      end
+      it 'should auto-detect format for provider_type => site' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format => 'site'))
+        provider.create
+      end
+    end
+end
 
   describe 'flush' do
     before(:each) do

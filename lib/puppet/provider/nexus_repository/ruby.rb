@@ -6,10 +6,32 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
   WRITE_ONCE_ERROR_MESSAGE = "%s is write-once only and cannot be changed without force."
-  PROVIDER_ROLE_MAPPING = {
-    :hosted  => 'org.sonatype.nexus.proxy.repository.Repository',
-    :proxy   => 'org.sonatype.nexus.proxy.repository.Repository',
-    :virtual => 'org.sonatype.nexus.proxy.repository.ShadowRepository',
+  PROVIDER_TYPE_MAPPING = {
+    'maven1'    => {
+      :provider     => 'maven1',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'maven1',
+    },
+    'maven2'    => {
+      :provider     => 'maven2',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'maven2',
+    },
+    'obr' => {
+      :provider     => 'obr-proxy',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'obr',
+    },
+    'nuget'     => {
+      :provider     => 'nuget-proxy',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'nuget',
+    },
+    'site'      => {
+      :provider     => 'site',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.WebSiteRepository',
+      :format       => 'site',
+    },
   }
 
   def initialize(value={})
@@ -45,7 +67,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def create
-    provider_Role = PROVIDER_ROLE_MAPPING[resource[:type]] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable provider role for type #{resource[:type]}"
+    content_type_details = PROVIDER_TYPE_MAPPING[resource[:provider_type].to_s] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable mapping for type #{resource[:provider_type]}"
     begin
       Nexus::Rest.create('/service/local/repositories', {
         :data => {
@@ -53,9 +75,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :id                       => resource[:name],
           :name                     => resource[:label],
           :repoType                 => resource[:type].to_s,
-          :provider                 => resource[:provider_type].to_s,
-          :providerRole             => provider_Role,
-          'format'                  => 'maven2',
+          :provider                 => content_type_details[:provider],
+          :providerRole             => content_type_details[:providerRole],
+          :format                   => content_type_details[:format],
           :repoPolicy               => resource[:policy].to_s,
 
           'writePolicy'             => 'READ_ONLY',
