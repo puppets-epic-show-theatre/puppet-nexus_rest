@@ -19,6 +19,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :label         => repository['name'],
           :ensure        => :present,
           :provider_type => repository['provider'],
+          :type          => repository['repoType'],
           :policy        => repository['repoPolicy']
         )
       end
@@ -43,7 +44,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
           :id                       => resource[:name],
           :name                     => resource[:label],
-          'repoType'                => 'hosted',
+          :repoType                 => resource[:type].to_s,
           :provider                 => resource[:provider_type].to_s,
           'providerRole'            => 'org.sonatype.nexus.proxy.repository.Repository',
           'format'                  => 'maven2',
@@ -72,7 +73,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       unless data.empty?
         # required values
         data[:id] = resource[:name]
-        data[:repoType] = 'hosted'
+        data[:repoType] = resource[:type]
         data[:repoPolicy] = resource[:policy].to_s
         begin
           Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", {:data => data})
@@ -97,6 +98,10 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   mk_resource_methods
+
+  def type=(value)
+    raise Puppet::Error, "type is write-once only and cannot be changed without force."
+  end
 
   def policy=(value)
     @property_flush[:policy] = true

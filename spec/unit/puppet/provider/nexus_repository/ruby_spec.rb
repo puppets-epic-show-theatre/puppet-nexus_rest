@@ -12,6 +12,7 @@ describe provider_class do
       :name          => 'example',
       :label         => 'Example Repository',
       :provider_type => 'maven2',
+      :type          => 'hosted',
       :policy        => 'SNAPSHOT',
     })
     provider_class.new(resource)
@@ -40,6 +41,7 @@ describe provider_class do
           'id'         => 'repository-1',
           'name'       => 'repository name',
           'provider'   => 'maven2',
+          'repoType'   => 'hosted',
           'repoPolicy' => 'SNAPSHOT',
         }]
       })
@@ -49,6 +51,7 @@ describe provider_class do
     it { expect(instance.name).to eq('repository-1') }
     it { expect(instance.label).to eq('repository name') }
     it { expect(instance.provider_type).to eq('maven2') }
+    it { expect(instance.type).to eq('hosted') }
     it { expect(instance.policy).to eq('SNAPSHOT') }
     it { expect(instance.exists?).to be_true }
   end
@@ -63,19 +66,23 @@ describe provider_class do
       expect { provider.create }.to raise_error(Puppet::Error, /Error while creating nexus_repository example/)
     end
     it 'should map name to id' do
-      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:id => 'example'}))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:id => 'example'))
       provider.create
     end
     it 'should map label to name' do
-      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:name => 'Example Repository'}))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:name => 'Example Repository'))
       provider.create
     end
     it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:provider => 'maven2'}))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
+      provider.create
+    end
+    it 'should map type to repoType' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoType => 'hosted'))
       provider.create
     end
     it 'should map policy to repoPolicy' do
-      Nexus::Rest.should_receive(:create).with(anything(), :data => hash_including({:repoPolicy => 'SNAPSHOT'}))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoPolicy => 'SNAPSHOT'))
       provider.create
     end
   end
@@ -94,11 +101,15 @@ describe provider_class do
       expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_repository example/)
     end
     it 'should map name to id' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including({:id => 'example'}))
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:id => 'example'))
+      provider.flush
+    end
+    it 'should not update type' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_excluding(:type => anything))
       provider.flush
     end
     it 'should map policy to repoPolicy' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including({:repoPolicy => 'SNAPSHOT'}))
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:repoPolicy => 'SNAPSHOT'))
       provider.flush
     end
   end
@@ -117,5 +128,8 @@ describe provider_class do
   it "should return false if it is not existing" do
     # the dummy example isn't returned by self.instances
     expect(provider.exists?).to be_false
+  end
+  it 'should raise an error when the type is changed' do
+    expect { provider.type = 'virtual' }.to raise_error(Puppet::Error, /type is write-once only/)
   end
 end

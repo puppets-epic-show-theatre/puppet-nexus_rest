@@ -11,6 +11,11 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'Human readable label of the repository. The Nexus UI will show it as repository name.'
   end
 
+  newproperty(:type) do
+    desc 'Type of this repository. Can be hosted, proxy or virtual; cannot be changed after creation without deleting the repository.'
+    newvalues('hosted', 'proxy', 'virtual')
+  end
+
   newproperty(:provider_type) do
     desc 'The content provider of the repository'
     newvalues('maven1', 'maven2')
