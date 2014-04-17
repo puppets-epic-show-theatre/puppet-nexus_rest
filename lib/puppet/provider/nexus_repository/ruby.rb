@@ -47,7 +47,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :ensure        => :present,
           :name          => repository['id'],
           :label         => repository['name'],
-          :provider_type => repository['provider'],
+          :provider_type => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
           :type          => repository['repoType'],
           :policy        => repository['repoPolicy']
         )

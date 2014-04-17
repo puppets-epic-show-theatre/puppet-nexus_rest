@@ -41,6 +41,7 @@ describe provider_class do
           'id'         => 'repository-1',
           'name'       => 'repository name',
           'provider'   => 'maven2',
+          'format'     => 'maven2',
           'repoType'   => 'hosted',
           'repoPolicy' => 'SNAPSHOT',
         }]
@@ -53,6 +54,27 @@ describe provider_class do
     it { expect(instance.provider_type).to eq('maven2') }
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.policy).to eq('SNAPSHOT') }
+    it { expect(instance.exists?).to be_true }
+  end
+
+  describe 'a nuget repository' do
+    let :instance do
+      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({
+        'data' => [{
+          'id'         => 'nuget-repository',
+          'name'       => 'repository name',
+          'provider'   => 'nuget-proxy',
+          'format'     => 'nuget',
+          'repoType'   => 'hosted',
+        }]
+      })
+      provider_class.instances[0]
+    end
+
+    it { expect(instance.name).to eq('nuget-repository') }
+    it { expect(instance.label).to eq('repository name') }
+    it { expect(instance.provider_type).to eq('nuget') }
+    it { expect(instance.type).to eq('hosted') }
     it { expect(instance.exists?).to be_true }
   end
 
