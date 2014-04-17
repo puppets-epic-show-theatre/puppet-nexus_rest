@@ -69,7 +69,7 @@ module Nexus
     end
 
     def self.format_error_message(data)
-      if data && data[:errors]
+      if !data.empty?
         # The data normally looks like
         # {
         #    "errors":
