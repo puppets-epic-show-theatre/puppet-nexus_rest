@@ -105,6 +105,12 @@ describe Nexus::Rest do
         Nexus::Rest.update('/service/local/repositories/example', {})
       }.to raise_error(RuntimeError, /Could not update/)
     end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.update('/service/local/repositories/example', {})
+      stub.should have_been_requested
+    end
   end
 
   describe 'destroy' do
@@ -131,6 +137,12 @@ describe Nexus::Rest do
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')
       }.to raise_error(RuntimeError, /Could not delete/)
+    end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.destroy('/service/local/repositories/example')
+      stub.should have_been_requested
     end
   end
 end

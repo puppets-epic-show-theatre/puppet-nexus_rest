@@ -47,7 +47,7 @@ module Nexus
     def self.update(resource_name, data)
       request { |nexus|
         begin
-          nexus[resource_name].put JSON.generate(data), :content_type => :json
+          nexus[resource_name].put JSON.generate(data), :accept => :json, :content_type => :json
         rescue Exception => e
           raise "Could not update #{resource_name} at #{nexus.url}: #{e}"
         end
@@ -57,7 +57,7 @@ module Nexus
     def self.destroy(resource_name)
       request { |nexus|
         begin
-          nexus[resource_name].delete
+          nexus[resource_name].delete :accept => :json
         rescue RestClient::ResourceNotFound
           # resource already deleted, nothing to do
         rescue Exception => e
