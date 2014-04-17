@@ -36,9 +36,10 @@ module Nexus
     def self.create(resource_name, data)
       request { |nexus|
         begin
-          nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
+          response = nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
         rescue Exception => e
-          raise "Could not create #{resource_name} at #{nexus.url}: #{e}"
+          error_message = format_error_message(e.http_body)
+          raise "Could not create #{resource_name} at #{nexus.url}: #{e} - #{error_message}"
         end
       }
     end
@@ -63,6 +64,24 @@ module Nexus
           raise "Could not delete #{resource_name} at #{nexus.url}: #{e}"
         end
       }
+    end
+
+    def self.format_error_message(data)
+      if data && data[:errors]
+        # The data normally looks like
+        # {
+        #    "errors":
+        #    [
+        #        {
+        #            "id": "*",
+        #            "msg": "... <long error message> ..."
+        #        }
+        #    ]
+        # }
+        data[:errors].collect {|entry| entry[:msg] }.join(' ')
+      else
+        '<unknown>'
+      end
     end
   end
 end

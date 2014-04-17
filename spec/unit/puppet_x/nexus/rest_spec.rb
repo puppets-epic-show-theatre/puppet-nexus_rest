@@ -85,6 +85,11 @@ describe Nexus::Rest do
       Nexus::Rest.create('/service/local/repositories', {})
       stub.should have_been_requested
     end
+
+    it 'should extract error message' do
+      stub = stub_request(:any, /.*/).to_return(:status => 400, :body => {:errors => [{:id => '*', :msg =>  'Error message'}]})
+      expect { Nexus::Rest.create('/service/local/respositories', {}) }.to raise_error(RuntimeError, /Error message/)
+    end
   end
 
   describe 'update' do
