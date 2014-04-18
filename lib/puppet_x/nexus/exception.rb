@@ -3,8 +3,8 @@ require 'json'
 module Nexus
   class ExceptionHandler
     def self.process(e)
-      msg = 'unknown'
-      msg = retrieve_error_message(e.http_body) if e.methods.include? :http_body
+      msg = e.to_s
+      msg += ', details: ' + retrieve_error_message(e.http_body) if e.methods.include? :http_body
       yield msg
     end
 
