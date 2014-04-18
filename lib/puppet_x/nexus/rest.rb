@@ -37,9 +37,10 @@ module Nexus
       request { |nexus|
         begin
           nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
-        rescue Exception => e
-          error_message = format_error_message(e.http_body)
-          raise "Could not create #{resource_name} at #{nexus.url}: #{e} - #{error_message}"
+        rescue => e
+          Nexus::ExceptionHandler.process(e) { |msg|
+            raise "Could not create #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+          }
         end
       }
     end
@@ -48,10 +49,10 @@ module Nexus
       request { |nexus|
         begin
           nexus[resource_name].put JSON.generate(data), :accept => :json, :content_type => :json
-        rescue Exception => e
-          Puppet::debug("Update of #{resource_name} at #{nexus.url} failed: #{e.http_body}")
-          error_message = format_error_message(e.http_body)
-          raise "Could not update #{resource_name} at #{nexus.url}: #{e} - #{error_message}"
+        rescue => e
+          Nexus::ExceptionHandler.process(e) { |msg|
+            raise "Could not update #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+          }
         end
       }
     end
@@ -62,30 +63,12 @@ module Nexus
           nexus[resource_name].delete :accept => :json
         rescue RestClient::ResourceNotFound
           # resource already deleted, nothing to do
-        rescue Exception => e
-          Puppet::debug("Delete of #{resource_name} at #{nexus.url} failed: #{e.http_body}")
-          error_message = format_error_message(e.http_body)
-          raise "Could not delete #{resource_name} at #{nexus.url}: #{e} - #{error_message}"
+        rescue => e
+          Nexus::ExceptionHandler.process(e) { |msg|
+            raise "Could not delete #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+          }
         end
       }
-    end
-
-    def self.format_error_message(data)
-      if data.class == {}.class && !data.empty?
-        # The data normally looks like
-        # {
-        #    "errors":
-        #    [
-        #        {
-        #            "id": "*",
-        #            "msg": "... <long error message> ..."
-        #        }
-        #    ]
-        # }
-        data[:errors].collect {|entry| entry[:msg] }.join(' ')
-      else
-        '<unknown>'
-      end
     end
   end
 end
