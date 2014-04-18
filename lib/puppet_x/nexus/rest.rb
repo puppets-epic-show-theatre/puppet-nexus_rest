@@ -22,7 +22,9 @@ module Nexus
         begin
           response = nexus[resource_name].get(:accept => :json)
         rescue => e
-          raise "Could not request #{resource_name} from #{nexus.url}: #{e}"
+          Nexus::ExceptionHandler.process(e) { |msg|
+            raise "Could not request #{resource_name} from #{nexus.url}: #{msg}"
+          }
         end
 
         begin
@@ -39,7 +41,7 @@ module Nexus
           nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
         rescue => e
           Nexus::ExceptionHandler.process(e) { |msg|
-            raise "Could not create #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+            raise "Could not create #{resource_name} at #{nexus.url}: #{msg}"
           }
         end
       }
@@ -51,7 +53,7 @@ module Nexus
           nexus[resource_name].put JSON.generate(data), :accept => :json, :content_type => :json
         rescue => e
           Nexus::ExceptionHandler.process(e) { |msg|
-            raise "Could not update #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+            raise "Could not update #{resource_name} at #{nexus.url}: #{msg}"
           }
         end
       }
@@ -65,7 +67,7 @@ module Nexus
           # resource already deleted, nothing to do
         rescue => e
           Nexus::ExceptionHandler.process(e) { |msg|
-            raise "Could not delete #{resource_name} at #{nexus.url}: #{e}, reason: #{msg}"
+            raise "Could not delete #{resource_name} at #{nexus.url}: #{msg}"
           }
         end
       }
