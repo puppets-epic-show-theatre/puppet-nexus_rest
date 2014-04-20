@@ -18,6 +18,7 @@ module Nexus
         return error_message ? error_message[1]: 'unknown'
       end
 
+      # sometimes the error message is a Hash, sometimes a String; trying to parse the String
       json = data
       if data.is_a? String
         begin
@@ -37,6 +38,8 @@ module Nexus
       #        }
       #    ]
       # }
+
+      # sometimes the hash contains Strings ('errors') and sometimes symbols (:errors) and because they are not equal, we have to adapt ...
       if json['errors']
         json['errors'].collect {|entry| entry['msg'] }.join(' ')
       elsif json[:errors]
