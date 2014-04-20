@@ -15,6 +15,8 @@ describe provider_class do
       :type          => 'hosted',
       :policy        => 'SNAPSHOT',
       :exposed       => :true,
+      :browseable    => :true,
+      :indexable     => :true,
     })
     provider_class.new(resource)
   end
@@ -46,6 +48,8 @@ describe provider_class do
           'repoType'   => 'hosted',
           'repoPolicy' => 'SNAPSHOT',
           'exposed'    => true,
+          'browseable' => true,
+          'indexable'  => true,
         }]
       })
       provider_class.instances[0]
@@ -57,6 +61,8 @@ describe provider_class do
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.policy).to eq('SNAPSHOT') }
     it { expect(instance.exposed).to eq('true') }
+    it { expect(instance.browseable).to eq('true') }
+    it { expect(instance.indexable).to eq('true') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -70,6 +76,8 @@ describe provider_class do
           'format'     => 'nuget',
           'repoType'   => 'hosted',
           'exposed'    => false,
+          'browseable' => false,
+          'indexable'  => false,
         }]
       })
       provider_class.instances[0]
@@ -80,6 +88,8 @@ describe provider_class do
     it { expect(instance.provider_type).to eq('nuget') }
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.exposed).to eq('false') }
+    it { expect(instance.browseable).to eq('false') }
+    it { expect(instance.indexable).to eq('false') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -114,6 +124,14 @@ describe provider_class do
     end
     it 'should map exposed symbol to boolean' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:exposed => true))
+      provider.create
+    end
+    it 'should map browseable symbol to boolean' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:browseable => true))
+      provider.create
+    end
+    it 'should map indexable symbol to boolean' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:indexable => true))
       provider.create
     end
 
@@ -265,6 +283,16 @@ end
     it 'should map exposed symbol to boolean' do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:exposed => true))
       provider.exposed = :true
+      provider.flush
+    end
+    it 'should map browseable symbol to boolean' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:browseable => true))
+      provider.browseable = :true
+      provider.flush
+    end
+    it 'should map indexable symbol to boolean' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:indexable => true))
+      provider.indexable = :true
       provider.flush
     end
   end

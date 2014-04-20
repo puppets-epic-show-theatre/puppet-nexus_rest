@@ -28,10 +28,17 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:exposed, :boolean => true) do
     desc 'Controls if the repository is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
+    munge { |value| @resource.munge_boolean(value) }
+  end
 
-    munge do |value|
-      @resource.munge_boolean(value)
-    end
+  newproperty(:browseable, :boolean => true) do
+    desc 'Controls if users can browse the contents of repository via their web browsers. Responds to the \'Allow File Browsing\' setting in the UI.'
+    munge { |value| @resource.munge_boolean(value) }
+  end
+
+  newproperty(:indexable, :boolean => true) do
+    desc 'Controls if the artifacts contained in this repository are index and thus searchable. Responds to the \'Include in Search\' setting in the UI.'
+    munge { |value| @resource.munge_boolean(value) }
   end
 
   autorequire(:file) do

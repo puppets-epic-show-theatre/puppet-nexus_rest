@@ -51,7 +51,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :provider_type => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
           :type          => repository['repoType'],
           :policy        => repository['repoPolicy'],
-          :exposed       => repository['exposed'].to_s
+          :exposed       => repository['exposed'].to_s,
+          :browseable    => repository['browseable'].to_s,
+          :indexable     => repository['indexable'].to_s
         )
       end
     rescue => e
@@ -81,11 +83,11 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :providerRole             => content_type_details[:providerRole],
           :format                   => content_type_details[:format],
           :repoPolicy               => resource[:policy].to_s,
+          :exposed                  => resource[:exposed] == :true,
 
           'writePolicy'             => 'READ_ONLY',
-          'browseable'              => true,
-          'indexable'               => true,
-          :exposed                  => resource[:exposed] == :true,
+          :browseable               => resource[:browseable] == :true,
+          :indexable                => resource[:indexable] == :true,
           'downloadRemoteIndexes'   => false,
           'notFoundCacheTTL'        => 1440,
 
@@ -103,6 +105,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       data = {}
       data[:repoPolicy] = resource[:policy].to_s if @property_flush[:policy]
       data[:exposed] = resource[:exposed] == :true if @property_flush[:exposed]
+      data[:browseable] = resource[:browseable] == :true if @property_flush[:browseable]
+      data[:indexable] = resource[:indexable] == :true if @property_flush[:indexable]
       unless data.empty?
         # required values
         data[:id] = resource[:name]
@@ -146,5 +150,13 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def exposed=(value)
     @property_flush[:exposed] = true
+  end
+
+  def browseable=(value)
+    @property_flush[:browseable] = true
+  end
+
+  def indexable=(value)
+    @property_flush[:indexable] = true
   end
 end
