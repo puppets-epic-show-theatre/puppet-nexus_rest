@@ -14,6 +14,7 @@ describe provider_class do
       :provider_type => 'maven2',
       :type          => 'hosted',
       :policy        => 'SNAPSHOT',
+      :exposed       => :true,
     })
     provider_class.new(resource)
   end
@@ -44,6 +45,7 @@ describe provider_class do
           'format'     => 'maven2',
           'repoType'   => 'hosted',
           'repoPolicy' => 'SNAPSHOT',
+          'exposed'    => true,
         }]
       })
       provider_class.instances[0]
@@ -54,6 +56,7 @@ describe provider_class do
     it { expect(instance.provider_type).to eq('maven2') }
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.policy).to eq('SNAPSHOT') }
+    it { expect(instance.exposed).to eq('true') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -66,6 +69,7 @@ describe provider_class do
           'provider'   => 'nuget-proxy',
           'format'     => 'nuget',
           'repoType'   => 'hosted',
+          'exposed'    => false,
         }]
       })
       provider_class.instances[0]
@@ -75,6 +79,7 @@ describe provider_class do
     it { expect(instance.label).to eq('repository name') }
     it { expect(instance.provider_type).to eq('nuget') }
     it { expect(instance.type).to eq('hosted') }
+    it { expect(instance.exposed).to eq('false') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -105,6 +110,10 @@ describe provider_class do
     end
     it 'should map policy to repoPolicy' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoPolicy => 'SNAPSHOT'))
+      provider.create
+    end
+    it 'should map exposed symbol to boolean' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:exposed => true))
       provider.create
     end
 
@@ -251,6 +260,11 @@ end
     end
     it 'should map policy to repoPolicy' do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:repoPolicy => 'SNAPSHOT'))
+      provider.flush
+    end
+    it 'should map exposed symbol to boolean' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:exposed => true))
+      provider.exposed = :true
       provider.flush
     end
   end

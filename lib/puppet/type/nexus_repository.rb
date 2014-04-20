@@ -23,10 +23,29 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
-    newvalues('SNAPSHOT', 'RELEASE', '')
+    newvalues('SNAPSHOT', 'RELEASE', 'MIXED')
+  end
+
+  newproperty(:exposed, :boolean => true) do
+    desc 'Controls if the repository is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
+
+    munge do |value|
+      @resource.munge_boolean(value)
+    end
   end
 
   autorequire(:file) do
     Nexus::Config::CONFIG_FILENAME
+  end
+
+  def munge_boolean(value)
+    case value
+    when true, "true", :true
+      :true
+    when false, "false", :false
+      :false
+    else
+      fail("munge_boolean only takes booleans")
+    end
   end
 end

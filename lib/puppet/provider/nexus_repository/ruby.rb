@@ -50,7 +50,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :label         => repository['name'],
           :provider_type => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
           :type          => repository['repoType'],
-          :policy        => repository['repoPolicy']
+          :policy        => repository['repoPolicy'],
+          :exposed       => repository['exposed'].to_s
         )
       end
     rescue => e
@@ -79,12 +80,12 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :provider                 => content_type_details[:provider],
           :providerRole             => content_type_details[:providerRole],
           :format                   => content_type_details[:format],
-          :repoPolicy               => resource[:policy].to_s, # TODO repoPolicy only required for maven1/maven2
+          :repoPolicy               => resource[:policy].to_s,
 
           'writePolicy'             => 'READ_ONLY',
           'browseable'              => true,
           'indexable'               => true,
-          'exposed'                 => true,
+          :exposed                  => resource[:exposed] == :true,
           'downloadRemoteIndexes'   => false,
           'notFoundCacheTTL'        => 1440,
 
@@ -101,6 +102,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     if @property_flush
       data = {}
       data[:repoPolicy] = resource[:policy].to_s if @property_flush[:policy]
+      data[:exposed] = resource[:exposed] == :true if @property_flush[:exposed]
       unless data.empty?
         # required values
         data[:id] = resource[:name]
@@ -140,5 +142,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def policy=(value)
     @property_flush[:policy] = true
+  end
+
+  def exposed=(value)
+    @property_flush[:exposed] = true
   end
 end
