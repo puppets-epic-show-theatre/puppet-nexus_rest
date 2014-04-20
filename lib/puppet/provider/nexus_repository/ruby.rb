@@ -42,7 +42,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def self.instances
     begin
-      repositories = Nexus::Rest.get_all('/service/local/repositories')
+      repositories = Nexus::Rest.get_all_plus_n('/service/local/repositories')
       repositories['data'].collect do |repository|
         new(
           :ensure        => :present,

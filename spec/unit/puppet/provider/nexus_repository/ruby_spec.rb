@@ -21,7 +21,7 @@ describe provider_class do
 
   describe 'instances' do
     let :instances do
-      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]})
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({'data' => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]})
       provider_class.instances
     end
 
@@ -30,14 +30,14 @@ describe provider_class do
 
   describe 'instances' do
     it 'should raise a human readable error message if the operation failed' do
-      Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
+      Nexus::Rest.should_receive(:get_all_plus_n).and_raise('Operation failed')
       expect { provider_class.instances }.to raise_error(Puppet::Error, /Error while retrieving all nexus_repository instances/)
     end
   end
 
   describe 'an instance' do
     let :instance do
-      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
           'id'         => 'repository-1',
           'name'       => 'repository name',
@@ -62,7 +62,7 @@ describe provider_class do
 
   describe 'a nuget repository' do
     let :instance do
-      Nexus::Rest.should_receive(:get_all).with('/service/local/repositories').and_return({
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
           'id'         => 'nuget-repository',
           'name'       => 'repository name',
