@@ -94,7 +94,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
         :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
       }
-      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].empty?
+      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil? or resource[:local_storage_url].empty?
       Nexus::Rest.create('/service/local/repositories', {:data => data})
     rescue Exception => e
       raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
