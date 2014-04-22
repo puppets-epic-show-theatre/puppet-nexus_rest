@@ -15,6 +15,7 @@ describe provider_class do
       :type          => 'hosted',
       :policy        => 'SNAPSHOT',
       :exposed       => :true,
+      :write_policy  => :ALLOW_WRITE_ONCE,
       :browseable    => :true,
       :indexable     => :true,
     })
@@ -41,15 +42,16 @@ describe provider_class do
     let :instance do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
-          'id'         => 'repository-1',
-          'name'       => 'repository name',
-          'provider'   => 'maven2',
-          'format'     => 'maven2',
-          'repoType'   => 'hosted',
-          'repoPolicy' => 'SNAPSHOT',
-          'exposed'    => true,
-          'browseable' => true,
-          'indexable'  => true,
+          'id'          => 'repository-1',
+          'name'        => 'repository name',
+          'provider'    => 'maven2',
+          'format'      => 'maven2',
+          'repoType'    => 'hosted',
+          'repoPolicy'  => 'SNAPSHOT',
+          'exposed'     => true,
+          'writePolicy' => 'ALLOW_WRITE_ONCE',
+          'browseable'  => true,
+          'indexable'   => true,
         }]
       })
       provider_class.instances[0]
@@ -61,6 +63,7 @@ describe provider_class do
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.policy).to eq('SNAPSHOT') }
     it { expect(instance.exposed).to eq('true') }
+    it { expect(instance.write_policy).to eq(:ALLOW_WRITE_ONCE) }
     it { expect(instance.browseable).to eq('true') }
     it { expect(instance.indexable).to eq('true') }
     it { expect(instance.exists?).to be_true }
@@ -70,14 +73,15 @@ describe provider_class do
     let :instance do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
-          'id'         => 'nuget-repository',
-          'name'       => 'repository name',
-          'provider'   => 'nuget-proxy',
-          'format'     => 'nuget',
-          'repoType'   => 'hosted',
-          'exposed'    => false,
-          'browseable' => false,
-          'indexable'  => false,
+          'id'          => 'nuget-repository',
+          'name'        => 'repository name',
+          'provider'    => 'nuget-proxy',
+          'format'      => 'nuget',
+          'repoType'    => 'hosted',
+          'exposed'     => false,
+          'writePolicy' => 'READ_ONLY',
+          'browseable'  => false,
+          'indexable'   => false,
         }]
       })
       provider_class.instances[0]
@@ -88,6 +92,7 @@ describe provider_class do
     it { expect(instance.provider_type).to eq('nuget') }
     it { expect(instance.type).to eq('hosted') }
     it { expect(instance.exposed).to eq('false') }
+    it { expect(instance.write_policy).to eq(:READ_ONLY) }
     it { expect(instance.browseable).to eq('false') }
     it { expect(instance.indexable).to eq('false') }
     it { expect(instance.exists?).to be_true }
@@ -124,6 +129,10 @@ describe provider_class do
     end
     it 'should map exposed symbol to boolean' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:exposed => true))
+      provider.create
+    end
+    it 'should map write_policy symbol to writePolicy string' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:writePolicy => 'ALLOW_WRITE_ONCE'))
       provider.create
     end
     it 'should map browseable symbol to boolean' do
@@ -283,6 +292,11 @@ end
     it 'should map exposed symbol to boolean' do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:exposed => true))
       provider.exposed = :true
+      provider.flush
+    end
+    it 'should map write_policy to writePolicy' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:writePolicy => :ALLOW_WRITE_ONCE))
+      provider.write_policy = :ALLOW_WRITE_ONCE
       provider.flush
     end
     it 'should map browseable symbol to boolean' do

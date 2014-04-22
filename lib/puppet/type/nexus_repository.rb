@@ -31,6 +31,10 @@ Puppet::Type.newtype(:nexus_repository) do
     munge { |value| @resource.munge_boolean(value) }
   end
 
+  newproperty(:write_policy) do
+    desc 'Controls if users are allowed to deploy and/or update artifacts in this repositoy. Responds to the \'Deployment Policy\' setting in the UI and is applicable for hosted repositories only.'
+    newvalues(:READ_ONLY, :ALLOW_WRITE_ONCE, :ALLOW_WRITE)
+  end
   newproperty(:browseable, :boolean => true) do
     desc 'Controls if users can browse the contents of repository via their web browsers. Responds to the \'Allow File Browsing\' setting in the UI.'
     munge { |value| @resource.munge_boolean(value) }

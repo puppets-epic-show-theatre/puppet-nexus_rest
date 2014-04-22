@@ -52,6 +52,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :type          => repository['repoType'],
           :policy        => repository['repoPolicy'],
           :exposed       => repository['exposed'].to_s,
+          :write_policy  => repository.has_key?('writePolicy') ? repository['writePolicy'].to_sym : nil,
           :browseable    => repository['browseable'].to_s,
           :indexable     => repository['indexable'].to_s
         )
@@ -85,7 +86,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :repoPolicy               => resource[:policy].to_s,
           :exposed                  => resource[:exposed] == :true,
 
-          'writePolicy'             => 'READ_ONLY',
+          :writePolicy              => resource[:write_policy].to_s,
           :browseable               => resource[:browseable] == :true,
           :indexable                => resource[:indexable] == :true,
           'downloadRemoteIndexes'   => false,
@@ -105,6 +106,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       data = {}
       data[:repoPolicy] = resource[:policy].to_s if @property_flush[:policy]
       data[:exposed] = resource[:exposed] == :true if @property_flush[:exposed]
+      data[:writePolicy] = resource[:write_policy] if @property_flush[:write_policy]
       data[:browseable] = resource[:browseable] == :true if @property_flush[:browseable]
       data[:indexable] = resource[:indexable] == :true if @property_flush[:indexable]
       unless data.empty?
@@ -150,6 +152,11 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def exposed=(value)
     @property_flush[:exposed] = true
+  end
+
+  def write_policy=(value)
+    raise Puppet::Error, "Write policy cannot be changed." unless resource[:type] == :hosted
+    @property_flush[:write_policy] = true
   end
 
   def browseable=(value)
