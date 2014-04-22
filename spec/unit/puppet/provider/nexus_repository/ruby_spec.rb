@@ -9,15 +9,18 @@ describe provider_class do
 
   let :provider do
     resource = Puppet::Type::Nexus_repository.new({
-      :name          => 'example',
-      :label         => 'Example Repository',
-      :provider_type => 'maven2',
-      :type          => 'hosted',
-      :policy        => 'SNAPSHOT',
-      :exposed       => :true,
-      :write_policy  => :ALLOW_WRITE_ONCE,
-      :browseable    => :true,
-      :indexable     => :true,
+      :name                    => 'example',
+      :label                   => 'Example Repository',
+      :provider_type           => 'maven2',
+      :type                    => 'hosted',
+      :policy                  => 'SNAPSHOT',
+      :exposed                 => :true,
+      :write_policy            => :ALLOW_WRITE_ONCE,
+      :browseable              => :true,
+      :indexable               => :true,
+      :not_found_cache_ttl     => 1440,
+      :local_storage_url       => 'file:///some/path',
+      :download_remote_indexes => :false
     })
     provider_class.new(resource)
   end
@@ -42,16 +45,19 @@ describe provider_class do
     let :instance do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
-          'id'          => 'repository-1',
-          'name'        => 'repository name',
-          'provider'    => 'maven2',
-          'format'      => 'maven2',
-          'repoType'    => 'hosted',
-          'repoPolicy'  => 'SNAPSHOT',
-          'exposed'     => true,
-          'writePolicy' => 'ALLOW_WRITE_ONCE',
-          'browseable'  => true,
-          'indexable'   => true,
+          'id'                      => 'repository-1',
+          'name'                    => 'repository name',
+          'provider'                => 'maven2',
+          'format'                  => 'maven2',
+          'repoType'                => 'hosted',
+          'repoPolicy'              => 'SNAPSHOT',
+          'exposed'                 => true,
+          'writePolicy'             => 'ALLOW_WRITE_ONCE',
+          'browseable'              => true,
+          'indexable'               => true,
+          'notFoundCacheTTL'        => 0,
+          'overrideLocalStorageUrl' => 'file:///some/path',
+          'downloadRemoteIndexes'   => false
         }]
       })
       provider_class.instances[0]
@@ -66,6 +72,9 @@ describe provider_class do
     it { expect(instance.write_policy).to eq(:ALLOW_WRITE_ONCE) }
     it { expect(instance.browseable).to eq('true') }
     it { expect(instance.indexable).to eq('true') }
+    it { expect(instance.not_found_cache_ttl).to eq(0) }
+    it { expect(instance.local_storage_url).to eq('file:///some/path') }
+    it { expect(instance.download_remote_indexes).to eq('false') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -73,15 +82,17 @@ describe provider_class do
     let :instance do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
         'data' => [{
-          'id'          => 'nuget-repository',
-          'name'        => 'repository name',
-          'provider'    => 'nuget-proxy',
-          'format'      => 'nuget',
-          'repoType'    => 'hosted',
-          'exposed'     => false,
-          'writePolicy' => 'READ_ONLY',
-          'browseable'  => false,
-          'indexable'   => false,
+          'id'                    => 'nuget-repository',
+          'name'                  => 'repository name',
+          'provider'              => 'nuget-proxy',
+          'format'                => 'nuget',
+          'repoType'              => 'hosted',
+          'exposed'               => false,
+          'writePolicy'           => 'READ_ONLY',
+          'browseable'            => false,
+          'indexable'             => false,
+          'notFoundCacheTTL'      => 0,
+          'downloadRemoteIndexes' => false,
         }]
       })
       provider_class.instances[0]
@@ -95,6 +106,9 @@ describe provider_class do
     it { expect(instance.write_policy).to eq(:READ_ONLY) }
     it { expect(instance.browseable).to eq('false') }
     it { expect(instance.indexable).to eq('false') }
+    it { expect(instance.not_found_cache_ttl).to eq(0) }
+    it { expect(instance.local_storage_url).to eq('') }
+    it { expect(instance.download_remote_indexes).to eq('false') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -141,6 +155,18 @@ describe provider_class do
     end
     it 'should map indexable symbol to boolean' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:indexable => true))
+      provider.create
+    end
+    it 'should map not_found_cache_ttl to notFoundCacheTTL' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:notFoundCacheTTL => 1440))
+      provider.create
+    end
+    it 'should map local_storage_url to overrideLocalStorageUrl' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:overrideLocalStorageUrl => 'file:///some/path'))
+      provider.create
+    end
+    it 'should map download_remote_indexes to downloadRemoteIndexes' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:downloadRemoteIndexes => false))
       provider.create
     end
 
@@ -274,28 +300,28 @@ end
       expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_repository example/)
     end
     it 'should map name to id' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:id => 'example'))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:id => 'example'))
       provider.flush
     end
     it 'should not update type' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_excluding(:type => anything))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_excluding(:type => anything))
       provider.flush
     end
     it 'should not update provider_type' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_excluding(:provider => anything))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_excluding(:provider => anything))
       provider.flush
     end
     it 'should map policy to repoPolicy' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:repoPolicy => 'SNAPSHOT'))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:repoPolicy => 'SNAPSHOT'))
       provider.flush
     end
     it 'should map exposed symbol to boolean' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:exposed => true))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:exposed => true))
       provider.exposed = :true
       provider.flush
     end
     it 'should map write_policy to writePolicy' do
-      Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', :data => hash_including(:writePolicy => :ALLOW_WRITE_ONCE))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:writePolicy => :ALLOW_WRITE_ONCE))
       provider.write_policy = :ALLOW_WRITE_ONCE
       provider.flush
     end
@@ -307,6 +333,21 @@ end
     it 'should map indexable symbol to boolean' do
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:indexable => true))
       provider.indexable = :true
+      provider.flush
+    end
+    it 'should map not_found_cache_ttl to notFoundCacheTTL' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:notFoundCacheTTL => 1440))
+      provider.not_found_cache_ttl = 0
+      provider.flush
+    end
+    it 'should map local_storage_url to overrideLocalStorageUrl' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:overrideLocalStorageUrl => 'file:///some/path'))
+      provider.local_storage_url = 'file://some/path'
+      provider.flush
+    end
+    it 'should map download_remote_indexes to downloadRemoteIndexes' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:downloadRemoteIndexes => false))
+      provider.download_remote_indexes = :false
       provider.flush
     end
   end

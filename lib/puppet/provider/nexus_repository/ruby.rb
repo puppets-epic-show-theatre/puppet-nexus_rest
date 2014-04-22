@@ -45,16 +45,19 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       repositories = Nexus::Rest.get_all_plus_n('/service/local/repositories')
       repositories['data'].collect do |repository|
         new(
-          :ensure        => :present,
-          :name          => repository['id'],
-          :label         => repository['name'],
-          :provider_type => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
-          :type          => repository['repoType'],
-          :policy        => repository['repoPolicy'],
-          :exposed       => repository['exposed'].to_s,
-          :write_policy  => repository.has_key?('writePolicy') ? repository['writePolicy'].to_sym : nil,
-          :browseable    => repository['browseable'].to_s,
-          :indexable     => repository['indexable'].to_s
+          :ensure                  => :present,
+          :name                    => repository['id'],
+          :label                   => repository['name'],
+          :provider_type           => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
+          :type                    => repository['repoType'],
+          :policy                  => repository['repoPolicy'],
+          :exposed                 => repository['exposed'].to_s,
+          :write_policy            => repository.has_key?('writePolicy') ? repository['writePolicy'].to_sym : nil,
+          :browseable              => repository['browseable'].to_s,
+          :indexable               => repository['indexable'].to_s,
+          :not_found_cache_ttl     => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
+          :local_storage_url       => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : '',
+          :download_remote_indexes => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s : :false
         )
       end
     rescue => e
@@ -74,28 +77,26 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   def create
     content_type_details = PROVIDER_TYPE_MAPPING[resource[:provider_type].to_s] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable mapping for type #{resource[:provider_type]}"
     begin
-      Nexus::Rest.create('/service/local/repositories', {
-        :data => {
-          'contentResourceURI'      => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
-          :id                       => resource[:name],
-          :name                     => resource[:label],
-          :repoType                 => resource[:type].to_s,
-          :provider                 => content_type_details[:provider],
-          :providerRole             => content_type_details[:providerRole],
-          :format                   => content_type_details[:format],
-          :repoPolicy               => resource[:policy].to_s,
-          :exposed                  => resource[:exposed] == :true,
+      data = {
+        'contentResourceURI'     => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
+        :id                      => resource[:name],
+        :name                    => resource[:label],
+        :repoType                => resource[:type].to_s,
+        :provider                => content_type_details[:provider],
+        :providerRole            => content_type_details[:providerRole],
+        :format                  => content_type_details[:format],
+        :repoPolicy              => resource[:policy].to_s,
+        :exposed                 => resource[:exposed] == :true,
 
-          :writePolicy              => resource[:write_policy].to_s,
-          :browseable               => resource[:browseable] == :true,
-          :indexable                => resource[:indexable] == :true,
-          'downloadRemoteIndexes'   => false,
-          'notFoundCacheTTL'        => 1440,
+        :writePolicy             => resource[:write_policy].to_s,
+        :browseable              => resource[:browseable] == :true,
+        :indexable               => resource[:indexable] == :true,
+        :notFoundCacheTTL        => resource[:not_found_cache_ttl],
 
-          'defaultLocalStorageUrl'  => '',
-          'overrideLocalStorageUrl' => '',
-        }
-      })
+        :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
+      }
+      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].empty?
+      Nexus::Rest.create('/service/local/repositories', {:data => data})
     rescue Exception => e
       raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
     end
@@ -109,16 +110,17 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       data[:writePolicy] = resource[:write_policy] if @property_flush[:write_policy]
       data[:browseable] = resource[:browseable] == :true if @property_flush[:browseable]
       data[:indexable] = resource[:indexable] == :true if @property_flush[:indexable]
-      unless data.empty?
-        # required values
-        data[:id] = resource[:name]
-        data[:repoType] = resource[:type]
-        data[:repoPolicy] = resource[:policy].to_s
-        begin
-          Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", {:data => data})
-        rescue Exception => e
-          raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
-        end
+      data[:notFoundCacheTTL] = resource[:not_found_cache_ttl] if @property_flush[:not_found_cache_ttl]
+      data[:downloadRemoteIndexes] = resource[:download_remote_indexes] == :true if @property_flush[:download_remote_indexes]
+      data[:overrideLocalStorageUrl] = resource[:local_storage_url] if @property_flush[:local_storage_url] and !resource[:local_storage_url].empty?
+      # required values
+      data[:id] = resource[:name]
+      data[:repoType] = resource[:type]
+      data[:repoPolicy] = resource[:policy].to_s
+      begin
+        Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", {:data => data})
+      rescue Exception => e
+        raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
       end
       @property_hash = resource.to_hash
     end
@@ -165,5 +167,17 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def indexable=(value)
     @property_flush[:indexable] = true
+  end
+
+  def not_found_cache_ttl=(value)
+    @property_flush[:not_found_cache_ttl] = true
+  end
+
+  def download_remote_indexes=(value)
+    @property_flush[:download_remote_indexes] = true
+  end
+
+  def local_storage_url=(value)
+    @property_flush[:local_storage_url] = true
   end
 end
