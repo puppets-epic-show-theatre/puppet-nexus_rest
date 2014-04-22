@@ -78,7 +78,6 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     content_type_details = PROVIDER_TYPE_MAPPING[resource[:provider_type].to_s] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable mapping for type #{resource[:provider_type]}"
     begin
       data = {
-        'contentResourceURI'     => Nexus::Config.resolve("/content/repositories/#{resource[:name]}"),
         :id                      => resource[:name],
         :name                    => resource[:label],
         :repoType                => resource[:type].to_s,
