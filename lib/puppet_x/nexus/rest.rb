@@ -45,10 +45,7 @@ module Nexus
       if !resource_list or !resource_list['data']
         resource_list
       elsif
-        resource_details = resource_list['data'].
-          collect { |resource| resource['resourceURI'] }.
-          delete_if { |resourceURI| resourceURI.nil? or resourceURI.empty?}.
-          collect { |resourceURI| get_all(resourceURI) }
+        resource_details = resource_list['data'].collect { |resource| get_all("#{resource_name}/#{resource['id']}") }
 
         # At this point, resource_details is a list of data hashes similar like
         #
