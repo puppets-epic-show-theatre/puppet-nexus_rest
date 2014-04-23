@@ -13,9 +13,9 @@ describe provider_class do
       :label                   => 'Example Repository',
       :provider_type           => 'maven2',
       :type                    => 'hosted',
-      :policy                  => 'SNAPSHOT',
+      :policy                  => :snapshot,
       :exposed                 => :true,
-      :write_policy            => :ALLOW_WRITE_ONCE,
+      :write_policy            => :allow_write_once,
       :browseable              => :true,
       :indexable               => :true,
       :not_found_cache_ttl     => 1440,
@@ -65,16 +65,16 @@ describe provider_class do
 
     it { expect(instance.name).to eq('repository-1') }
     it { expect(instance.label).to eq('repository name') }
-    it { expect(instance.provider_type).to eq('maven2') }
-    it { expect(instance.type).to eq('hosted') }
-    it { expect(instance.policy).to eq('SNAPSHOT') }
-    it { expect(instance.exposed).to eq('true') }
-    it { expect(instance.write_policy).to eq(:ALLOW_WRITE_ONCE) }
-    it { expect(instance.browseable).to eq('true') }
-    it { expect(instance.indexable).to eq('true') }
+    it { expect(instance.provider_type).to eq(:maven2) }
+    it { expect(instance.type).to eq(:hosted) }
+    it { expect(instance.policy).to eq(:snapshot) }
+    it { expect(instance.exposed).to eq(:true) }
+    it { expect(instance.write_policy).to eq(:allow_write_once) }
+    it { expect(instance.browseable).to eq(:true) }
+    it { expect(instance.indexable).to eq(:true) }
     it { expect(instance.not_found_cache_ttl).to eq(0) }
     it { expect(instance.local_storage_url).to eq('file:///some/path') }
-    it { expect(instance.download_remote_indexes).to eq('false') }
+    it { expect(instance.download_remote_indexes).to eq(:false) }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -100,15 +100,15 @@ describe provider_class do
 
     it { expect(instance.name).to eq('nuget-repository') }
     it { expect(instance.label).to eq('repository name') }
-    it { expect(instance.provider_type).to eq('nuget') }
-    it { expect(instance.type).to eq('hosted') }
-    it { expect(instance.exposed).to eq('false') }
-    it { expect(instance.write_policy).to eq(:READ_ONLY) }
-    it { expect(instance.browseable).to eq('false') }
-    it { expect(instance.indexable).to eq('false') }
+    it { expect(instance.provider_type).to eq(:nuget) }
+    it { expect(instance.type).to eq(:hosted) }
+    it { expect(instance.exposed).to eq(:false) }
+    it { expect(instance.write_policy).to eq(:read_only) }
+    it { expect(instance.browseable).to eq(:false) }
+    it { expect(instance.indexable).to eq(:false) }
     it { expect(instance.not_found_cache_ttl).to eq(0) }
     it { expect(instance.local_storage_url).to eq(:absent) }
-    it { expect(instance.download_remote_indexes).to eq('false') }
+    it { expect(instance.download_remote_indexes).to eq(:false) }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -289,7 +289,7 @@ end
   describe 'flush' do
     before(:each) do
       # mark resources as 'dirty'
-      provider.policy = 'RELEASE'
+      provider.policy = :release
     end
     it 'should use /service/local/repositories/example to update an existing resource' do
       Nexus::Rest.should_receive(:update).with('/service/local/repositories/example', anything())

@@ -48,16 +48,16 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :ensure                  => :present,
           :name                    => repository['id'],
           :label                   => repository['name'],
-          :provider_type           => repository['format'], # TODO using the format because it maps 1:1 to the provider_type
-          :type                    => repository['repoType'],
-          :policy                  => repository['repoPolicy'],
-          :exposed                 => repository['exposed'].to_s,
-          :write_policy            => repository.has_key?('writePolicy') ? repository['writePolicy'].to_sym : nil,
-          :browseable              => repository['browseable'].to_s,
-          :indexable               => repository['indexable'].to_s,
+          :provider_type           => repository.has_key?('format') ? repository['format'].to_sym : nil, # TODO using the format because it maps 1:1 to the provider_type
+          :type                    => repository.has_key?('repoType') ? repository['repoType'].to_sym : nil,
+          :policy                  => repository.has_key?('repoPolicy') ? repository['repoPolicy'].downcase.to_sym : nil,
+          :exposed                 => repository.has_key?('exposed') ? repository['exposed'].to_s.to_sym : nil,
+          :write_policy            => repository.has_key?('writePolicy') ? repository['writePolicy'].downcase.to_sym : nil,
+          :browseable              => repository.has_key?('browseable') ? repository['browseable'].to_s.to_sym : nil,
+          :indexable               => repository.has_key?('indexable') ? repository['indexable'].to_s.to_sym : nil,
           :not_found_cache_ttl     => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
           :local_storage_url       => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : nil,
-          :download_remote_indexes => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s : :false
+          :download_remote_indexes => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s.to_sym : :false
         )
       end
     rescue => e
@@ -123,10 +123,10 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :provider                => content_type_details[:provider],
       :providerRole            => content_type_details[:providerRole],
       :format                  => content_type_details[:format],
-      :repoPolicy              => resource[:policy].to_s,
+      :repoPolicy              => resource[:policy].to_s.upcase,
       :exposed                 => resource[:exposed] == :true,
 
-      :writePolicy             => resource[:write_policy].to_s,
+      :writePolicy             => resource[:write_policy].to_s.upcase,
       :browseable              => resource[:browseable] == :true,
       :indexable               => resource[:indexable] == :true,
       :notFoundCacheTTL        => resource[:not_found_cache_ttl],

@@ -6,9 +6,9 @@ describe Puppet::Type.type(:nexus_repository) do
 
     it { expect(repository[:type]).to eq(:hosted) }
     it { expect(repository[:provider_type]).to eq(:maven2) }
-    it { expect(repository[:policy]).to eq(:RELEASE) }
+    it { expect(repository[:policy]).to eq(:release) }
     it { expect(repository[:exposed]).to eq(:true) }
-    it { expect(repository[:write_policy]).to eq(:ALLOW_WRITE_ONCE) }
+    it { expect(repository[:write_policy]).to eq(:allow_write_once) }
     it { expect(repository[:browseable]).to eq(:true) }
     it { expect(repository[:indexable]).to eq(:true) }
     it { expect(repository[:not_found_cache_ttl]).to eq(1440) }

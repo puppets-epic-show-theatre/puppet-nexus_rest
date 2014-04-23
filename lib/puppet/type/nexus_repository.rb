@@ -27,8 +27,9 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
-    defaultto :RELEASE
-    newvalues(:SNAPSHOT, :RELEASE, :MIXED)
+    # TODO: :release is only the default for Maven; for other repositories, the value is :mixed and cannot be changed
+    defaultto :release
+    newvalues(:snapshot, :release, :mixed)
   end
 
   newproperty(:exposed, :boolean => true) do
@@ -39,8 +40,8 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:write_policy) do
     desc 'Controls if users are allowed to deploy and/or update artifacts in this repository. Responds to the \'Deployment Policy\' setting in the UI and is applicable for hosted repositories only.'
-    defaultto :ALLOW_WRITE_ONCE
-    newvalues(:READ_ONLY, :ALLOW_WRITE_ONCE, :ALLOW_WRITE)
+    defaultto :allow_write_once
+    newvalues(:read_only, :allow_write_once, :allow_write)
   end
 
   newproperty(:browseable, :boolean => true) do
