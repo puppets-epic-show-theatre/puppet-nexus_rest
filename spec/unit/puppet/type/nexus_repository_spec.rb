@@ -9,4 +9,32 @@ describe Puppet::Type.type(:nexus_repository) do
       )
     }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
   end
+  it 'should accept hosted Maven1 repository' do
+    Puppet::Type.type(:nexus_repository).new(
+      :name                => 'maven1-hosted',
+      :label               => 'Maven1 Hosted Repository',
+      :type                => :hosted,
+      :provider_type       => :maven1,
+      :policy              => :SNAPSHOT,
+      :write_policy        => :READ_ONLY,
+      :browseable          => true,
+      :indexable           => true,
+      :not_found_cache_ttl => 0,
+      :local_storage_url   => ''
+    )
+  end
+  it 'should accept hosted Maven2 repository' do
+    Puppet::Type.type(:nexus_repository).new(
+      :name                => 'maven2-hosted',
+      :label               => 'Maven2 Hosted Repository',
+      :type                => :hosted,
+      :provider_type       => :maven2,
+      :policy              => :RELEASE,
+      :write_policy        => :ALLOW_WRITE_ONCE,
+      :browseable          => true,
+      :indexable           => true,
+      :not_found_cache_ttl => 0,
+      :local_storage_url   => ''
+    )
+  end
 end
