@@ -34,7 +34,7 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:write_policy) do
-    desc 'Controls if users are allowed to deploy and/or update artifacts in this repositoy. Responds to the \'Deployment Policy\' setting in the UI and is applicable for hosted repositories only.'
+    desc 'Controls if users are allowed to deploy and/or update artifacts in this repository. Responds to the \'Deployment Policy\' setting in the UI and is applicable for hosted repositories only.'
     newvalues(:READ_ONLY, :ALLOW_WRITE_ONCE, :ALLOW_WRITE)
   end
 
