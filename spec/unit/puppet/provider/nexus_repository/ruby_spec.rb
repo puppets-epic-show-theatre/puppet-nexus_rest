@@ -107,7 +107,7 @@ describe provider_class do
     it { expect(instance.browseable).to eq('false') }
     it { expect(instance.indexable).to eq('false') }
     it { expect(instance.not_found_cache_ttl).to eq(0) }
-    it { expect(instance.local_storage_url).to eq('') }
+    it { expect(instance.local_storage_url).to eq(:absent) }
     it { expect(instance.download_remote_indexes).to eq('false') }
     it { expect(instance.exists?).to be_true }
   end

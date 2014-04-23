@@ -56,7 +56,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :browseable              => repository['browseable'].to_s,
           :indexable               => repository['indexable'].to_s,
           :not_found_cache_ttl     => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
-          :local_storage_url       => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : '',
+          :local_storage_url       => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : nil,
           :download_remote_indexes => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s : :false
         )
       end
@@ -92,7 +92,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       data[:indexable] = resource[:indexable] == :true if @property_flush[:indexable]
       data[:notFoundCacheTTL] = resource[:not_found_cache_ttl] if @property_flush[:not_found_cache_ttl]
       data[:downloadRemoteIndexes] = resource[:download_remote_indexes] == :true if @property_flush[:download_remote_indexes]
-      data[:overrideLocalStorageUrl] = resource[:local_storage_url] if @property_flush[:local_storage_url] and !resource[:local_storage_url].empty?
+      data[:overrideLocalStorageUrl] = resource[:local_storage_url] if @property_flush[:local_storage_url] and !resource[:local_storage_url].nil?
       # required values
       data[:id] = resource[:name]
       data[:repoType] = resource[:type]
@@ -146,7 +146,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
       :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
     }
-    data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil? or resource[:local_storage_url].empty?
+    data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
     {:data => data}
   end
 

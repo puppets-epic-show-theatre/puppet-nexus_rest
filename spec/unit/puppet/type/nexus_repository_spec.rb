@@ -19,8 +19,7 @@ describe Puppet::Type.type(:nexus_repository) do
       :write_policy        => :READ_ONLY,
       :browseable          => true,
       :indexable           => true,
-      :not_found_cache_ttl => 0,
-      :local_storage_url   => ''
+      :not_found_cache_ttl => 0
     )
   end
   it 'should accept hosted Maven2 repository' do
@@ -33,8 +32,23 @@ describe Puppet::Type.type(:nexus_repository) do
       :write_policy        => :ALLOW_WRITE_ONCE,
       :browseable          => true,
       :indexable           => true,
-      :not_found_cache_ttl => 0,
-      :local_storage_url   => ''
+      :not_found_cache_ttl => 0
     )
+  end
+  it 'should not accept local_storage_url => \'\'' do
+    expect {
+      Puppet::Type.type(:nexus_repository).new(
+        :name                => 'maven2-hosted',
+        :label               => 'Maven2 Hosted Repository',
+        :type                => :hosted,
+        :provider_type       => :maven2,
+        :policy              => :RELEASE,
+        :write_policy        => :ALLOW_WRITE_ONCE,
+        :browseable          => true,
+        :indexable           => true,
+        :not_found_cache_ttl => 0,
+        :local_storage_url   => ''
+      )
+    }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
   end
 end

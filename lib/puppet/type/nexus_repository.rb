@@ -54,9 +54,9 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:local_storage_url) do
-    desc 'Used to override the default local storage. Leave it blank to use the default. Should be a file URI.'
+    desc 'Override the default local storage; should match the file URI scheme, set to undef to use the default location.'
     validate do |value|
-      fail("Invalid local_storage_url #{value}") unless value.empty? or URI.parse(value).scheme == 'file'
+      fail("Invalid local_storage_url #{value}; expected either 'default' or an URI matching the file scheme.") unless value.nil? or URI.parse(value).scheme == 'file'
     end
   end
 
