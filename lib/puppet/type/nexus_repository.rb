@@ -15,41 +15,49 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:type) do
     desc 'Type of this repository. Can be hosted, proxy or virtual; cannot be changed after creation without deleting the repository.'
+    defaultto :hosted
     newvalues(:hosted, :proxy, :virtual)
   end
 
   newproperty(:provider_type) do
     desc 'The content provider of the repository'
+    defaultto :maven2
     newvalues(:maven1, :maven2, :nuget, :site, :obr)
   end
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
+    defaultto :RELEASE
     newvalues(:SNAPSHOT, :RELEASE, :MIXED)
   end
 
   newproperty(:exposed, :boolean => true) do
     desc 'Controls if the repository is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
+    defaultto :true
     munge { |value| @resource.munge_boolean(value) }
   end
 
   newproperty(:write_policy) do
     desc 'Controls if users are allowed to deploy and/or update artifacts in this repository. Responds to the \'Deployment Policy\' setting in the UI and is applicable for hosted repositories only.'
+    defaultto :ALLOW_WRITE_ONCE
     newvalues(:READ_ONLY, :ALLOW_WRITE_ONCE, :ALLOW_WRITE)
   end
 
   newproperty(:browseable, :boolean => true) do
     desc 'Controls if users can browse the contents of repository via their web browsers. Responds to the \'Allow File Browsing\' setting in the UI.'
+    defaultto :true
     munge { |value| @resource.munge_boolean(value) }
   end
 
   newproperty(:indexable, :boolean => true) do
     desc 'Controls if the artifacts contained in this repository are index and thus searchable. Responds to the \'Include in Search\' setting in the UI.'
+    defaultto :true
     munge { |value| @resource.munge_boolean(value) }
   end
 
   newproperty(:not_found_cache_ttl) do
-    desc 'Controls how long to cache the fact that a file was not found in the repository.'
+    desc 'Controls how long to cache the fact that a file was not found in the repository (in minutes).'
+    defaultto 1440
     munge { |value| Integer(value) }
   end
 
@@ -62,6 +70,7 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:download_remote_indexes, :boolean => true) do
     desc 'Indicates if the index stored on the remote repository should be downloaded and used for local searches. Applicable for proxy repositories only.'
+    defaultto :true
     munge { |value| @resource.munge_boolean(value) }
   end
 
