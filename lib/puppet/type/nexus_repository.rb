@@ -70,7 +70,7 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:download_remote_indexes, :boolean => true) do
     desc 'Indicates if the index stored on the remote repository should be downloaded and used for local searches. Applicable for proxy repositories only.'
-    defaultto :true
+    defaultto :false
     munge { |value| @resource.munge_boolean(value) }
   end
 
