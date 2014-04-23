@@ -37,7 +37,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def initialize(value={})
     super(value)
-    @property_flush = {}
+    @dirty_flag = false
   end
 
   def self.instances
@@ -83,16 +83,16 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def flush
-    if @property_flush
+    if @dirty_flag
       data = {}
-      data[:repoPolicy] = resource[:policy].to_s if @property_flush[:policy]
-      data[:exposed] = resource[:exposed] == :true if @property_flush[:exposed]
-      data[:writePolicy] = resource[:write_policy] if @property_flush[:write_policy]
-      data[:browseable] = resource[:browseable] == :true if @property_flush[:browseable]
-      data[:indexable] = resource[:indexable] == :true if @property_flush[:indexable]
-      data[:notFoundCacheTTL] = resource[:not_found_cache_ttl] if @property_flush[:not_found_cache_ttl]
-      data[:downloadRemoteIndexes] = resource[:download_remote_indexes] == :true if @property_flush[:download_remote_indexes]
-      data[:overrideLocalStorageUrl] = resource[:local_storage_url] if @property_flush[:local_storage_url] and !resource[:local_storage_url].nil?
+      data[:repoPolicy] = resource[:policy].to_s
+      data[:exposed] = resource[:exposed] == :true
+      data[:writePolicy] = resource[:write_policy]
+      data[:browseable] = resource[:browseable] == :true
+      data[:indexable] = resource[:indexable] == :true
+      data[:notFoundCacheTTL] = resource[:not_found_cache_ttl]
+      data[:downloadRemoteIndexes] = resource[:download_remote_indexes] == :true
+      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
       # required values
       data[:id] = resource[:name]
       data[:repoType] = resource[:type]
@@ -161,35 +161,35 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def policy=(value)
-    @property_flush[:policy] = true
+    @dirty_flag = true
   end
 
   def exposed=(value)
-    @property_flush[:exposed] = true
+    @dirty_flag = true
   end
 
   def write_policy=(value)
     raise Puppet::Error, "Write policy cannot be changed." unless resource[:type] == :hosted
-    @property_flush[:write_policy] = true
+    @dirty_flag = true
   end
 
   def browseable=(value)
-    @property_flush[:browseable] = true
+    @dirty_flag = true
   end
 
   def indexable=(value)
-    @property_flush[:indexable] = true
+    @dirty_flag = true
   end
 
   def not_found_cache_ttl=(value)
-    @property_flush[:not_found_cache_ttl] = true
+    @dirty_flag = true
   end
 
   def download_remote_indexes=(value)
-    @property_flush[:download_remote_indexes] = true
+    @dirty_flag = true
   end
 
   def local_storage_url=(value)
-    @property_flush[:local_storage_url] = true
+    @dirty_flag = true
   end
 end
