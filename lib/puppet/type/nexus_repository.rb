@@ -15,17 +15,17 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:type) do
     desc 'Type of this repository. Can be hosted, proxy or virtual; cannot be changed after creation without deleting the repository.'
-    newvalues('hosted', 'proxy', 'virtual')
+    newvalues(:hosted, :proxy, :virtual)
   end
 
   newproperty(:provider_type) do
     desc 'The content provider of the repository'
-    newvalues('maven1', 'maven2', 'nuget', 'site', 'obr')
+    newvalues(:maven1, :maven2, :nuget, :site, :obr)
   end
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
-    newvalues('SNAPSHOT', 'RELEASE', 'MIXED')
+    newvalues(:SNAPSHOT, :RELEASE, :MIXED)
   end
 
   newproperty(:exposed, :boolean => true) do
