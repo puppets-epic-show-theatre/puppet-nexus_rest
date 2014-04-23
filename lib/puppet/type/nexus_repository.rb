@@ -70,13 +70,8 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   def munge_boolean(value)
-    case value
-    when true, "true", :true
-      :true
-    when false, "false", :false
-      :false
-    else
-      fail("munge_boolean only takes booleans")
-    end
+    return :true if [true, "true", :true].include? value
+    return :false if [false, "false", :false].include? value
+    fail("Expected boolean parameter, got '#{value}'")
   end
 end
