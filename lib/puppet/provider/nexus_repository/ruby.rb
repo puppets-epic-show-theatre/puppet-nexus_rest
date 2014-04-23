@@ -84,21 +84,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def flush
     if @dirty_flag
-      data = {}
-      data[:repoPolicy] = resource[:policy].to_s
-      data[:exposed] = resource[:exposed] == :true
-      data[:writePolicy] = resource[:write_policy]
-      data[:browseable] = resource[:browseable] == :true
-      data[:indexable] = resource[:indexable] == :true
-      data[:notFoundCacheTTL] = resource[:not_found_cache_ttl]
-      data[:downloadRemoteIndexes] = resource[:download_remote_indexes] == :true
-      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
-      # required values
-      data[:id] = resource[:name]
-      data[:repoType] = resource[:type]
-      data[:repoPolicy] = resource[:policy].to_s
       begin
-        Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", {:data => data})
+        Nexus::Rest.update("/service/local/repositories/#{resource[:name]}", map_resource_to_data)
       rescue Exception => e
         raise Puppet::Error, "Error while updating nexus_repository #{resource[:name]}: #{e}"
       end

@@ -145,7 +145,7 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:exposed => true))
       provider.create
     end
-    it 'should map write_policy symbol to writePolicy string' do
+    it 'should map write_policy to writePolicy' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:writePolicy => 'ALLOW_WRITE_ONCE'))
       provider.create
     end
@@ -303,12 +303,12 @@ end
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:id => 'example'))
       provider.flush
     end
-    it 'should not update type' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_excluding(:type => anything))
+    it 'should map type to repoType' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:repoType => 'hosted'))
       provider.flush
     end
-    it 'should not update provider_type' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_excluding(:provider => anything))
+    it 'should map provider_type to provider' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.flush
     end
     it 'should map policy to repoPolicy' do
@@ -321,7 +321,7 @@ end
       provider.flush
     end
     it 'should map write_policy to writePolicy' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:writePolicy => :ALLOW_WRITE_ONCE))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:writePolicy => 'ALLOW_WRITE_ONCE'))
       provider.write_policy = :ALLOW_WRITE_ONCE
       provider.flush
     end
