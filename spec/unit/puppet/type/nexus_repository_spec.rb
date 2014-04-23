@@ -1,6 +1,21 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:nexus_repository) do
+  describe 'by default' do
+    let(:repository) { Puppet::Type.type(:nexus_repository).new(:name => 'default') }
+
+    it { expect(repository[:type]).to eq(:hosted) }
+    it { expect(repository[:provider_type]).to eq(:maven2) }
+    it { expect(repository[:policy]).to eq(:RELEASE) }
+    it { expect(repository[:exposed]).to eq(:true) }
+    it { expect(repository[:write_policy]).to eq(:ALLOW_WRITE_ONCE) }
+    it { expect(repository[:browseable]).to eq(:true) }
+    it { expect(repository[:indexable]).to eq(:true) }
+    it { expect(repository[:not_found_cache_ttl]).to eq(1440) }
+    it { expect(repository[:local_storage_url]).to eq(nil) }
+    it { expect(repository[:download_remote_indexes]).to eq(:false) }
+  end
+
   it 'should validate provider_type' do
     expect {
       Puppet::Type.type(:nexus_repository).new(
@@ -9,44 +24,27 @@ describe Puppet::Type.type(:nexus_repository) do
       )
     }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
   end
+
   it 'should accept hosted Maven1 repository' do
     Puppet::Type.type(:nexus_repository).new(
       :name                => 'maven1-hosted',
-      :label               => 'Maven1 Hosted Repository',
       :type                => :hosted,
-      :provider_type       => :maven1,
-      :policy              => :SNAPSHOT,
-      :write_policy        => :READ_ONLY,
-      :browseable          => true,
-      :indexable           => true,
-      :not_found_cache_ttl => 0
+      :provider_type       => :maven1
     )
   end
+
   it 'should accept hosted Maven2 repository' do
     Puppet::Type.type(:nexus_repository).new(
       :name                => 'maven2-hosted',
-      :label               => 'Maven2 Hosted Repository',
       :type                => :hosted,
-      :provider_type       => :maven2,
-      :policy              => :RELEASE,
-      :write_policy        => :ALLOW_WRITE_ONCE,
-      :browseable          => true,
-      :indexable           => true,
-      :not_found_cache_ttl => 0
+      :provider_type       => :maven2
     )
   end
+
   it 'should not accept local_storage_url => \'\'' do
     expect {
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'maven2-hosted',
-        :label               => 'Maven2 Hosted Repository',
-        :type                => :hosted,
-        :provider_type       => :maven2,
-        :policy              => :RELEASE,
-        :write_policy        => :ALLOW_WRITE_ONCE,
-        :browseable          => true,
-        :indexable           => true,
-        :not_found_cache_ttl => 0,
         :local_storage_url   => ''
       )
     }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
