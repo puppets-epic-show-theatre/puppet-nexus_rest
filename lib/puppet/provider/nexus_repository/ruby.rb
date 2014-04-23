@@ -75,27 +75,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def create
-    content_type_details = PROVIDER_TYPE_MAPPING[resource[:provider_type].to_s] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable mapping for type #{resource[:provider_type]}"
     begin
-      data = {
-        :id                      => resource[:name],
-        :name                    => resource[:label],
-        :repoType                => resource[:type].to_s,
-        :provider                => content_type_details[:provider],
-        :providerRole            => content_type_details[:providerRole],
-        :format                  => content_type_details[:format],
-        :repoPolicy              => resource[:policy].to_s,
-        :exposed                 => resource[:exposed] == :true,
-
-        :writePolicy             => resource[:write_policy].to_s,
-        :browseable              => resource[:browseable] == :true,
-        :indexable               => resource[:indexable] == :true,
-        :notFoundCacheTTL        => resource[:not_found_cache_ttl],
-
-        :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
-      }
-      data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil? or resource[:local_storage_url].empty?
-      Nexus::Rest.create('/service/local/repositories', {:data => data})
+      Nexus::Rest.create('/service/local/repositories', map_resource_to_data)
     rescue Exception => e
       raise Puppet::Error, "Error while creating nexus_repository #{resource[:name]}: #{e}"
     end
@@ -135,6 +116,38 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
 
   def exists?
     @property_hash[:ensure] == :present
+  end
+
+  # Returns the resource in a representation as expected by Nexus:
+  #
+  # {
+  #   :data => {
+  #              :id   => <resource name>
+  #              :name => <resource label>
+  #              ...
+  #            }
+  # }
+  def map_resource_to_data
+    content_type_details = PROVIDER_TYPE_MAPPING[resource[:provider_type].to_s] or raise Puppet::Error, "Nexus_repository[#{resource[:name]}]: unable to find a suitable mapping for type #{resource[:provider_type]}"
+    data = {
+      :id                      => resource[:name],
+      :name                    => resource[:label],
+      :repoType                => resource[:type].to_s,
+      :provider                => content_type_details[:provider],
+      :providerRole            => content_type_details[:providerRole],
+      :format                  => content_type_details[:format],
+      :repoPolicy              => resource[:policy].to_s,
+      :exposed                 => resource[:exposed] == :true,
+
+      :writePolicy             => resource[:write_policy].to_s,
+      :browseable              => resource[:browseable] == :true,
+      :indexable               => resource[:indexable] == :true,
+      :notFoundCacheTTL        => resource[:not_found_cache_ttl],
+
+      :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
+    }
+    data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil? or resource[:local_storage_url].empty?
+    {:data => data}
   end
 
   mk_resource_methods
