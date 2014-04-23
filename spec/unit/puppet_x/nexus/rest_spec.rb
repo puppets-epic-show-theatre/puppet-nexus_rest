@@ -82,7 +82,7 @@ describe Nexus::Rest do
     end
 
     it 'should resolve details of referenced resource' do
-      stub_request(:get, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:get, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"resourceURI": "http://example.com/service/local/repositories/repository-1"}] }')
       stub_request(:get, /example.com\/service\/local\/repositories\/repository-1/).to_return(:body => '{ "data": {"id": "repository-1", "name": "example"} }')
       instances = Nexus::Rest.get_all_plus_n('/service/local/repositories')
       instances['data'].should have(1).items
@@ -91,7 +91,7 @@ describe Nexus::Rest do
     end
 
     it 'should raise an error if referenced resource returns an expected response' do
-      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"resourceURI": "http://example.com/service/local/repositories/repository-1"}] }')
       stub_request(:any, /example.com\/service\/local\/repositories\/repository-1/).to_return(:status => 503)
       expect {
         Nexus::Rest.get_all_plus_n('/service/local/repositories')
@@ -99,7 +99,7 @@ describe Nexus::Rest do
     end
 
     it 'should raise an error if referenced resource returns unparsable response' do
-      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"resourceURI": "http://example.com/service/local/repositories/repository-1"}] }')
       stub_request(:any, /example.com\/service\/local\/repositories\/repository-1/).to_return(:body => 'some non-json crap')
       expect {
         Nexus::Rest.get_all_plus_n('/service/local/repositories')
