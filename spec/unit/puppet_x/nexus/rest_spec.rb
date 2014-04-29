@@ -79,6 +79,17 @@ describe Nexus::Rest do
         Nexus::Rest.create('/service/local/repositories', {})
       }.to raise_error(RuntimeError, /Could not create/)
     end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.create('/service/local/repositories', {})
+      stub.should have_been_requested
+    end
+
+    it 'should extract error message' do
+      stub = stub_request(:any, /.*/).to_return(:status => 400, :body => {:errors => [{:id => '*', :msg =>  'Error message'}]})
+      expect { Nexus::Rest.create('/service/local/repositories', {}) }.to raise_error(RuntimeError, /Error message/)
+    end
   end
 
   describe 'update' do
@@ -93,6 +104,17 @@ describe Nexus::Rest do
       expect {
         Nexus::Rest.update('/service/local/repositories/example', {})
       }.to raise_error(RuntimeError, /Could not update/)
+    end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.update('/service/local/repositories/example', {})
+      stub.should have_been_requested
+    end
+
+    it 'should extract error message' do
+      stub = stub_request(:any, /.*/).to_return(:status => 400, :body => {:errors => [{:id => '*', :msg =>  'Error message'}]})
+      expect { Nexus::Rest.update('/service/local/repositories/example', {}) }.to raise_error(RuntimeError, /Error message/)
     end
   end
 
@@ -120,6 +142,17 @@ describe Nexus::Rest do
       expect {
         Nexus::Rest.destroy('/service/local/repositories/example')
       }.to raise_error(RuntimeError, /Could not delete/)
+    end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:any, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.destroy('/service/local/repositories/example')
+      stub.should have_been_requested
+    end
+
+    it 'should extract error message' do
+      stub = stub_request(:any, /.*/).to_return(:status => 400, :body => {:errors => [{:id => '*', :msg =>  'Error message'}]})
+      expect { Nexus::Rest.destroy('/service/local/repositories/example') }.to raise_error(RuntimeError, /Error message/)
     end
   end
 end
