@@ -39,11 +39,8 @@ module Nexus
       #    ]
       # }
 
-      # sometimes the hash contains Strings ('errors') and sometimes symbols (:errors) and because they are not equal, we have to adapt ...
       if json['errors']
         json['errors'].collect {|entry| entry['msg'] }.join(' ')
-      elsif json[:errors]
-        json[:errors].collect {|entry| entry[:msg] }.join(' ')
       else
         'unknown'
       end
