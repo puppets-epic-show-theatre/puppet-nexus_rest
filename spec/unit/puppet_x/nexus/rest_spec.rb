@@ -48,6 +48,64 @@ describe Nexus::Rest do
     end
   end
 
+  describe 'get_all_plus_n' do
+    it 'should parse JSON response' do
+      stub = stub_request(:any, /.*/).to_return(:body => '{ "data": [] }')
+      instances = Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      stub.should have_been_requested
+    end
+
+    it 'should accept only application/json' do
+      stub = stub_request(:get, /.*/).with(:headers => {'Accept' => 'application/json'}).to_return(:body => '{}')
+      Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      stub.should have_been_requested
+    end
+
+    it 'should send credentials' do
+      stub = stub_request(:get, /foobar:secret@example.com.*/).to_return(:body => '{}')
+      Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      stub.should have_been_requested
+    end
+
+    it 'should raise an error if initial response is not expected' do
+      stub_request(:any, /.*/).to_return(:status => 503)
+      expect {
+        Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      }.to raise_error(RuntimeError, /Could not request/)
+    end
+
+    it 'should raise an error if initial response is not parsable' do
+      stub_request(:any, /.*/).to_return(:body => 'some non-json crap')
+      expect {
+        Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      }.to raise_error(RuntimeError, /Could not parse the JSON/)
+    end
+
+    it 'should resolve details of referenced resource' do
+      stub_request(:get, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:get, /example.com\/service\/local\/repositories\/repository-1/).to_return(:body => '{ "data": {"id": "repository-1", "name": "example"} }')
+      instances = Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      instances['data'].should have(1).items
+      expect(instances['data'][0]['id']).to eq('repository-1')
+      expect(instances['data'][0]['name']).to eq('example')
+    end
+
+    it 'should raise an error if referenced resource returns an expected response' do
+      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:any, /example.com\/service\/local\/repositories\/repository-1/).to_return(:status => 503)
+      expect {
+        Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      }.to raise_error(RuntimeError, /repository-1/)
+    end
+
+    it 'should raise an error if referenced resource returns unparsable response' do
+      stub_request(:any, /example.com\/service\/local\/repositories/).to_return(:body => '{ "data": [{"id": "repository-1"}] }')
+      stub_request(:any, /example.com\/service\/local\/repositories\/repository-1/).to_return(:body => 'some non-json crap')
+      expect {
+        Nexus::Rest.get_all_plus_n('/service/local/repositories')
+      }.to raise_error(RuntimeError, /repository-1/)
+    end
+  end
   describe 'create' do
     it 'should submit a POST to /service/local/repositories' do
       stub = stub_request(:post, /example.com\/service\/local\/repositories/).to_return(:status => 200)

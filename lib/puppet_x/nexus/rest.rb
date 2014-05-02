@@ -35,6 +35,36 @@ module Nexus
       }
     end
 
+    # Request a resource that returns a list of resources and do an additional request per resource.
+    #
+    # Due to unknown reasons, some REST resources do not expose all attributes in the list view. Hence, an additional
+    # REST request is made for each returned resource.
+    #
+    def self.get_all_plus_n(resource_name)
+      resource_list = get_all(resource_name)
+      if !resource_list or !resource_list['data']
+        resource_list
+      elsif
+        resource_details = resource_list['data'].collect { |resource| get_all("#{resource_name}/#{resource['id']}") }
+
+        # At this point, resource_details is a list of data hashes similar like
+        #
+        # [{ 'data': { 'id': ..., 'name': ... } }, { 'data': ...}]
+        #
+        # It has to be 'unwrapped' to match the expect data structure:
+        #
+        # {
+        #    'data': [{
+        #               'id': ...
+        #               'name': ...
+        #             }, {
+        #                ...
+        #             }]
+        # }
+        {'data' => resource_details.collect { |resource| resource['data'] } }
+      end
+    end
+
     def self.create(resource_name, data)
       request { |nexus|
         begin
