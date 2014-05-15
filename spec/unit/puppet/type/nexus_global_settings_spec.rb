@@ -8,25 +8,25 @@ describe Puppet::Type.type(:nexus_global_settings) do
   end
 
   describe 'notification_recipients' do
-    specify 'should support a single string' do
+    specify 'should accept a single string' do
       expect {
         described_class.new(:name => 'default', :notification_recipients => 'jdoe@example.com')
       }.to_not raise_error
     end
 
-    specify 'should support an empty string' do
+    specify 'should accept an empty string' do
       expect {
         described_class.new(:name => 'default', :notification_recipients => "")
       }.to_not raise_error
     end
 
-    specify 'should support an empty array' do
+    specify 'should accept an empty array' do
       expect {
         described_class.new(:name => 'default', :notification_recipients => [])
       }.to_not raise_error
     end
 
-    specify 'should support multiple elements' do
+    specify 'should accept multiple elements' do
       expect {
         described_class.new(:name => 'default', :notification_recipients => ['jdoe@example.com'])
       }.to_not raise_error
