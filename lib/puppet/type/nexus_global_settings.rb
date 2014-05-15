@@ -22,6 +22,10 @@ Puppet::Type.newtype(:nexus_global_settings) do
     end
   end
 
+  newproperty(:notification_groups, :parent => Puppet::Property::List) do
+    desc 'A list of groups to notify.'
+  end
+
   autorequire(:file) do
     Nexus::Config::CONFIG_FILENAME
   end

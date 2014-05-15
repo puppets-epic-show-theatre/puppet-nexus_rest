@@ -16,7 +16,7 @@ describe Puppet::Type.type(:nexus_global_settings) do
 
     specify 'should accept an empty string' do
       expect {
-        described_class.new(:name => 'default', :notification_emails => "")
+        described_class.new(:name => 'default', :notification_emails => '')
       }.to_not raise_error
     end
 
@@ -39,6 +39,35 @@ describe Puppet::Type.type(:nexus_global_settings) do
       expect {
         described_class.new(:name => 'default', :notification_emails => ['fail'])
       }.to raise_error(Puppet::ResourceError, /Invalid email address 'fail'/)
+    end
+  end
+
+  describe 'notification_groups' do
+    specify 'should accept a single string' do
+      expect {
+        described_class.new(:name => 'default', :notification_groups => 'admins')
+      }.to_not raise_error
+    end
+
+    specify 'should accept an empty string' do
+      expect {
+        described_class.new(:name => 'default', :notification_groups => '')
+      }.to_not raise_error
+    end
+
+    specify 'should accept an empty array' do
+      expect {
+        described_class.new(:name => 'default', :notification_groups => [])
+      }.to_not raise_error
+    end
+
+    specify 'should accept multiple elements' do
+      expect {
+        described_class.new(:name => 'default', :notification_groups => ['admins'])
+      }.to_not raise_error
+      expect {
+        described_class.new(:name => 'default', :notification_groups => ['admins', 'users'])
+      }.to_not raise_error
     end
   end
 end
