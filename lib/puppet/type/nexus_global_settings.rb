@@ -13,7 +13,7 @@ Puppet::Type.newtype(:nexus_global_settings) do
     defaultto :false
   end
 
-  newproperty(:notification_recipients, :parent => Puppet::Property::List) do
+  newproperty(:notification_emails, :parent => Puppet::Property::List) do
     desc 'A list of email addresses to notify.'
     validate do |value|
       unless value.empty?
