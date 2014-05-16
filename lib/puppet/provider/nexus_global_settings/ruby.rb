@@ -17,6 +17,15 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
     end
   end
 
+  def self.prefetch(resources)
+    settings = instances
+    settings.keys.each do |name|
+      if provider = settings.find { |setting| setting.name == name }
+        resources[name].provider = provider
+      end
+    end
+  end
+
   def self.map_data_to_resource(name, settings)
     new(
       :name => name,
