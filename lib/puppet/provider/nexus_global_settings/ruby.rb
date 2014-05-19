@@ -28,7 +28,7 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
 
   def self.map_data_to_resource(name, settings)
     new(
-      :name => name,
+      :name => name
     )
   end
 end
