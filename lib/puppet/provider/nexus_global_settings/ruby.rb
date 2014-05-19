@@ -6,6 +6,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
   desc "Nexus settings management based on Ruby."
 
+  def initialize(value={}, dirty_flag = false)
+    super(value)
+    @dirty_flag = dirty_flag
+  end
+
   def self.instances
     begin
       [
@@ -26,9 +31,50 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
     end
   end
 
+  def flush
+    if @dirty_flag
+      begin
+        Nexus::Rest.update("/service/local/global_settings/#{resource[:name]}", map_resource_to_data)
+      rescue Exception => e
+        raise Puppet::Error, "Error while updating nexus_global_settings #{resource[:name]}: #{e}"
+      end
+      @property_hash = resource.to_hash
+    end
+  end
+
   def self.map_data_to_resource(name, settings)
     new(
       :name => name
     )
+  end
+
+  # Returns the resource in a representation as expected by Nexus:
+  #
+  # {
+  #   :data => {
+  #              :id   => <resource name>
+  #              :name => <resource label>
+  #              ...
+  #            }
+  # }
+  def map_resource_to_data
+    {
+      :data => {
+        :systemNotificationSettings => {
+          :enabled        => resource[:notification_enabled],
+          :emailAddresses => resource[:notification_emails] ? resource[:notification_emails].join(',') : ''
+        }
+      }
+    }
+  end
+
+  mk_resource_methods
+
+  def notification_enabled=(value)
+    mark_dirty
+  end
+
+  def mark_dirty
+    @dirty_flag = true
   end
 end
