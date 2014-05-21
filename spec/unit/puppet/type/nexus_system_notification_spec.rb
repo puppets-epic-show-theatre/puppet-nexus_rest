@@ -10,15 +10,47 @@ describe Puppet::Type.type(:nexus_system_notification) do
     described_class.stubs(:defaultprovider).returns @provider_class
   end
 
-  describe 'by default' do
-    let(:notification) { described_class.new(:name => 'any') }
+  describe :enabled do
+    specify 'should default to false' do
+      expect(described_class.new(:name => 'any')[:enabled]).to be_false
+    end
 
-    specify { expect(notification[:enabled]).to be_false }
-    specify { expect(notification[:emails]).to be_nil }
-    specify { expect(notification[:roles]).to be_nil }
+    specify 'should accept true' do
+      expect { described_class.new(:name => 'any', :enabled => true) }.to_not raise_error
+    end
+
+    specify 'should accept :true' do
+      expect { described_class.new(:name => 'any', :enabled => :true) }.to_not raise_error
+    end
+
+    specify 'should accept "true"' do
+      expect { described_class.new(:name => 'any', :enabled => 'true') }.to_not raise_error
+    end
+
+    specify 'should accept false' do
+      expect { described_class.new(:name => 'any', :enabled => false) }.to_not raise_error
+    end
+
+    specify 'should accept :false' do
+      expect { described_class.new(:name => 'any', :enabled => :false) }.to_not raise_error
+    end
+
+    specify 'should accept "false"' do
+      expect { described_class.new(:name => 'any', :enabled => 'false') }.to_not raise_error
+    end
+
+    specify 'should not accept empty string' do
+      expect {
+        described_class.new(:name => 'any', :enabled => '')
+      }.to raise_error(Puppet::ResourceError, /Parameter enabled failed/)
+    end
   end
 
-  describe 'emails' do
+  describe :emails do
+    specify 'should default to nil' do
+      expect(described_class.new(:name => 'any')[:emails]).to be_nil
+    end
+
     specify 'should accept a single string' do
       expect { described_class.new(:name => 'any', :emails => 'jdoe@example.com') }.to_not raise_error
     end
@@ -49,7 +81,11 @@ describe Puppet::Type.type(:nexus_system_notification) do
     end
   end
 
-  describe 'roles' do
+  describe :roles do
+    specify 'should default to nil' do
+      expect(described_class.new(:name => 'any')[:roles]).to be_nil
+    end
+
     specify 'should accept a single string' do
       expect { described_class.new(:name => 'any', :roles => 'admins') }.to_not raise_error
     end
