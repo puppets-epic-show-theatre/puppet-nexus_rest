@@ -12,15 +12,34 @@ describe provider_class do
   describe 'instances' do
     let :instances do
       Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/current').and_return({'data' => {}})
-      Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/default').and_return({'data' => {}})
       described_class.instances
     end
 
-    specify { expect(instances).to have(2).items }
+    specify { expect(instances).to have(1).items }
     specify 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
       expect { described_class.instances }.to raise_error(Puppet::Error, /Error while retrieving settings/)
     end
+  end
+
+  describe 'an instance' do
+    let :current_settings do
+      Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/current').and_return({
+        'data' => {
+          'systemNotificationSettings' => {
+            'enabled'        => true,
+            'emailAddresses' => 'john@example.com, jane@example.com',
+            'roles'          => ['group-1','group-2']
+          }
+        }
+      })
+      provider_class.instances[0]
+    end
+
+    specify { expect(current_settings.name).to eq('current') }
+    specify { expect(current_settings.notification_enabled).to eq(:true) }
+    specify { expect(current_settings.notification_emails).to eq('john@example.com, jane@example.com') }
+    specify { expect(current_settings.notification_groups).to eq('group-1,group-2') }
   end
 
   describe 'flush' do

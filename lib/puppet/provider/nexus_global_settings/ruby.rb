@@ -13,10 +13,7 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
 
   def self.instances
     begin
-      [
-        map_data_to_resource('current', Nexus::Rest.get_all('/service/local/global_settings/current')),
-        map_data_to_resource('default', Nexus::Rest.get_all('/service/local/global_settings/default'))
-      ]
+      [ map_data_to_resource('current', Nexus::Rest.get_all('/service/local/global_settings/current')) ]
     rescue => e
       raise Puppet::Error, "Error while retrieving settings: #{e}"
     end
@@ -43,8 +40,13 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
   end
 
   def self.map_data_to_resource(name, settings)
+    data = settings['data']
+    notification_settings = data['systemNotificationSettings']
     new(
-      :name => name
+      :name                 => name,
+      :notification_enabled => notification_settings ? notification_settings['enabled'].to_s.to_sym : :absent,
+      :notification_emails  => notification_settings ? notification_settings['emailAddresses'] : :absent,
+      :notification_groups  => notification_settings ? notification_settings['roles'].join(',') : :absent
     )
   end
 
@@ -62,7 +64,8 @@ Puppet::Type.type(:nexus_global_settings).provide(:ruby) do
       :data => {
         :systemNotificationSettings => {
           :enabled        => resource[:notification_enabled],
-          :emailAddresses => resource[:notification_emails] ? resource[:notification_emails].join(',') : ''
+          :emailAddresses => resource[:notification_emails] ? resource[:notification_emails].join(',') : '',
+          :roles          => resource[:notification_groups] ? resource[:notification_groups] : []
         }
       }
     }
