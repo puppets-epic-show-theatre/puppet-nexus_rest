@@ -21,7 +21,7 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
 
   def self.prefetch(resources)
     settings = instances
-    settings.keys.each do |name|
+    resources.keys.each do |name|
       if provider = settings.find { |setting| setting.name == name }
         resources[name].provider = provider
       end
