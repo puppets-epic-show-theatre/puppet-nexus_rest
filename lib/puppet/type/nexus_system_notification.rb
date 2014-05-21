@@ -19,12 +19,18 @@ Puppet::Type.newtype(:nexus_system_notification) do
     validate do |value|
       unless value.empty?
         raise ArgumentError, "Invalid email address '#{value}'." if value !~ /@/
+        raise ArgumentError, "Multiple email addresses must be provided as an array, not a comma-separated list." if value.include?(",")
       end
     end
   end
 
   newproperty(:roles, :parent => Puppet::Property::List) do
     desc 'A list of roles to notify. Multiple roles should be specified as an array.'
+    validate do |value|
+      unless value.empty?
+        raise ArgumentError, "Multiple roles must be provided as an array, not a comma-separated list." if value.include?(",")
+      end
+    end
   end
 
   autorequire(:file) do
