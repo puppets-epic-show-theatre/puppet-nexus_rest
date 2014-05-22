@@ -64,8 +64,8 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
       :data => {
         :systemNotificationSettings => {
           :enabled        => resource[:enabled],
-          :emailAddresses => resource[:emails] ? resource[:emails].join(',') : '',
-          :roles          => resource[:roles] ? resource[:roles] : []
+          :emailAddresses => resource[:emails],
+          :roles          => resource[:roles].split(',')
         }
       }
     }

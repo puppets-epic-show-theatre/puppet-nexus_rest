@@ -16,11 +16,15 @@ Puppet::Type.newtype(:nexus_system_notification) do
 
   newproperty(:emails, :parent => Puppet::Property::List) do
     desc 'A list of email addresses to notify. Multiple email addresses should be specified as an array.'
+    defaultto []
     validate do |value|
       unless value.empty?
         raise ArgumentError, "Invalid email address '#{value}'." if value !~ /@/
         raise ArgumentError, "Multiple email addresses must be provided as an array, not a comma-separated list." if value.include?(",")
       end
+    end
+    def membership
+      :inclusive_membership
     end
   end
 
@@ -31,6 +35,15 @@ Puppet::Type.newtype(:nexus_system_notification) do
         raise ArgumentError, "Multiple roles must be provided as an array, not a comma-separated list." if value.include?(",")
       end
     end
+    def membership
+      :inclusive_membership
+    end
+  end
+
+  newparam(:inclusive_membership) do
+    desc "The list is considered a complete lists as opposed to minimum lists."
+    newvalues(:inclusive)
+    defaultto :inclusive
   end
 
   autorequire(:file) do
