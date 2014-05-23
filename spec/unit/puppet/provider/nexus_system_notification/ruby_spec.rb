@@ -85,5 +85,17 @@ describe provider_class do
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('enabled' => false)))
       expect { provider.flush }.to_not raise_error
     end
+
+    specify 'should map emails to a flat string' do
+      resource[:emails] = ['john@example.com', 'jane@example.com']
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('emailAddresses' => 'john@example.com,jane@example.com')))
+      expect { provider.flush }.to_not raise_error
+    end
+
+    specify 'should map roles to an array' do
+      resource[:roles] = ['group-1','group-2']
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('roles' => ['group-1','group-2'])))
+      expect { provider.flush }.to_not raise_error
+    end
   end
 end

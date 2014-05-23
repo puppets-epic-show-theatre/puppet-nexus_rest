@@ -1,5 +1,5 @@
 require 'puppet/property/boolean'
-require 'puppet/property/list'
+require 'puppet/property/ordered_list'
 
 Puppet::Type.newtype(:nexus_system_notification) do
   @doc = 'Manage the global Nexus system notification settings through a REST API. System notifications are send when
@@ -14,7 +14,7 @@ Puppet::Type.newtype(:nexus_system_notification) do
     defaultto :false
   end
 
-  newproperty(:emails, :parent => Puppet::Property::List) do
+  newproperty(:emails, :parent => Puppet::Property::OrderedList) do
     desc 'A list of email addresses to notify. Multiple email addresses should be specified as an array.'
     defaultto []
     validate do |value|
@@ -28,7 +28,7 @@ Puppet::Type.newtype(:nexus_system_notification) do
     end
   end
 
-  newproperty(:roles, :parent => Puppet::Property::List) do
+  newproperty(:roles, :parent => Puppet::Property::OrderedList) do
     desc 'A list of roles to notify. Multiple roles should be specified as an array.'
     validate do |value|
       unless value.empty?
