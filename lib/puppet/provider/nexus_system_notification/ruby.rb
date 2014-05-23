@@ -13,6 +13,7 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
 
   def self.instances
     begin
+      # we only support the current configuration; the other existing configuration - default - looks quite different
       [ map_data_to_resource('current', Nexus::Rest.get_all('/service/local/global_settings/current')) ]
     rescue => e
       raise Puppet::Error, "Error while retrieving settings: #{e}"
