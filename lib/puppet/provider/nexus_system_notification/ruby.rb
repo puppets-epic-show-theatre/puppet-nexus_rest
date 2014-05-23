@@ -40,13 +40,12 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   end
 
   def self.map_data_to_resource(name, settings)
-    data = settings['data']
-    notification_settings = data['systemNotificationSettings']
+    notification_settings = settings['data']['systemNotificationSettings']
     new(
       :name    => name,
-      :enabled => notification_settings ? notification_settings['enabled'].to_s.to_sym : :absent,
-      :emails  => notification_settings ? notification_settings['emailAddresses'] : :absent,
-      :roles   => notification_settings ? notification_settings['roles'].join(',') : :absent
+      :enabled => notification_settings['enabled'].to_s.to_sym,
+      :emails  => notification_settings['emailAddresses'],
+      :roles   => notification_settings['roles'].join(',')
     )
   end
 

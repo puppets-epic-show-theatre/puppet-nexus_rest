@@ -22,20 +22,7 @@ describe provider_class do
   end
 
   describe 'instances' do
-    let :instances do
-      Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/current').and_return({'data' => {}})
-      described_class.instances
-    end
-
-    specify { expect(instances).to have(1).items }
-    specify 'should raise a human readable error message if the operation failed' do
-      Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
-      expect { described_class.instances }.to raise_error(Puppet::Error, /Error while retrieving settings/)
-    end
-  end
-
-  describe 'an instance' do
-    let :current_settings do
+    let(:instances) do
       Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/current').and_return({
         'data' => {
           'systemNotificationSettings' => {
@@ -45,9 +32,15 @@ describe provider_class do
           }
         }
       })
-      provider_class.instances[0]
+      described_class.instances
     end
+    let(:current_settings) { instances[0] }
 
+    specify { expect(instances).to have(1).items }
+    specify 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
+      expect { described_class.instances }.to raise_error(Puppet::Error, /Error while retrieving settings/)
+    end
     specify { expect(current_settings.name).to eq('current') }
     specify { expect(current_settings.enabled).to eq(:true) }
     specify { expect(current_settings.emails).to eq('john@example.com, jane@example.com') }
