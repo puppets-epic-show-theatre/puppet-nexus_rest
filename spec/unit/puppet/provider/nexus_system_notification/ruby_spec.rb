@@ -48,8 +48,24 @@ describe provider_class do
   end
 
   describe 'flush' do
+    before (:each) do
+      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
+      Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+    end
+
     specify 'should use /service/local/global_settings/default to update the configuration' do
       Nexus::Rest.should_receive(:update).with('/service/local/global_settings/default', anything())
+      expect { provider.flush }.to_not raise_error
+    end
+
+    specify 'should add unmanaged parts of the current configuration with the new one' do
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('otherdata' => 'foobar'))
+      expect { provider.flush }.to_not raise_error
+    end
+
+    specify 'should call REST_RESOURCE to fetch the current configuration' do
+      Nexus::Rest.stub(:update)
+      Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/default')
       expect { provider.flush }.to_not raise_error
     end
 
@@ -60,13 +76,13 @@ describe provider_class do
 
     specify 'should map notification_enabled :true to true' do
       resource[:enabled] = :true
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:systemNotificationSettings => hash_including(:enabled => true)))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('enabled' => true)))
       expect { provider.flush }.to_not raise_error
     end
 
     specify 'should map notification_enabled :false to false' do
       resource[:enabled] = :false
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:systemNotificationSettings => hash_including(:enabled => false)))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('enabled' => false)))
       expect { provider.flush }.to_not raise_error
     end
   end

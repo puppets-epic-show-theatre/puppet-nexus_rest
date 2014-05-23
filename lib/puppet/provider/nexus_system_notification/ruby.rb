@@ -30,9 +30,12 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   end
 
   def flush
+    rest_resource = "/service/local/global_settings/#{resource[:name]}"
     if @dirty_flag
       begin
-        Nexus::Rest.update("/service/local/global_settings/#{resource[:name]}", map_resource_to_data)
+        current_settings = Nexus::Rest.get_all(rest_resource)
+        current_settings['data'].merge!(map_resource_to_data['data'])
+        Nexus::Rest.update(rest_resource, current_settings)
       rescue Exception => e
         raise Puppet::Error, "Error while updating nexus_system_notification #{resource[:name]}: #{e}"
       end
@@ -50,22 +53,15 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
     )
   end
 
-  # Returns the resource in a representation as expected by Nexus:
+  # Returns the resource in a representation as expected by Nexus.
   #
-  # {
-  #   :data => {
-  #              :id   => <resource name>
-  #              :name => <resource label>
-  #              ...
-  #            }
-  # }
   def map_resource_to_data
     {
-      :data => {
-        :systemNotificationSettings => {
-          :enabled        => resource[:enabled],
-          :emailAddresses => resource[:emails],
-          :roles          => resource[:roles].split(',')
+      'data' => {
+        'systemNotificationSettings' => {
+          'enabled'        => resource[:enabled],
+          'emailAddresses' => resource[:emails],
+          'roles'          => resource[:roles].split(',')
         }
       }
     }
