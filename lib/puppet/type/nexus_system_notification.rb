@@ -30,6 +30,7 @@ Puppet::Type.newtype(:nexus_system_notification) do
 
   newproperty(:roles, :parent => Puppet::Property::OrderedList) do
     desc 'A list of roles to notify. Multiple roles should be specified as an array.'
+    defaultto []
     validate do |value|
       unless value.empty?
         raise ArgumentError, "Multiple roles must be provided as an array, not a comma-separated list." if value.include?(",")

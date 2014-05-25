@@ -47,7 +47,7 @@ describe Puppet::Type.type(:nexus_system_notification) do
   end
 
   describe :emails do
-    specify 'should default to nil' do
+    specify 'should default to empty string' do
       expect(described_class.new(:name => 'any')[:emails]).to eq('')
     end
 
@@ -82,8 +82,8 @@ describe Puppet::Type.type(:nexus_system_notification) do
   end
 
   describe :roles do
-    specify 'should default to nil' do
-      expect(described_class.new(:name => 'any')[:roles]).to be_nil
+    specify 'should default to empty string' do
+      expect(described_class.new(:name => 'any')[:roles]).to eq('')
     end
 
     specify 'should accept a single string' do
