@@ -88,7 +88,7 @@ describe provider_class do
 
     specify 'should map emails to a flat string' do
       resource[:emails] = ['john@example.com', 'jane@example.com']
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('emailAddresses' => 'john@example.com,jane@example.com')))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('emailAddresses' => 'jane@example.com,john@example.com')))
       expect { provider.flush }.to_not raise_error
     end
 
