@@ -73,6 +73,14 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
     mark_dirty
   end
 
+  def emails=(value)
+    mark_dirty
+  end
+
+  def roles=(value)
+    mark_dirty
+  end
+
   def mark_dirty
     @dirty_flag = true
   end
