@@ -47,7 +47,7 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
     notification_settings = settings['data']['systemNotificationSettings']
     new(
       :name    => name,
-      :enabled => notification_settings['enabled'].to_s.to_sym,
+      :enabled => notification_settings['enabled'].to_s.intern,
       :emails  => notification_settings['emailAddresses'],
       :roles   => notification_settings['roles'].join(',')
     )
@@ -59,7 +59,7 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
     {
       'data' => {
         'systemNotificationSettings' => {
-          'enabled'        => resource[:enabled],
+          'enabled'        => resource[:enabled] == :true,
           'emailAddresses' => resource[:emails],
           'roles'          => resource[:roles].split(',')
         }

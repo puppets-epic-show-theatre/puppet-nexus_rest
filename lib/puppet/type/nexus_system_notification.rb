@@ -12,6 +12,7 @@ Puppet::Type.newtype(:nexus_system_notification) do
   newproperty(:enabled, :parent => Puppet::Property::Boolean) do
     desc 'Enable the system to send notifications to the configured recipients.'
     defaultto :false
+    munge { |value| super(value).to_s.intern }
   end
 
   newproperty(:emails, :parent => Puppet::Property::OrderedList) do
