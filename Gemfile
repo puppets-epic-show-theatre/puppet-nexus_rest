@@ -7,6 +7,10 @@ gem 'json', '~> 1.8.1'
 gem 'rest-client', '~> 1.6.7' # Ruby 1.8.7 compatible version
 gem 'mime-types', '< 2.0'
 
+group :development do
+  gem 'guard-rspec', '~> 4.2.9', :require => false
+end
+
 group :test do
   gem 'rake', '~> 10.2.2'
   gem 'rspec-puppet', '~> 1.0.1'
