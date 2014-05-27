@@ -30,8 +30,16 @@ Puppet::Type.newtype(:nexus_smtp_settings) do
   end
 
   newproperty(:password) do
-    desc 'The password used to access the SMTP server. Use `absent` to express no password.'
+    desc 'The state of the password used to access the SMTP server. Either `absent` or `present` whereas `absent` means
+      no password at all and `present` will update the password to the given `password_value` field. Unfortunately, it
+      is not possible to retrieve the current password.'
     defaultto :absent
+    newvalues(:absent, :present)
+  end
+
+  newparam(:password_value) do
+    desc 'The expected value of the password. Will be only used if `password` is set to `present`.'
+    defaultto 'secret'
   end
 
   newproperty(:communication_security) do

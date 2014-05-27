@@ -87,16 +87,32 @@ describe Puppet::Type.type(:nexus_smtp_settings) do
       expect(described_class.new(:name => 'any')[:password]).to eq(:absent)
     end
 
-    specify 'should accept empty string' do
-      expect { described_class.new(:name => 'any', :password => '') }.to_not raise_error
+    specify 'should accept :present' do
+      expect { described_class.new(:name => 'any', :password => :present) }.to_not raise_error
     end
 
     specify 'should accept :absent' do
-      expect { described_class.new(:name => 'any', :password => '') }.to_not raise_error
+      expect { described_class.new(:name => 'any', :password => :absent) }.to_not raise_error
+    end
+
+    specify 'should not accept anything else' do
+      expect {
+        described_class.new(:name => 'any', :password => 'secret')
+      }.to raise_error(Puppet::ResourceError, /Parameter password failed/)
+    end
+  end
+
+  describe :password_value do
+    specify 'should default to secret' do
+      expect(described_class.new(:name => 'any')[:password_value]).to eq('secret')
+    end
+
+    specify 'should accept empty string' do
+      expect { described_class.new(:name => 'any', :password_value => '') }.to_not raise_error
     end
 
     specify 'should accept valid value' do
-      expect { described_class.new(:name => 'any', :password => 'secret') }.to_not raise_error
+      expect { described_class.new(:name => 'any', :password_value => 'secret') }.to_not raise_error
     end
   end
 
