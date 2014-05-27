@@ -19,7 +19,7 @@ Puppet::Type.newtype(:nexus_smtp_settings) do
     defaultto 25
     validate do |value|
       raise ArgumentError, "Port must be a non-negative integer, got #{value}" unless value.to_s =~ /\d+/
-      raise ArgumentError, "Port must within [1, 65535], got #{value}" unless (1..65535).cover?(value.to_i)
+      raise ArgumentError, "Port must within [1, 65535], got #{value}" unless (1..65535).include?(value.to_i)
     end
     munge { |value| Integer(value) }
   end
