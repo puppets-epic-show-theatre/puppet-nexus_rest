@@ -35,7 +35,8 @@ Puppet::Type.newtype(:nexus_smtp_settings) do
   end
 
   newproperty(:communication_security) do
-    desc 'Enable the selected communication security when talking to the SMTP server. Can be one of: `none`, `ssl` or `tls`.'
+    desc 'Enable the selected communication security when talking to the SMTP server. Can be one of: `none`, `ssl` or
+      `tls`.'
     defaultto :none
     newvalues(:none, :ssl, :tls)
   end
@@ -49,7 +50,8 @@ Puppet::Type.newtype(:nexus_smtp_settings) do
   end
 
   newproperty(:use_nexus_trust_store, :parent => Puppet::Property::Boolean) do
-    desc 'When using SSL to communicate with the SMTP server, trust is based on Nexus\' internal certifacte store. Only valid for SSL connections.'
+    desc 'When using SSL to communicate with the SMTP server, trust is based on Nexus\' internal certifacte store. Only
+      valid for SSL connections (see `communication_security`).'
     munge { |value| super(value).to_s.intern }
   end
 end
