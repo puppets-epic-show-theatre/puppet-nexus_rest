@@ -19,9 +19,9 @@ base_url: http://localhost:8081/
 
 ```
 
-This will provide the module with the required information about where Nexus is listening and which credentials to use
-to enforce the configuration. Obviously it is recommended to manage the file within Puppet and limit the visibility to
-the root and / or the Puppet user.
+This file needs to exist on the machine where the Nexus is running. It will provide the module with the required
+information about where Nexus is listening and which credentials to use to enforce the configuration. Obviously it is
+recommended to manage the file within Puppet and limit the visibility to the root and / or the Puppet user.
 
 If you have a running Nexus instance, you can just benifit from the fact that all resources are implemented as
 providers: simply inspect the current state with
