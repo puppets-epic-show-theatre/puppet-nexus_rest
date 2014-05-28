@@ -77,8 +77,8 @@ Puppet::Type.type(:nexus_smtp_settings).provide(:ruby) do
       'host'               => resource[:hostname],
       'port'               => resource[:port],
       'username'           => resource[:username],
-      'ssl_enabled'        => resource[:communication_security] == :ssl,
-      'tls_enabled'        => resource[:communication_security] == :tls,
+      'sslEnabled'         => resource[:communication_security] == :ssl,
+      'tlsEnabled'         => resource[:communication_security] == :tls,
       'systemEmailAddress' => resource[:sender_email]
     }
     smtpSettings['password'] = resource[:password_value] if resource[:password] == :present

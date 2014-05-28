@@ -165,21 +165,21 @@ describe provider_class do
       expect { provider.update_smtp_settings }.to_not raise_error
     end
 
-    specify 'should set ssl_enabled = false and tls_enabled = false for communication_security => :none' do
+    specify 'should set sslEnabled = false and tlsEnabled = false for communication_security => :none' do
       resource[:communication_security] = :none
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('ssl_enabled' => false)))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => false, 'tlsEnabled' => false)))
       expect { provider.update_smtp_settings }.to_not raise_error
     end
 
-    specify 'should set ssl_enabled = true and tls_enabled = false for communication_security => :ssl' do
+    specify 'should set sslEnabled = true and tlsEnabled = false for communication_security => :ssl' do
       resource[:communication_security] = :ssl
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('ssl_enabled' => true)))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => true, 'tlsEnabled' => false)))
       expect { provider.update_smtp_settings }.to_not raise_error
     end
 
-    specify 'should set ssl_enabled = false and tls_enabled = true for communication_security => :tls' do
+    specify 'should set sslEnabled = false and tlsEnabled = true for communication_security => :tls' do
       resource[:communication_security] = :tls
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('ssl_enabled' => false)))
+      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => false, 'tlsEnabled' => true)))
       expect { provider.update_smtp_settings }.to_not raise_error
     end
 
