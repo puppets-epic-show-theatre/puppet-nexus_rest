@@ -62,4 +62,8 @@ Puppet::Type.newtype(:nexus_smtp_settings) do
       valid for SSL connections (see `communication_security`).'
     munge { |value| super(value).to_s.intern }
   end
+
+  autorequire(:file) do
+    Nexus::Config::CONFIG_FILENAME
+  end
 end
