@@ -18,7 +18,7 @@ describe provider_class do
     })
   end
   let(:provider) do
-    described_class.new(resource, force_update)
+    described_class.new(resource)
   end
 
   describe 'instances' do
@@ -47,7 +47,20 @@ describe provider_class do
     specify { expect(current_settings.roles).to eq('group-1,group-2') }
   end
 
-  describe 'flush' do
+  describe :flush do
+    before (:each) do
+      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
+      Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      provider.mark_system_notifications_dirty
+      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
+      expect { provider.flush}.to raise_error(Puppet::Error, /Error while updating nexus_system_notification default/)
+    end
+  end
+
+  describe :update_system_notifications do
     before (:each) do
       Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
       Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
@@ -55,47 +68,42 @@ describe provider_class do
 
     specify 'should use /service/local/global_settings/default to update the configuration' do
       Nexus::Rest.should_receive(:update).with('/service/local/global_settings/default', anything())
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should add unmanaged parts of the current configuration with the new one' do
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('otherdata' => 'foobar'))
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should call REST_RESOURCE to fetch the current configuration' do
       Nexus::Rest.stub(:update)
       Nexus::Rest.should_receive(:get_all).with('/service/local/global_settings/default')
-      expect { provider.flush }.to_not raise_error
-    end
-
-    specify 'should raise a human readable error message if the operation failed' do
-      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
-      expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_system_notification default/)
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should map notification_enabled :true to true' do
       resource[:enabled] = :true
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('enabled' => true)))
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should map notification_enabled :false to false' do
       resource[:enabled] = :false
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('enabled' => false)))
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should map emails to a flat string' do
       resource[:emails] = ['john@example.com', 'jane@example.com']
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('emailAddresses' => 'jane@example.com,john@example.com')))
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
 
     specify 'should map roles to an array' do
       resource[:roles] = ['group-1','group-2']
       Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('systemNotificationSettings' => hash_including('roles' => ['group-1','group-2'])))
-      expect { provider.flush }.to_not raise_error
+      expect { provider.update_system_notifications }.to_not raise_error
     end
   end
 end

@@ -6,9 +6,9 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   desc "Ruby-based management of the Nexus system notifications."
 
-  def initialize(value={}, dirty_flag = false)
+  def initialize(value={})
     super(value)
-    @dirty_flag = dirty_flag
+    @update_system_notifications = false
   end
 
   def self.instances
@@ -30,17 +30,19 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   end
 
   def flush
-    rest_resource = "/service/local/global_settings/#{resource[:name]}"
-    if @dirty_flag
-      begin
-        current_settings = Nexus::Rest.get_all(rest_resource)
-        current_settings['data'].merge!(map_resource_to_data['data'])
-        Nexus::Rest.update(rest_resource, current_settings)
-      rescue Exception => e
-        raise Puppet::Error, "Error while updating nexus_system_notification #{resource[:name]}: #{e}"
-      end
+    begin
+      update_system_notifications if @update_system_notifications
       @property_hash = resource.to_hash
+    rescue Exception => e
+      raise Puppet::Error, "Error while updating nexus_system_notification #{resource[:name]}: #{e}"
     end
+  end
+
+  def update_system_notifications
+    rest_resource = "/service/local/global_settings/#{resource[:name]}"
+    current_settings = Nexus::Rest.get_all(rest_resource)
+    current_settings['data'].merge!(map_resource_to_data['data'])
+    Nexus::Rest.update(rest_resource, current_settings)
   end
 
   def self.map_data_to_resource(name, settings)
@@ -70,18 +72,18 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   mk_resource_methods
 
   def enabled=(value)
-    mark_dirty
+    mark_system_notifications_dirty
   end
 
   def emails=(value)
-    mark_dirty
+    mark_system_notifications_dirty
   end
 
   def roles=(value)
-    mark_dirty
+    mark_system_notifications_dirty
   end
 
-  def mark_dirty
-    @dirty_flag = true
+  def mark_system_notifications_dirty
+    @update_system_notifications = true
   end
 end
