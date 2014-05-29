@@ -1,70 +1,24 @@
 require 'json'
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'config.rb'))
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
-require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
+require File.join(File.dirname(__FILE__), '..', 'nexus_global_config')
 
-Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
+Puppet::Type.type(:nexus_system_notification).provide(:ruby, :parent => Puppet::Provider::NexusGlobalConfig) do
   desc "Ruby-based management of the Nexus system notifications."
 
-  def initialize(value={})
-    super(value)
-    @update_system_notifications = false
-  end
-
-  def self.instances
-    begin
-      # we only support the current configuration; the other existing configuration - default - looks quite different
-      [ map_data_to_resource('current', Nexus::Rest.get_all('/service/local/global_settings/current')) ]
-    rescue => e
-      raise Puppet::Error, "Error while retrieving settings: #{e}"
-    end
-  end
-
-  def self.prefetch(resources)
-    settings = instances
-    resources.keys.each do |name|
-      if provider = settings.find { |setting| setting.name == name }
-        resources[name].provider = provider
-      end
-    end
-  end
-
-  def flush
-    begin
-      update_system_notifications if @update_system_notifications
-      @property_hash = resource.to_hash
-    rescue Exception => e
-      raise Puppet::Error, "Error while updating nexus_system_notification #{resource[:name]}: #{e}"
-    end
-  end
-
-  def update_system_notifications
-    rest_resource = "/service/local/global_settings/#{resource[:name]}"
-    current_settings = Nexus::Rest.get_all(rest_resource)
-    current_settings['data'].merge!(map_resource_to_data['data'])
-    Nexus::Rest.update(rest_resource, current_settings)
-  end
-
-  def self.map_data_to_resource(name, settings)
-    notification_settings = settings['data']['systemNotificationSettings']
-    new(
-      :name    => name,
+  def self.map_config_to_resource_hash(global_config)
+    notification_settings = global_config['systemNotificationSettings']
+    {
       :enabled => notification_settings['enabled'].to_s.intern,
       :emails  => notification_settings['emailAddresses'],
       :roles   => notification_settings['roles'].join(',')
-    )
+    }
   end
 
-  # Returns the resource in a representation as expected by Nexus.
-  #
-  def map_resource_to_data
+  def map_resource_to_config
     {
-      'data' => {
-        'systemNotificationSettings' => {
-          'enabled'        => resource[:enabled] == :true,
-          'emailAddresses' => resource[:emails],
-          'roles'          => resource[:roles].split(',')
-        }
+      'systemNotificationSettings' => {
+        'enabled'        => resource[:enabled] == :true,
+        'emailAddresses' => resource[:emails],
+        'roles'          => resource[:roles].split(',')
       }
     }
   end
@@ -72,18 +26,14 @@ Puppet::Type.type(:nexus_system_notification).provide(:ruby) do
   mk_resource_methods
 
   def enabled=(value)
-    mark_system_notifications_dirty
+    mark_config_dirty
   end
 
   def emails=(value)
-    mark_system_notifications_dirty
+    mark_config_dirty
   end
 
   def roles=(value)
-    mark_system_notifications_dirty
-  end
-
-  def mark_system_notifications_dirty
-    @update_system_notifications = true
+    mark_config_dirty
   end
 end
