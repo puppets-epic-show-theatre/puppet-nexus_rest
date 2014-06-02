@@ -25,6 +25,27 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
     [new(hash)]
   end
 
+  # Map the current global configuration to a hash which is used to create a new resource instance.
+  #
+  # This method is expected to be implemented by inheriting classes.
+  #
+  # global_config: A map of data as received from the config REST resource except that leading data has been stripped.
+  # {
+  #    ...
+  #    'securityRealms': ...
+  #    'globalConnectionSettings': ...
+  #    'systemNotificationSettings': ...
+  #    'smtpSettings': ...
+  #    ...
+  # }
+  #
+  # returns: A map of data representing the Puppet resource state.
+  # {
+  #    :puppet_attribute_1 => ...,
+  #    :puppet_attribute_2 => ...,
+  #    :puppet_attribute_3 => ...,
+  # }
+  #
   def self.map_config_to_resource_hash(global_config)
     notice("Method 'map_config_to_resource_hash' should be implemented")
   end
@@ -48,7 +69,7 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   # * The `default` configuration looks quite different and I don't see much value in managing it anyway - hence it is
   #   excluded
   #
-  # Returns:
+  # returns: The data as expected by the remote REST resource but without the data 'envelop'.
   # {
   #    'attribute1': ...
   #    'attribute2': ...
@@ -84,6 +105,21 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
     end
   end
 
+  # Map the resource state to a partial global configuration. First this partial configuration is merged with the
+  # current configuration returned by the REST resource. After that, the now complete configuration is send to the
+  # REST resource in order to perform the update.
+  #
+  # This method is expected to be implemented by inheriting classes.
+  #
+  # returns: The data in a format as expected by the REST resources just without the data wrapper.
+  # {
+  #    'securityRealms': {
+  #      'attribute1': 'value1',
+  #      'attribute2': 'value2',
+  #      'attribute3': 'value3',
+  #    },
+  # }
+  #
   def map_resource_to_config
     notice("Method 'map_resource_to_config' should be implemented")
   end
