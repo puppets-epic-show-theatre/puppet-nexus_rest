@@ -12,7 +12,7 @@ describe Puppet::Type.type(:nexus_system_notification) do
 
   describe :enabled do
     specify 'should default to false' do
-      expect(described_class.new(:name => 'any')[:enabled]).to be_false
+      expect(described_class.new(:name => 'any')[:enabled]).to eq(:false)
     end
 
     specify 'should accept true' do
