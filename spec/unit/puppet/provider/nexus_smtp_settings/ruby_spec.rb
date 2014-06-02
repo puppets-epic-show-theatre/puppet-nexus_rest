@@ -1,196 +1,165 @@
 require 'spec_helper'
 
 type_class = Puppet::Type.type(:nexus_smtp_settings)
-provider_class = type_class.provider(:ruby)
 
-describe provider_class do
-  let(:settings_rest_resource) { '/service/local/global_settings/current' }
+describe type_class.provider(:ruby) do
   let(:nexus_trust_store_rest_resource) { '/service/siesta/ssl/truststore/key/smtp/global' }
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
   end
 
-  let(:resource) do
-    resource = type_class.new({
-      :name         => 'current',
-      :hostname     => 'mail.example.com',
-      :sender_email => 'nexus@example.com'
-    })
-  end
-  let(:provider) do
-    described_class.new(resource)
-  end
-
-  describe :instances do
-    let(:data) do
+  describe :map_config_to_resource_hash do
+    let(:config_template) do
       {
-        'data' => {
-          'smtpSettings' => {
-            'host'               => 'mail.example.com',
-            'port'               => 25,
-            'username'           => "",
-            'systemEmailAddress' => 'nexus@example.com',
-            'sslEnabled'         => false,
-            'tlsEnabled'         => false
-          }
+        'smtpSettings' => {
+          'host'               => 'mail.example.com',
+          'port'               => 25,
+          'username'           => "",
+          'systemEmailAddress' => 'nexus@example.com',
+          'sslEnabled'         => false,
+          'tlsEnabled'         => false
         }
       }
     end
-    describe 'by default' do
-      let(:current_settings) do
-        Nexus::Rest.should_receive(:get_all).with(settings_rest_resource).and_return(data)
-        Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => false})
-        described_class.instances[0]
-      end
 
-      specify 'should raise a human readable error message if the operation failed' do
-        Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
-        expect { described_class.instances }.to raise_error(Puppet::Error, /Error while retrieving settings/)
-      end
-      specify { expect(current_settings.name).to eq('current') }
-      specify { expect(current_settings.hostname).to eq('mail.example.com') }
-      specify { expect(current_settings.port).to eq(25) }
-      specify { expect(current_settings.username).to eq('') }
-      specify { expect(current_settings.password).to eq(:absent) }
-      specify { expect(current_settings.sender_email).to eq('nexus@example.com') }
-      specify { expect(current_settings.communication_security).to eq(:none) }
-      specify { expect(current_settings.use_nexus_trust_store).to eq(:false) }
+    let(:resource_hash) do
+      Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => false})
+      described_class::map_config_to_resource_hash(global_config)
+    end
+
+    describe 'by default' do
+      let(:global_config) { config_template} 
+
+      specify { expect(resource_hash[:hostname]).to eq('mail.example.com') }
+      specify { expect(resource_hash[:port]).to eq(25) }
+      specify { expect(resource_hash[:username]).to eq('') }
+      specify { expect(resource_hash[:password]).to eq(:absent) }
+      specify { expect(resource_hash[:sender_email]).to eq('nexus@example.com') }
+      specify { expect(resource_hash[:communication_security]).to eq(:none) }
+      specify { expect(resource_hash[:use_nexus_trust_store]).to eq(:false) }
     end
 
     describe 'with ssl enabled' do
-      let(:current_settings) do
-        data['data']['smtpSettings']['sslEnabled'] = true
-        Nexus::Rest.should_receive(:get_all).with(settings_rest_resource).and_return(data)
-        Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => false})
-        described_class.instances[0]
+      let(:global_config) do
+        config_template['smtpSettings']['sslEnabled'] = true
+        config_template
       end
 
-      specify { expect(current_settings.communication_security).to eq(:ssl) }
+      specify { expect(resource_hash[:communication_security]).to eq(:ssl) }
     end
 
     describe 'with tls enabled' do
-      let(:current_settings) do
-        data['data']['smtpSettings']['tlsEnabled'] = true
-        Nexus::Rest.should_receive(:get_all).with(settings_rest_resource).and_return(data)
-        Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => false})
-        described_class.instances[0]
+      let(:global_config) do
+        config_template['smtpSettings']['tlsEnabled'] = true
+        config_template
       end
 
-      specify { expect(current_settings.communication_security).to eq(:tls) }
+      specify { expect(resource_hash[:communication_security]).to eq(:tls) }
     end
 
     describe 'with password set' do
-      let(:current_settings) do
-        data['data']['smtpSettings']['password'] = '|$|N|E|X|U|S|$|'
-        Nexus::Rest.should_receive(:get_all).with(settings_rest_resource).and_return(data)
-        Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => false})
-        described_class.instances[0]
+      let(:global_config) do
+        config_template['smtpSettings']['password'] = '|$|N|E|X|U|S|$|'
+        config_template
       end
 
-      specify { expect(current_settings.password).to eq(:present) }
+      specify { expect(resource_hash[:password]).to eq(:present) }
+    end
+
+    describe 'with nexus_trust_store set to true' do
+      let(:resource_hash) do
+        Nexus::Rest.should_receive(:get_all).with(nexus_trust_store_rest_resource).and_return({'enabled' => true})
+        described_class::map_config_to_resource_hash(config_template)
+      end
+
+      specify { expect(resource_hash[:use_nexus_trust_store]).to eq(:true) }
     end
   end
 
-  describe :flush do
-    before (:each) do
-      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
-      Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+  describe :map_resource_to_config do
+    let(:resource) do
+      {
+        :hostname               => 'mail.example.com',
+        :port                   => 25,
+        :username               => 'jdoe',
+        :password               => :present,
+        :password_value         => 'supersecret',
+        :communication_security => :none,
+        :sender_email           => 'nexus@example.com'
+      }
     end
 
-    specify 'should raise a human readable error message if the operation failed' do
-      provider.hostname = 'mail2.example.com'
-      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
-      expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_smtp_settings current/)
-    end
-  end
-
-  describe :update_smtp_settings do
-    before (:each) do
-      Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
-      Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+    let(:instance) do
+      instance = described_class.new()
+      instance.resource = resource
+      instance
     end
 
-    specify 'should use /service/local/global_settings/current to update most of the SMTP configuration' do
-      Nexus::Rest.should_receive(:update).with(settings_rest_resource, anything)
-      expect { provider.update_smtp_settings }.to_not raise_error
-    end
-
-    specify 'should add unmanaged parts of the current configuration with the new one' do
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('otherdata' => 'foobar'))
-      expect { provider.update_smtp_settings }.to_not raise_error
-    end
-
-    specify 'should call REST_RESOURCE to fetch the current configuration' do
-      Nexus::Rest.stub(:update)
-      Nexus::Rest.should_receive(:get_all).with(anything)
-      expect { provider.update_smtp_settings }.to_not raise_error
+    specify 'should return all changes within smtpSettings hash' do
+      expect(instance.map_resource_to_config.keys).to eq(['smtpSettings'])
     end
 
     specify 'should map hostname to host' do
-      resource[:hostname] = 'mail2.example.com'
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('host' => 'mail2.example.com')))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('host' => 'mail.example.com')
     end
 
     specify 'should update port' do
-      resource[:port] = 465
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('port' => 465)))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('port' => 25)
     end
 
     specify 'should update username' do
-      resource[:username] = 'jdoe'
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('username' => 'jdoe')))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('username' => 'jdoe')
     end
 
     specify 'should update password' do
-      resource[:password] = :present
-      resource[:password_value] = 'supersecret'
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('password' => 'supersecret')))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('password' => 'supersecret')
     end
 
     specify 'should update empty password' do
       resource[:password] = :present
       resource[:password_value] = ''
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('password' => '')))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('password' => '')
     end
 
     specify 'should omit password when value is :absent' do
       resource[:password] = :absent
       resource[:password_value] = 'supersecret'
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_excluding('password' => anything())))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to_not include('password' => anything())
     end
 
     specify 'should set sslEnabled = false and tlsEnabled = false for communication_security => :none' do
       resource[:communication_security] = :none
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => false, 'tlsEnabled' => false)))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('sslEnabled' => false, 'tlsEnabled' => false)
     end
 
     specify 'should set sslEnabled = true and tlsEnabled = false for communication_security => :ssl' do
       resource[:communication_security] = :ssl
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => true, 'tlsEnabled' => false)))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('sslEnabled' => true, 'tlsEnabled' => false)
     end
 
     specify 'should set sslEnabled = false and tlsEnabled = true for communication_security => :tls' do
       resource[:communication_security] = :tls
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('sslEnabled' => false, 'tlsEnabled' => true)))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('sslEnabled' => false, 'tlsEnabled' => true)
     end
 
     specify 'should map sender_email to systemEmailAddress' do
-      resource[:sender_email] = 'nexus@example.com'
-      Nexus::Rest.should_receive(:update).with(anything, 'data' => hash_including('smtpSettings' => hash_including('systemEmailAddress' => 'nexus@example.com')))
-      expect { provider.update_smtp_settings }.to_not raise_error
+      expect(instance.map_resource_to_config['smtpSettings']).to include('systemEmailAddress' => 'nexus@example.com')
     end
   end
 
   describe :update_nexus_trust do
+    let(:resource) do
+      resource = type_class.new({
+        :name         => 'current',
+        :hostname     => 'mail.example.com',
+        :sender_email => 'nexus@example.com'
+      })
+    end
+
+    let(:provider) do
+      described_class.new(resource)
+    end
+
     specify 'should use /service/siesta/ssl/truststore/key/smtp/global to the other part of the configuration' do
       Nexus::Rest.should_receive(:update).with(nexus_trust_store_rest_resource, anything)
       expect { provider.update_trust_store_setting }.to_not raise_error
