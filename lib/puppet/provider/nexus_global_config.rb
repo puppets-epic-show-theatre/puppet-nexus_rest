@@ -93,15 +93,21 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   #
   def flush
     if @update_required
-      begin
-        rest_resource = "#{GLOBAL_CONFIG_REST_RESOURCE}/#{resource[:name]}"
-        global_config = Nexus::Rest.get_all(rest_resource)
-        global_config['data'].merge!(map_resource_to_config)
-        Nexus::Rest.update(rest_resource, global_config)
-        @property_hash = resource.to_hash
-      rescue Exception => e
-        raise Puppet::Error, "Error while updating global configuration '#{resource[:name]}': #{e}"
-      end
+      update_global_config
+      @property_hash = resource.to_hash
+    end
+  end
+
+  # Update the global configuration. Intended to be used when updating multiple things with one flush invocation.
+  #
+  def update_global_config
+    begin
+      rest_resource = "#{GLOBAL_CONFIG_REST_RESOURCE}/#{resource[:name]}"
+      global_config = Nexus::Rest.get_all(rest_resource)
+      global_config['data'].merge!(map_resource_to_config)
+      Nexus::Rest.update(rest_resource, global_config)
+    rescue Exception => e
+      raise Puppet::Error, "Error while updating global configuration '#{resource[:name]}': #{e}"
     end
   end
 
