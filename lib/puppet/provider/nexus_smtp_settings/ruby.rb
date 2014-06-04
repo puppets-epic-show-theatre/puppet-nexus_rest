@@ -14,7 +14,7 @@ Puppet::Type.type(:nexus_smtp_settings).provide(:ruby, :parent => Puppet::Provid
 
   def self.map_config_to_resource_hash(global_config)
     smtpSettings = global_config['smtpSettings']
-    nexus_trust_store_setttings = get_nexus_trust_store_settings['enabled']
+    nexus_trust_store_settings = get_nexus_trust_store_settings['enabled']
     {
       :hostname               => smtpSettings['host'],
       :port                   => smtpSettings['port'],
@@ -22,7 +22,7 @@ Puppet::Type.type(:nexus_smtp_settings).provide(:ruby, :parent => Puppet::Provid
       :password               => smtpSettings['password'] ? :present : :absent,
       :communication_security => smtpSettings['sslEnabled'] == true ? :ssl : smtpSettings['tlsEnabled'] == true ? :tls : :none,
       :sender_email           => smtpSettings['systemEmailAddress'],
-      :use_nexus_trust_store  => nexus_trust_store_setttings ? nexus_trust_store_setttings.to_s.intern : :false
+      :use_nexus_trust_store  => nexus_trust_store_settings ? nexus_trust_store_settings.to_s.intern : :false
     }
   end
 
