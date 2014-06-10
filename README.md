@@ -40,8 +40,8 @@ The global configuration has been decomposed into different resources. The follo
 #!puppet
 nexus_application_server_settings { 'current':
   baseurl  => 'http://example.com/',
-  forceurl => 'false',
-  timeout  => '60',
+  forceurl => false,
+  timeout  => 60,
 }
 ```
 
