@@ -28,7 +28,7 @@ Puppet::Type.newtype(:nexus_application_server_settings) do
     defaultto 60
     validate do |value|
       raise ArgumentError, "Timeout must be a non-negative integer, got #{value}" unless value.to_s =~ /\d+/
-      raise ArgumentError, "Timeout must bigger than zero" unless value.to_i > 0
+      raise ArgumentError, "Timeout must bigger than or equal to zero" unless value.to_i >= 0
     end
     munge { |value| Integer(value) }
   end

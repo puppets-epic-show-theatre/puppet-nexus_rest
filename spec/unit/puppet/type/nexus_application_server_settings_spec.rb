@@ -71,10 +71,8 @@ describe Puppet::Type.type(:nexus_application_server_settings) do
       }.to raise_error(Puppet::ResourceError, /Parameter timeout failed/)
     end
 
-    specify 'should not accept empty 0' do
-      expect {
-        described_class.new(:name => 'any', :timeout => 0)
-      }.to raise_error(Puppet::ResourceError, /Parameter timeout failed/)
+    specify 'should accept 0' do
+      expect { described_class.new(:name => 'any', :timeout => 0) }.to_not raise_error
     end
 
     specify 'should not accept negative number' do
