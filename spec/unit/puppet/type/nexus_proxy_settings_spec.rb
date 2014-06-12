@@ -204,7 +204,7 @@ describe Puppet::Type.type(:nexus_proxy_settings) do
 
     specify 'should not accept string with comma separated list of hostnames' do
       expect {
-        described_class.new(configured_http_proxy.merge(:non_proxy_hostnames => 'john@example.com,jane@example.com'))
+        described_class.new(configured_http_proxy.merge(:non_proxy_hostnames => 'private.example.com,internal.example.com'))
       }.to raise_error(Puppet::ResourceError, /Multiple non-proxy hostnames/)
     end
   end
