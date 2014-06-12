@@ -59,6 +59,8 @@ nexus_proxy_settings { 'current':
 }
 ```
 
+Note: The current implementation doesn't support authentication at the proxy server. We're happy to accept a PR on this matter.
+
 ```
 #!puppet
 
