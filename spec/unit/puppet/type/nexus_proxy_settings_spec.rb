@@ -87,12 +87,12 @@ describe Puppet::Type.type(:nexus_proxy_settings) do
     end
 
     specify 'should accept port 65535' do
-      expect { described_class.new(:name => 'any', :http_proxy_enabled => :true, :http_proxy_hostname => valid_hostname, :http_proxy_port =>  65535) }.to_not raise_error
+      expect { described_class.new(:name => 'any', :http_proxy_enabled => :true, :http_proxy_hostname => valid_hostname, :http_proxy_port => 65535) }.to_not raise_error
     end
 
     specify 'should not accept ports larger than 65535' do
       expect {
-        described_class.new(:name => 'any', :http_proxy_enabled => :true, :http_proxy_hostname => valid_hostname, :http_proxy_port =>  65536)
+        described_class.new(:name => 'any', :http_proxy_enabled => :true, :http_proxy_hostname => valid_hostname, :http_proxy_port => 65536)
       }.to raise_error(Puppet::ResourceError, /Parameter http_proxy_port failed/)
     end
   end
@@ -167,12 +167,12 @@ describe Puppet::Type.type(:nexus_proxy_settings) do
     end
 
     specify 'should accept port 65535' do
-      expect { described_class.new(configured_http_proxy.merge(:https_proxy_enabled => :true, :https_proxy_hostname => valid_hostname, :https_proxy_port =>  65535)) }.to_not raise_error
+      expect { described_class.new(configured_http_proxy.merge(:https_proxy_enabled => :true, :https_proxy_hostname => valid_hostname, :https_proxy_port => 65535)) }.to_not raise_error
     end
 
     specify 'should not accept ports larger than 65535' do
       expect {
-        described_class.new(configured_http_proxy.merge(:https_proxy_enabled => :true, :https_proxy_hostname => valid_hostname, :https_proxy_port =>  65536))
+        described_class.new(configured_http_proxy.merge(:https_proxy_enabled => :true, :https_proxy_hostname => valid_hostname, :https_proxy_port => 65536))
       }.to raise_error(Puppet::ResourceError, /Parameter https_proxy_port failed/)
     end
   end
