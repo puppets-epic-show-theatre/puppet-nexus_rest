@@ -11,7 +11,7 @@ Puppet::Type.newtype(:nexus_application_server_settings) do
   newproperty(:baseurl) do
     desc 'The base URL of the Nexus web application.'
     validate do |value|
-      raise ArgumentError, "Base URL must not be empty" if value.nil? or value.to_s.empty?\
+      raise ArgumentError, "Base URL must not be empty" if value.nil? or value.to_s.empty?
       raise ArgumentError, "Base URL must be a valid url" unless URI.parse(value).is_a?(URI::HTTP) or URI.parse(value).is_a?(URI::HTTPS)
     end
   end
