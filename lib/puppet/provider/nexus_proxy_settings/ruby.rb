@@ -2,7 +2,7 @@ require 'json'
 require File.join(File.dirname(__FILE__), '..', 'nexus_global_config')
 
 Puppet::Type.type(:nexus_proxy_settings).provide(:ruby, :parent => Puppet::Provider::NexusGlobalConfig) do
-  desc "Ruby-based management of the Nexus global proxy settings."
+  desc "Ruby-based management of the global proxy settings."
 
   def self.map_config_to_resource_hash(global_config)
     proxy_settings = global_config['remoteProxySettings']
