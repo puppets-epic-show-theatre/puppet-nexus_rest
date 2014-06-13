@@ -5,7 +5,7 @@ Puppet::Type.newtype(:nexus_connection_settings) do
     desc 'Name of the configuration (i.e. current).'
   end
 
-  newproperty(:connection_timeout) do
+  newproperty(:timeout) do
     desc 'Time in seconds Nexus will wait for a successful connection before retrying.'
     defaultto 10
     validate do |value|
@@ -15,7 +15,7 @@ Puppet::Type.newtype(:nexus_connection_settings) do
     munge { |value| Integer(value) }
   end
 
-  newproperty(:connection_retries) do
+  newproperty(:retries) do
     desc 'Number of connection attempts before giving up.'
     defaultto 3
     validate do |value|
