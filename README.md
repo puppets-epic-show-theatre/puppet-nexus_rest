@@ -64,6 +64,21 @@ nexus_system_notification { 'current':
 
 ```
 #!puppet
+nexus_proxy_settings { 'current':
+  http_proxy_enabled   => true,
+  http_proxy_hostname  => 'example.com',
+  http_proxy_port      => 8080,
+  https_proxy_enabled  => true,
+  https_proxy_hostname => 'ssl.example.com',
+  https_proxy_port     => 8443,
+  non_proxy_hostnames  => ['localhost', '*.example.com'],
+}
+```
+
+Note: The current implementation doesn't support authentication at the proxy server. We're happy to accept a PR on this matter.
+
+```
+#!puppet
 
 nexus_smtp_settings { 'current':
   hostname               => 'mail.example.com',
