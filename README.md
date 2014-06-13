@@ -36,7 +36,7 @@ and copy&paste the result in your manifest.
 
 The global configuration has been decomposed into different resources. The following examples show how to use them.
 
-``
+```
 #!puppet
 nexus_connection_settings { 'current':
   timeout             => 10,
