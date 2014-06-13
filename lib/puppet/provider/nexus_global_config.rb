@@ -6,7 +6,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x
 class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   desc "Manage the global configuration."
 
-  GLOBAL_CONFIG_REST_RESOURCE = '/service/local/global_settings'
+  @@global_config_rest_resource = '/service/local/global_settings'
 
   def initialize(value={})
     super(value)
@@ -77,7 +77,7 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   #
   def self.get_current_global_config
     begin
-      data = Nexus::Rest.get_all("#{GLOBAL_CONFIG_REST_RESOURCE}/current")
+      data = Nexus::Rest.get_all("#{@@global_config_rest_resource}/current")
       data['data']
     rescue => e
       raise Puppet::Error, "Error while retrieving global configuration 'current': #{e}"
@@ -102,7 +102,7 @@ class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   #
   def update_global_config
     begin
-      rest_resource = "#{GLOBAL_CONFIG_REST_RESOURCE}/#{resource[:name]}"
+      rest_resource = "#{@@global_config_rest_resource}/#{resource[:name]}"
       global_config = Nexus::Rest.get_all(rest_resource)
       global_config['data'].merge!(map_resource_to_config)
       Nexus::Rest.update(rest_resource, global_config)
