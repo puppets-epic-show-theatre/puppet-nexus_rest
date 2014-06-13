@@ -80,5 +80,11 @@ describe Puppet::Type.type(:nexus_application_server_settings) do
         described_class.new(:name => 'any', :timeout => -1)
       }.to raise_error(Puppet::ResourceError, /Parameter timeout failed/)
     end
+
+    specify 'should not accept characters' do
+      expect {
+        described_class.new(:name => 'any', :timeout => 'abc')
+      }.to raise_error(Puppet::ResourceError, /Parameter timeout failed/)
+    end
   end
 end
