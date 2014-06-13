@@ -36,6 +36,22 @@ and copy&paste the result in your manifest.
 
 The global configuration has been decomposed into different resources. The following examples show how to use them.
 
+``
+#!puppet
+nexus_connection_settings { 'current':
+  timeout             => 10,
+  retries             => 3,
+  query_string        => 'foo=bar&foo2=bar2',
+  user_agent_fragment => 'foobar',
+}
+```
+
+Note: the query string returned by Nexus contains encoded HTML entities. So submitting e.g. `&` via the REST interface
+will result in an new version of the query string where it is replaced with `&amp;`. To avoid a constant update war
+between Nexus and Puppet updating the configuration, this module will unescape the received query string. Hence, this
+can be subject to an API breakage when Sonatype would decide to change the behaviour.
+
+
 ```
 #!puppet
 
