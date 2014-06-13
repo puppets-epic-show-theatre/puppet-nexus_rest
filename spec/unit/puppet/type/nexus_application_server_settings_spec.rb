@@ -57,11 +57,19 @@ describe Puppet::Type.type(:nexus_application_server_settings) do
       expect(described_class.new(:name => 'any')[:timeout]).to eq(60)
     end
 
-    specify 'should accept a 1' do
+    specify 'should accept 0' do
+      expect { described_class.new(:name => 'any', :timeout => 0) }.to_not raise_error
+    end
+
+    specify 'should accept 1' do
       expect { described_class.new(:name => 'any', :timeout => 1) }.to_not raise_error
     end
 
-    specify 'should accept an 1 as string' do
+    specify 'should accept 100' do
+      expect { described_class.new(:name => 'any', :timeout => 100) }.to_not raise_error
+    end
+
+    specify 'should accept timeout as string' do
       expect { described_class.new(:name => 'any', :timeout => '1') }.to_not raise_error
     end
 
@@ -69,10 +77,6 @@ describe Puppet::Type.type(:nexus_application_server_settings) do
       expect {
         described_class.new(:name => 'any', :timeout => '')
       }.to raise_error(Puppet::ResourceError, /Parameter timeout failed/)
-    end
-
-    specify 'should accept 0' do
-      expect { described_class.new(:name => 'any', :timeout => 0) }.to_not raise_error
     end
 
     specify 'should not accept negative number' do
