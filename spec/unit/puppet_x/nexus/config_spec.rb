@@ -79,7 +79,7 @@ describe Nexus::Config do
     end
 
     specify 'should not add base url if the url starts with https' do
-      expect(Nexus::Config.resolve('https://secure.net/foobar')).to  eq('https://secure.net/foobar')
+      expect(Nexus::Config.resolve('https://secure.net/foobar')).to eq('https://secure.net/foobar')
     end
   end
 end
