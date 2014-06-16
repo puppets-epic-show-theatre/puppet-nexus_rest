@@ -49,6 +49,6 @@ Puppet::Type.newtype(:nexus_system_notification) do
   end
 
   autorequire(:file) do
-    Nexus::Config::CONFIG_FILENAME
+    Nexus::Config::file_path
   end
 end

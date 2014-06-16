@@ -6,14 +6,14 @@ describe Nexus::Config do
     Nexus::Config.reset
   end
 
-  describe :config_filename do
+  describe :file_path do
     specify 'should retrieve path to Puppet\'s configuration directory from the API' do
       Puppet.settings[:confdir] = '/puppet/is/somewhere/else'
-      expect(Nexus::Config.filename).to eq('/puppet/is/somewhere/else/nexus_rest.conf')
+      expect(Nexus::Config.file_path).to eq('/puppet/is/somewhere/else/nexus_rest.conf')
     end
 
     specify 'should cache the filename' do
-      expect(Nexus::Config.filename).to be(Nexus::Config.filename)
+      expect(Nexus::Config.file_path).to be(Nexus::Config.file_path)
     end
   end
 

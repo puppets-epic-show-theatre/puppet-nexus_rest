@@ -34,7 +34,7 @@ Puppet::Type.newtype(:nexus_application_server_settings) do
   end
 
   autorequire(:file) do
-    Nexus::Config::CONFIG_FILENAME
+    Nexus::Config::file_path
   end
 
   # establish a happens-before relationship to other resources that update the same configuration; following the order
