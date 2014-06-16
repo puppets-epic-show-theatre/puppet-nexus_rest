@@ -37,6 +37,6 @@ Puppet::Type.newtype(:nexus_connection_settings) do
   end
 
   autorequire(:file) do
-    Nexus::Config::CONFIG_FILENAME
+    Nexus::Config::file_path
   end
 end
