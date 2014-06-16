@@ -1,6 +1,7 @@
 require 'json'
-require 'yaml'
+require 'puppet'
 require 'rest_client'
+require 'yaml'
 
 module Nexus
   class Config
@@ -21,6 +22,14 @@ module Nexus
       }
     end
 
+    # Returns: the full path to the file where this class sources its information from.
+    #
+    # Notice: any provider should have a soft dependency on this file to make sure it is created before usage.
+    #
+    def self.filename
+      @config_filename ||= File.expand_path(File.join(Puppet.settings[:confdir], '/nexus_rest.conf'))
+    end
+
     def self.reset
       @config = nil
     end
@@ -37,21 +46,21 @@ module Nexus
 
     def self.read_config
       begin
-        Puppet::debug("Parsing configuration file #{CONFIG_FILENAME}")
-        config = YAML.load_file(CONFIG_FILENAME)
-      rescue
-        raise Puppet::ParseError, "Could not parse YAML configuration file #{CONFIG_FILENAME}" + $!.inspect
+        Puppet::debug("Parsing configuration file #{filename}")
+        config = YAML.load_file(filename)
+      rescue => e
+        raise Puppet::ParseError, "Could not parse YAML configuration file '#{filename}': #{e}"
       end
 
       if config[CONFIG_BASE_URL].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_BASE_URL}'."
+        raise Puppet::ParseError, "Config file #{filename} must contain a value for key '#{CONFIG_BASE_URL}'."
       end
       # TODO: add warning about insecure connection if protocol is http and host not localhost (credentials sent in plain text)
       if config[CONFIG_USERNAME].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_USERNAME}'."
+        raise Puppet::ParseError, "Config file #{filename} must contain a value for key '#{CONFIG_USERNAME}'."
       end
       if config[CONFIG_PASSWORD].nil?
-        raise Puppet::ParseError, "Config file #{CONFIG_FILENAME} must contain a value for key '#{CONFIG_PASSWORD}'."
+        raise Puppet::ParseError, "Config file #{filename} must contain a value for key '#{CONFIG_PASSWORD}'."
       end
       config[CONFIG_TIMEOUT] = 10 if config[CONFIG_TIMEOUT].nil?
       config[CONFIG_OPEN_TIMEOUT] = 10 if config[CONFIG_OPEN_TIMEOUT].nil?
