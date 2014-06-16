@@ -5,11 +5,11 @@ require 'yaml'
 
 module Nexus
   class Config
-    CONFIG_BASE_URL = 'base_url'
-    CONFIG_USERNAME = 'username'
-    CONFIG_PASSWORD = 'password'
-    CONFIG_TIMEOUT = 'timeout'
-    CONFIG_OPEN_TIMEOUT = 'open_timeout'
+    CONFIG_BASE_URL = 'nexus_base_url'
+    CONFIG_USERNAME = 'admin_username'
+    CONFIG_PASSWORD = 'admin_password'
+    CONFIG_TIMEOUT = 'connection_timeout'
+    CONFIG_OPEN_TIMEOUT = 'connection_open_timeout'
 
     def self.configure
       @config ||= read_config
