@@ -77,7 +77,7 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   autorequire(:file) do
-    Nexus::Config::CONFIG_FILENAME
+    Nexus::Config::file_path
   end
 
   def munge_boolean(value)

@@ -6,6 +6,17 @@ describe Nexus::Config do
     Nexus::Config.reset
   end
 
+  describe :file_path do
+    specify 'should retrieve path to Puppet\'s configuration directory from the API' do
+      Puppet.settings[:confdir] = '/puppet/is/somewhere/else'
+      expect(Nexus::Config.file_path).to eq('/puppet/is/somewhere/else/nexus_rest.conf')
+    end
+
+    specify 'should cache the filename' do
+      expect(Nexus::Config.file_path).to be(Nexus::Config.file_path)
+    end
+  end
+
   describe :read_config do
     specify 'should raise an error if file is not existing' do
       YAML.should_receive(:load_file).and_raise('file not found')
