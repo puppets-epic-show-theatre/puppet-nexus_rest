@@ -13,11 +13,11 @@ module Nexus
 
     def self.configure
       @config ||= read_config
-      yield @config[:base_url], {
-        :username => @config[:username],
-        :password => @config[:password],
-        :timeout => @config[:timeout],
-        :open_timeout => @config[:open_timeout]
+      yield @config[:nexus_base_url], {
+        :admin_username          => @config[:admin_username],
+        :admin_password          => @config[:admin_password],
+        :connection_timeout      => @config[:connection_timeout],
+        :connection_open_timeout => @config[:connection_open_timeout]
       }
     end
 
@@ -35,8 +35,8 @@ module Nexus
 
     def self.resolve(url)
       unless url.start_with?('http')
-        configure { |base_url, options|
-          URI.join(base_url, url).to_s
+        configure { |nexus_base_url, options|
+          URI.join(nexus_base_url, url).to_s
         }
       else
         url
@@ -65,11 +65,11 @@ module Nexus
       config[CONFIG_OPEN_TIMEOUT] = 10 if config[CONFIG_OPEN_TIMEOUT].nil?
 
       {
-        :base_url      => config[CONFIG_BASE_URL].chomp('/'),
-        :username      => config[CONFIG_USERNAME],
-        :password      => config[CONFIG_PASSWORD],
-        :timeout       => Integer(config[CONFIG_TIMEOUT]),
-        :open_timeout  => Integer(config[CONFIG_OPEN_TIMEOUT]),
+        :nexus_base_url          => config[CONFIG_BASE_URL].chomp('/'),
+        :admin_username          => config[CONFIG_USERNAME],
+        :admin_password          => config[CONFIG_PASSWORD],
+        :connection_timeout      => Integer(config[CONFIG_TIMEOUT]),
+        :connection_open_timeout => Integer(config[CONFIG_OPEN_TIMEOUT]),
       }
     end
   end

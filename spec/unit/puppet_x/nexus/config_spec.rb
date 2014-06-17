@@ -29,54 +29,54 @@ describe Nexus::Config do
       expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /file not found/)
     end
 
-    specify 'should raise an error if base url is missing' do
+    specify 'should raise an error if Nexus base url is missing' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.reject{|key,value| key == 'nexus_base_url'})
       expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /must contain a value for key 'nexus_base_url'/)
     end
 
-    specify 'should raise an error if username is missing' do
+    specify 'should raise an error if admin username is missing' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.reject{|key,value| key == 'admin_username'})
       expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /must contain a value for key 'admin_username'/)
     end
 
-    specify 'should raise an error if password is missing' do
+    specify 'should raise an error if admin password is missing' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.reject{|key,value| key == 'admin_password'})
       expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /must contain a value for key 'admin_password'/)
     end
 
-    specify 'should read base url' do
+    specify 'should read Nexus base url' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
-      expect(Nexus::Config.read_config[:base_url]).to eq(nexus_base_url)
+      expect(Nexus::Config.read_config[:nexus_base_url]).to eq(nexus_base_url)
     end
 
-    specify 'should read username' do
+    specify 'should read admin username' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
-      expect(Nexus::Config.read_config[:username]).to eq(admin_username)
+      expect(Nexus::Config.read_config[:admin_username]).to eq(admin_username)
     end
 
-    specify 'should read password' do
+    specify 'should read admin password' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
-      expect(Nexus::Config.read_config[:password]).to eq(admin_password)
+      expect(Nexus::Config.read_config[:admin_password]).to eq(admin_password)
     end
 
-    specify 'should use default timeout if not specified' do
+    specify 'should use default connection timeout if not specified' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
-      expect(Nexus::Config.read_config[:timeout]).to be(10)
+      expect(Nexus::Config.read_config[:connection_timeout]).to be(10)
     end
 
-    specify 'should read timeout' do
+    specify 'should read connection timeout' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'connection_timeout' => '60'}))
-      expect(Nexus::Config.read_config[:timeout]).to be(60)
+      expect(Nexus::Config.read_config[:connection_timeout]).to be(60)
     end
 
-    specify 'should use default open timeout if not specified' do
+    specify 'should use default connection open timeout if not specified' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
-      expect(Nexus::Config.read_config[:timeout]).to be(10)
+      expect(Nexus::Config.read_config[:connection_timeout]).to be(10)
     end
 
-    specify 'should read open timeout' do
+    specify 'should read connection open timeout' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'connection_open_timeout' => '60'}))
-      expect(Nexus::Config.read_config[:open_timeout]).to be(60)
+      expect(Nexus::Config.read_config[:connection_open_timeout]).to be(60)
     end
   end
 
