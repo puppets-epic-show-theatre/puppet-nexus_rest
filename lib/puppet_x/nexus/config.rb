@@ -25,6 +25,10 @@ module Nexus
       @config_file_path ||= File.expand_path(File.join(Puppet.settings[:confdir], '/nexus_rest.conf'))
     end
 
+    def self.kill_switch_enabled
+      configure { |nexus_base_url, options| options[CONFIG_KILL_SWITCH_DISABLED] == false}
+    end
+
     def self.reset
       @config = nil
     end

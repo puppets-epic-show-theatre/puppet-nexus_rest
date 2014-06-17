@@ -121,4 +121,16 @@ describe Nexus::Config do
       expect(Nexus::Config.resolve('https://secure.net/foobar')).to eq('https://secure.net/foobar')
     end
   end
+
+  describe :kill_switch_enabled do
+    specify 'should return true if kill switch configuration parameter is set to false' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials)
+      expect(Nexus::Config.kill_switch_enabled).to be_true
+    end
+
+    specify 'should return false if kill switch configuration parameter is set to true' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'kill_switch_disabled' => true}))
+      expect(Nexus::Config.kill_switch_enabled).to be_false
+    end
+  end
 end
