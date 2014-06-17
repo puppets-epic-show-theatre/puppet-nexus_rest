@@ -6,7 +6,14 @@ describe Nexus::Config do
   let(:nexus_base_url) { 'http://example.com' }
   let(:admin_username) { 'foobar' }
   let(:admin_password) { 'secret' }
-  let(:base_url_and_credentials) { {'nexus_base_url' => nexus_base_url, 'admin_username' => admin_username, 'admin_password' => admin_password} }
+  let(:base_url_and_credentials) do
+    {
+      'nexus_base_url'       => nexus_base_url,
+      'admin_username'       => admin_username,
+      'admin_password'       => admin_password,
+      'kill_switch_disabled' => false,
+    }
+  end
 
   after(:each) do
     Nexus::Config.reset
@@ -57,6 +64,21 @@ describe Nexus::Config do
     specify 'should read admin password' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
       expect(Nexus::Config.read_config[:admin_password]).to eq(admin_password)
+    end
+
+    specify 'should raise an error if kill switch flag is missing' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.reject{|key,value| key == 'kill_switch_disabled'})
+      expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /must contain a value for key 'kill_switch_disabled'/)
+    end
+
+    specify 'should read kill switch flag' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'kill_switch_disabled' => false}))
+      expect(Nexus::Config.read_config[:kill_switch_disabled]).to be_false
+    end
+
+    specify 'should read kill switch flag (disarmed version)' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'kill_switch_disabled' => true}))
+      expect(Nexus::Config.read_config[:kill_switch_disabled]).to be_true
     end
 
     specify 'should use default connection timeout if not specified' do

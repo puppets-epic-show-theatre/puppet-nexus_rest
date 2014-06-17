@@ -20,6 +20,9 @@ admin_password: secret
 # the base url of the Nexus service to be managed
 nexus_base_url: http://localhost:8081/
 
+# disable the kill switch that prevents operations which could cause data loss (e.g. by deleting a repository)
+kill_switch_disabled: false
+
 # timeout in seconds for opening the connection to the Nexus service
 # connection_open_timeout: 10
 
