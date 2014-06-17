@@ -51,4 +51,10 @@ Puppet::Type.newtype(:nexus_system_notification) do
   autorequire(:file) do
     Nexus::Config::CONFIG_FILENAME
   end
+
+  # establish a happens-before relationship to other resources that update the same configuration; following the order
+  # in which they are defined in the REST response
+  autorequire(:nexus_connection_settings) do
+    self[:name]
+  end
 end
