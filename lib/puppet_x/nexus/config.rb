@@ -5,20 +5,15 @@ require 'yaml'
 
 module Nexus
   class Config
-    CONFIG_BASE_URL = 'nexus_base_url'
-    CONFIG_USERNAME = 'admin_username'
-    CONFIG_PASSWORD = 'admin_password'
-    CONFIG_TIMEOUT = 'connection_timeout'
-    CONFIG_OPEN_TIMEOUT = 'connection_open_timeout'
+    CONFIG_BASE_URL = :nexus_base_url
+    CONFIG_USERNAME = :admin_username
+    CONFIG_PASSWORD = :admin_password
+    CONFIG_TIMEOUT = :connection_timeout
+    CONFIG_OPEN_TIMEOUT = :connection_open_timeout
 
     def self.configure
       @config ||= read_config
-      yield @config[:nexus_base_url], {
-        :admin_username          => @config[:admin_username],
-        :admin_password          => @config[:admin_password],
-        :connection_timeout      => @config[:connection_timeout],
-        :connection_open_timeout => @config[:connection_open_timeout]
-      }
+      yield @config[CONFIG_BASE_URL], @config
     end
 
     # Returns: the full path to the file where this class sources its information from.
@@ -46,7 +41,9 @@ module Nexus
     def self.read_config
       begin
         Puppet::debug("Parsing configuration file #{file_path}")
-        config = YAML.load_file(file_path)
+        # each loop used to convert hash keys from String to Symbol; each doesn't return the modified hash ... ugly, I know
+        config = Hash.new
+        YAML.load_file(file_path).each{ |key, value| config[key.intern] = value}
       rescue => e
         raise Puppet::ParseError, "Could not parse YAML configuration file '#{file_path}': #{e}"
       end
@@ -65,11 +62,11 @@ module Nexus
       config[CONFIG_OPEN_TIMEOUT] = 10 if config[CONFIG_OPEN_TIMEOUT].nil?
 
       {
-        :nexus_base_url          => config[CONFIG_BASE_URL].chomp('/'),
-        :admin_username          => config[CONFIG_USERNAME],
-        :admin_password          => config[CONFIG_PASSWORD],
-        :connection_timeout      => Integer(config[CONFIG_TIMEOUT]),
-        :connection_open_timeout => Integer(config[CONFIG_OPEN_TIMEOUT]),
+        CONFIG_BASE_URL          => config[CONFIG_BASE_URL].chomp('/'),
+        CONFIG_USERNAME          => config[CONFIG_USERNAME],
+        CONFIG_PASSWORD          => config[CONFIG_PASSWORD],
+        CONFIG_TIMEOUT           => Integer(config[CONFIG_TIMEOUT]),
+        CONFIG_OPEN_TIMEOUT      => Integer(config[CONFIG_OPEN_TIMEOUT]),
       }
     end
   end
