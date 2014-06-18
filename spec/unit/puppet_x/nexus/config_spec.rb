@@ -132,5 +132,10 @@ describe Nexus::Config do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'kill_switch_disabled' => true}))
       expect(Nexus::Config.kill_switch_enabled).to be_false
     end
+
+    specify 'should return true if kill switch is some random crap' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'kill_switch_disabled' => 'We are the champions!'}))
+      expect(Nexus::Config.kill_switch_enabled).to be_true
+    end
   end
 end

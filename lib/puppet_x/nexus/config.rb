@@ -26,7 +26,7 @@ module Nexus
     end
 
     def self.kill_switch_enabled
-      configure { |nexus_base_url, options| options[CONFIG_KILL_SWITCH_DISABLED] == false}
+      configure { |nexus_base_url, options| options[CONFIG_KILL_SWITCH_DISABLED] != true}
     end
 
     def self.reset
