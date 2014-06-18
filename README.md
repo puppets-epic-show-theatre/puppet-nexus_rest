@@ -13,9 +13,18 @@ First of all you need to create a configuration file `$confdir/nexus_rest.conf` 
 ```
 #!yaml
 ---
-username: admin
-password: secret
-base_url: http://localhost:8081/
+# credentials of a user with administrative power
+admin_username: admin
+admin_password: secret
+
+# the base url of the Nexus service to be managed
+nexus_base_url: http://localhost:8081/
+
+# timeout in seconds for opening the connection to the Nexus service
+# connection_open_timeout: 10
+
+# timeout in seconds for reading the answer from the Nexus service
+# connection_timeout: 10
 
 ```
 

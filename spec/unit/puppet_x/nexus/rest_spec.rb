@@ -7,9 +7,9 @@ include WebMock::API
 describe Nexus::Rest do
   before(:each) do
     Nexus::Config.stub(:read_config).and_return({
-      :base_url       => 'http://example.com',
-      :username => 'foobar',
-      :password => 'secret'
+      :nexus_base_url => 'http://example.com',
+      :admin_username => 'foobar',
+      :admin_password => 'secret'
     })
   end
 

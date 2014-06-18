@@ -5,20 +5,15 @@ require 'yaml'
 
 module Nexus
   class Config
-    CONFIG_BASE_URL = 'base_url'
-    CONFIG_USERNAME = 'username'
-    CONFIG_PASSWORD = 'password'
-    CONFIG_TIMEOUT = 'timeout'
-    CONFIG_OPEN_TIMEOUT = 'open_timeout'
+    CONFIG_NEXUS_BASE_URL = :nexus_base_url
+    CONFIG_ADMIN_USERNAME = :admin_username
+    CONFIG_ADMIN_PASSWORD = :admin_password
+    CONFIG_CONNECTION_TIMEOUT = :connection_timeout
+    CONFIG_CONNECTION_OPEN_TIMEOUT = :connection_open_timeout
 
     def self.configure
       @config ||= read_config
-      yield @config[:base_url], {
-        :username => @config[:username],
-        :password => @config[:password],
-        :timeout => @config[:timeout],
-        :open_timeout => @config[:open_timeout]
-      }
+      yield @config[CONFIG_NEXUS_BASE_URL], @config
     end
 
     # Returns: the full path to the file where this class sources its information from.
@@ -35,8 +30,8 @@ module Nexus
 
     def self.resolve(url)
       unless url.start_with?('http')
-        configure { |base_url, options|
-          URI.join(base_url, url).to_s
+        configure { |nexus_base_url, options|
+          URI.join(nexus_base_url, url).to_s
         }
       else
         url
@@ -46,30 +41,32 @@ module Nexus
     def self.read_config
       begin
         Puppet::debug("Parsing configuration file #{file_path}")
-        config = YAML.load_file(file_path)
+        # each loop used to convert hash keys from String to Symbol; each doesn't return the modified hash ... ugly, I know
+        config = Hash.new
+        YAML.load_file(file_path).each{ |key, value| config[key.intern] = value}
       rescue => e
         raise Puppet::ParseError, "Could not parse YAML configuration file '#{file_path}': #{e}"
       end
 
-      if config[CONFIG_BASE_URL].nil?
-        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_BASE_URL}'."
+      if config[CONFIG_NEXUS_BASE_URL].nil?
+        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_NEXUS_BASE_URL}'."
       end
       # TODO: add warning about insecure connection if protocol is http and host not localhost (credentials sent in plain text)
-      if config[CONFIG_USERNAME].nil?
-        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_USERNAME}'."
+      if config[CONFIG_ADMIN_USERNAME].nil?
+        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_ADMIN_USERNAME}'."
       end
-      if config[CONFIG_PASSWORD].nil?
-        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_PASSWORD}'."
+      if config[CONFIG_ADMIN_PASSWORD].nil?
+        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
-      config[CONFIG_TIMEOUT] = 10 if config[CONFIG_TIMEOUT].nil?
-      config[CONFIG_OPEN_TIMEOUT] = 10 if config[CONFIG_OPEN_TIMEOUT].nil?
+      config[CONFIG_CONNECTION_TIMEOUT] = 10 if config[CONFIG_CONNECTION_TIMEOUT].nil?
+      config[CONFIG_CONNECTION_OPEN_TIMEOUT] = 10 if config[CONFIG_CONNECTION_OPEN_TIMEOUT].nil?
 
       {
-        :base_url      => config[CONFIG_BASE_URL].chomp('/'),
-        :username      => config[CONFIG_USERNAME],
-        :password      => config[CONFIG_PASSWORD],
-        :timeout       => Integer(config[CONFIG_TIMEOUT]),
-        :open_timeout  => Integer(config[CONFIG_OPEN_TIMEOUT]),
+        CONFIG_NEXUS_BASE_URL          => config[CONFIG_NEXUS_BASE_URL].chomp('/'),
+        CONFIG_ADMIN_USERNAME          => config[CONFIG_ADMIN_USERNAME],
+        CONFIG_ADMIN_PASSWORD          => config[CONFIG_ADMIN_PASSWORD],
+        CONFIG_CONNECTION_TIMEOUT      => Integer(config[CONFIG_CONNECTION_TIMEOUT]),
+        CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config[CONFIG_CONNECTION_OPEN_TIMEOUT]),
       }
     end
   end
