@@ -362,7 +362,7 @@ end
       Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
       expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_repository example/)
     end
-    specify 'should fail if ' do
+    specify 'should fail if configuration prevents deletion of repositories' do
       Nexus::Config.stub(:can_delete_repositories).and_return(false)
       expect { provider.destroy }.to raise_error(RuntimeError, /current configuration prevents the deletion of nexus_repository example/)
     end

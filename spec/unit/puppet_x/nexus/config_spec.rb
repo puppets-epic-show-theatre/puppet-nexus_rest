@@ -123,17 +123,17 @@ describe Nexus::Config do
   end
 
   describe :can_delete_repositories do
-    specify 'should return false if kill switch configuration parameter is set to false' do
+    specify 'should return false if can_delete_repositories configuration parameter is set to false' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
       expect(Nexus::Config.can_delete_repositories).to be_false
     end
 
-    specify 'should return true if kill switch configuration parameter is set to true' do
+    specify 'should return true if can_delete_repositories configuration parameter is set to true' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => true}))
       expect(Nexus::Config.can_delete_repositories).to be_true
     end
 
-    specify 'should return false if kill switch is some random crap' do
+    specify 'should return false if can_delete_repositories is some random crap' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => 'We are the champions!'}))
       expect(Nexus::Config.can_delete_repositories).to be_false
     end
