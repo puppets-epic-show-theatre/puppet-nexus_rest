@@ -9,7 +9,7 @@ describe Nexus::Rest do
     Nexus::Config.stub(:read_config).and_return({
       :nexus_base_url => 'http://example.com',
       :admin_username => 'foobar',
-      :admin_password => 'secret',
+      :admin_password => 'secret'
     })
   end
 
