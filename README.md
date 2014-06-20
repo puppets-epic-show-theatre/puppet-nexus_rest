@@ -20,8 +20,10 @@ admin_password: secret
 # the base url of the Nexus service to be managed
 nexus_base_url: http://localhost:8081/
 
-# disable the kill switch that prevents operations which could cause data loss (e.g. by deleting a repository)
-kill_switch_disabled: false
+# Certain operations may result in data loss. The following parameter(s) control if Puppet should perform those
+# changes or not. Set the parameter to `false` to prevent Puppet from enforcing the change and cause the Puppet run to
+# fail instead.
+can_delete_repositories: false
 
 # timeout in seconds for opening the connection to the Nexus service
 # connection_open_timeout: 10

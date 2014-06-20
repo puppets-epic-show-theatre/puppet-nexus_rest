@@ -7,10 +7,9 @@ include WebMock::API
 describe Nexus::Rest do
   before(:each) do
     Nexus::Config.stub(:read_config).and_return({
-      :nexus_base_url       => 'http://example.com',
-      :admin_username       => 'foobar',
-      :admin_password       => 'secret',
-      :kill_switch_disabled => true,
+      :nexus_base_url => 'http://example.com',
+      :admin_username => 'foobar',
+      :admin_password => 'secret',
     })
   end
 
@@ -198,16 +197,6 @@ describe Nexus::Rest do
     specify 'should extract error message' do
       stub = stub_request(:any, /.*/).to_return(:status => 400, :body => {'errors' => [{'id' => '*', 'msg' =>  'Error message'}]})
       expect { Nexus::Rest.destroy('/service/local/repositories/example') }.to raise_error(RuntimeError, /Error message/)
-    end
-
-    specify 'should fail if kill switch is armed' do
-      Nexus::Config.stub(:read_config).and_return({
-        :nexus_base_url       => 'http://example.com',
-        :admin_username       => 'foobar',
-        :admin_password       => 'secret',
-        :kill_switch_disabled => false,
-      })
-      expect { Nexus::Rest.destroy('/service/local/repositories/example') }.to raise_error(RuntimeError, /Enabled kill switch prevents deletion/)
     end
   end
 end

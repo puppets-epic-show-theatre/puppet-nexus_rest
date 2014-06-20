@@ -90,9 +90,6 @@ module Nexus
     end
 
     def self.destroy(resource_name)
-      raise "Enabled kill switch prevents deletion of #{resource_name}; Please disarm the kill switch in the" +
-        " configuration file if you want this change to be applied." if Nexus::Config.kill_switch_enabled
-
       request { |nexus|
         begin
           nexus[resource_name].delete :accept => :json

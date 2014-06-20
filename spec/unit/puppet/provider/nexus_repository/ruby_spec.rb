@@ -5,6 +5,7 @@ provider_class = Puppet::Type.type(:nexus_repository).provider(:ruby)
 describe provider_class do
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
+    Nexus::Config.stub(:can_delete_repositories).and_return(true)
   end
 
   let :provider do
@@ -360,6 +361,10 @@ end
     it 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
       expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_repository example/)
+    end
+    specify 'should fail if ' do
+      Nexus::Config.stub(:can_delete_repositories).and_return(false)
+      expect { provider.destroy }.to raise_error(RuntimeError, /current configuration prevents the deletion of nexus_repository example/)
     end
   end
 

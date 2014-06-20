@@ -8,9 +8,9 @@ module Nexus
     CONFIG_NEXUS_BASE_URL = :nexus_base_url
     CONFIG_ADMIN_USERNAME = :admin_username
     CONFIG_ADMIN_PASSWORD = :admin_password
-    CONFIG_KILL_SWITCH_DISABLED = :kill_switch_disabled
     CONFIG_CONNECTION_TIMEOUT = :connection_timeout
     CONFIG_CONNECTION_OPEN_TIMEOUT = :connection_open_timeout
+    CONFIG_CAN_DELETE_REPOSITORIES = :can_delete_repositories
 
     def self.configure
       @config ||= read_config
@@ -25,12 +25,13 @@ module Nexus
       @config_file_path ||= File.expand_path(File.join(Puppet.settings[:confdir], '/nexus_rest.conf'))
     end
 
-    def self.kill_switch_enabled
-      configure { |nexus_base_url, options| options[CONFIG_KILL_SWITCH_DISABLED] != true}
+    def self.can_delete_repositories
+      configure { |nexus_base_url, options| options[CONFIG_CAN_DELETE_REPOSITORIES] == true}
     end
 
     def self.reset
       @config = nil
+      @config_file_path = nil
     end
 
     def self.resolve(url)
@@ -63,8 +64,8 @@ module Nexus
       if config[CONFIG_ADMIN_PASSWORD].nil?
         raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
-      if config[CONFIG_KILL_SWITCH_DISABLED].nil?
-        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_KILL_SWITCH_DISABLED}'."
+      if config[CONFIG_CAN_DELETE_REPOSITORIES].nil?
+        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_CAN_DELETE_REPOSITORIES}'."
       end
       config[CONFIG_CONNECTION_TIMEOUT] = 10 if config[CONFIG_CONNECTION_TIMEOUT].nil?
       config[CONFIG_CONNECTION_OPEN_TIMEOUT] = 10 if config[CONFIG_CONNECTION_OPEN_TIMEOUT].nil?
@@ -73,9 +74,9 @@ module Nexus
         CONFIG_NEXUS_BASE_URL          => config[CONFIG_NEXUS_BASE_URL].chomp('/'),
         CONFIG_ADMIN_USERNAME          => config[CONFIG_ADMIN_USERNAME],
         CONFIG_ADMIN_PASSWORD          => config[CONFIG_ADMIN_PASSWORD],
-        CONFIG_KILL_SWITCH_DISABLED    => config[CONFIG_KILL_SWITCH_DISABLED],
         CONFIG_CONNECTION_TIMEOUT      => Integer(config[CONFIG_CONNECTION_TIMEOUT]),
         CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config[CONFIG_CONNECTION_OPEN_TIMEOUT]),
+        CONFIG_CAN_DELETE_REPOSITORIES => config[CONFIG_CAN_DELETE_REPOSITORIES],
       }
     end
   end
