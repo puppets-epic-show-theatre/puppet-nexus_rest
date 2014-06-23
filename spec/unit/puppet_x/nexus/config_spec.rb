@@ -6,9 +6,16 @@ describe Nexus::Config do
   let(:nexus_base_url) { 'http://example.com' }
   let(:admin_username) { 'foobar' }
   let(:admin_password) { 'secret' }
-  let(:base_url_and_credentials) { {'nexus_base_url' => nexus_base_url, 'admin_username' => admin_username, 'admin_password' => admin_password} }
+  let(:base_url_and_credentials) do
+    {
+      'nexus_base_url'          => nexus_base_url,
+      'admin_username'          => admin_username,
+      'admin_password'          => admin_password,
+      'can_delete_repositories' => false,
+    }
+  end
 
-  after(:each) do
+  before(:each) do
     Nexus::Config.reset
   end
 
@@ -59,6 +66,21 @@ describe Nexus::Config do
       expect(Nexus::Config.read_config[:admin_password]).to eq(admin_password)
     end
 
+    specify 'should raise an error if can_delete_repositories flag is missing' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.reject{|key,value| key == 'can_delete_repositories'})
+      expect { Nexus::Config.read_config }.to raise_error(Puppet::ParseError, /must contain a value for key 'can_delete_repositories'/)
+    end
+
+    specify 'should read can_delete_repositories flag (false case)' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => false}))
+      expect(Nexus::Config.read_config[:can_delete_repositories]).to be_false
+    end
+
+    specify 'should read can_delete_repositories flag (true case)' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => true}))
+      expect(Nexus::Config.read_config[:can_delete_repositories]).to be_true
+    end
+
     specify 'should use default connection timeout if not specified' do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials)
       expect(Nexus::Config.read_config[:connection_timeout]).to be(10)
@@ -97,6 +119,23 @@ describe Nexus::Config do
 
     specify 'should not add base url if the url starts with https' do
       expect(Nexus::Config.resolve('https://secure.net/foobar')).to eq('https://secure.net/foobar')
+    end
+  end
+
+  describe :can_delete_repositories do
+    specify 'should return false if can_delete_repositories configuration parameter is set to false' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials)
+      expect(Nexus::Config.can_delete_repositories).to be_false
+    end
+
+    specify 'should return true if can_delete_repositories configuration parameter is set to true' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => true}))
+      expect(Nexus::Config.can_delete_repositories).to be_true
+    end
+
+    specify 'should return false if can_delete_repositories is some random crap' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'can_delete_repositories' => 'We are the champions!'}))
+      expect(Nexus::Config.can_delete_repositories).to be_false
     end
   end
 end

@@ -10,6 +10,7 @@ module Nexus
     CONFIG_ADMIN_PASSWORD = :admin_password
     CONFIG_CONNECTION_TIMEOUT = :connection_timeout
     CONFIG_CONNECTION_OPEN_TIMEOUT = :connection_open_timeout
+    CONFIG_CAN_DELETE_REPOSITORIES = :can_delete_repositories
 
     def self.configure
       @config ||= read_config
@@ -24,8 +25,13 @@ module Nexus
       @config_file_path ||= File.expand_path(File.join(Puppet.settings[:confdir], '/nexus_rest.conf'))
     end
 
+    def self.can_delete_repositories
+      configure { |nexus_base_url, options| options[CONFIG_CAN_DELETE_REPOSITORIES] == true}
+    end
+
     def self.reset
       @config = nil
+      @config_file_path = nil
     end
 
     def self.resolve(url)
@@ -58,6 +64,9 @@ module Nexus
       if config[CONFIG_ADMIN_PASSWORD].nil?
         raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_ADMIN_PASSWORD}'."
       end
+      if config[CONFIG_CAN_DELETE_REPOSITORIES].nil?
+        raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_CAN_DELETE_REPOSITORIES}'."
+      end
       config[CONFIG_CONNECTION_TIMEOUT] = 10 if config[CONFIG_CONNECTION_TIMEOUT].nil?
       config[CONFIG_CONNECTION_OPEN_TIMEOUT] = 10 if config[CONFIG_CONNECTION_OPEN_TIMEOUT].nil?
 
@@ -67,6 +76,7 @@ module Nexus
         CONFIG_ADMIN_PASSWORD          => config[CONFIG_ADMIN_PASSWORD],
         CONFIG_CONNECTION_TIMEOUT      => Integer(config[CONFIG_CONNECTION_TIMEOUT]),
         CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config[CONFIG_CONNECTION_OPEN_TIMEOUT]),
+        CONFIG_CAN_DELETE_REPOSITORIES => config[CONFIG_CAN_DELETE_REPOSITORIES],
       }
     end
   end

@@ -94,6 +94,10 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   end
 
   def destroy
+    raise "The current configuration prevents the deletion of nexus_repository #{resource[:name]}; If this change is" +
+      " intended, please update the configuration file (#{Nexus::Config.file_path}) in order to perform this change." \
+      unless Nexus::Config.can_delete_repositories
+
     begin
       Nexus::Rest.destroy("/service/local/repositories/#{resource[:name]}")
     rescue Exception => e
