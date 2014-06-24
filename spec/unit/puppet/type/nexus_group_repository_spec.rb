@@ -12,7 +12,7 @@ describe Puppet::Type.type(:nexus_group_repository) do
     expect {
       Puppet::Type.type(:nexus_group_repository).new(
         :name          => 'example',
-        :provider_type => 'invalid',
+        :provider_type => 'invalid'
       )
     }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
   end
@@ -21,7 +21,7 @@ describe Puppet::Type.type(:nexus_group_repository) do
     Puppet::Type.type(:nexus_group_repository).new(
       :name                => 'mvn1-group',
       :label               => 'maven 1 group',
-      :provider_type       => :maven1,
+      :provider_type       => :maven1
     )
   end
 
@@ -29,14 +29,14 @@ describe Puppet::Type.type(:nexus_group_repository) do
     Puppet::Type.type(:nexus_group_repository).new(
       :name                => 'mvn2-group',
       :label               => 'maven 2 group',
-      :provider_type       => :maven2,
+      :provider_type       => :maven2
     )
   end
 
   it 'should accept some repositories' do
     Puppet::Type.type(:nexus_group_repository).new(
       :name                => 'group-repository',
-      :repositories        => ['repo-c', 'repo-d'],
+      :repositories        => ['repo-c', 'repo-d']
     )
 
   end
