@@ -21,7 +21,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
           :label                   => group['name'],
           :provider_type           => group.has_key?('format') ? group['format'].to_sym : nil,
           :exposed                 => group.has_key?('exposed') ? group['exposed'].to_s.to_sym : nil,
-          :repositories            => group.has_key?('repositories') ? group['repositories'] : [],
+          :repositories            => group.has_key?('repositories') ? [group['repositories']].flatten : []
         )
       end
     rescue => e
@@ -90,7 +90,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
       :provider                => resource[:provider_type],
       :exposed                 => resource[:exposed] == :true,
 
-      :repositories            => resource[:repositories],
+      :repositories            => ([resource[:repositories]]).flatten
     }
     {:data => data}
   end
