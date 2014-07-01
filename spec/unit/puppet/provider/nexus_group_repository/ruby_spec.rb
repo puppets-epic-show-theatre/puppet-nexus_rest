@@ -121,7 +121,7 @@ describe provider_class do
     end
     it 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
-      expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_group_repository example/)
+      expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_group_repository example-group/)
     end
     specify 'should fail if configuration prevents deletion of repositories' do
       Nexus::Config.stub(:can_delete_repositories).and_return(false)

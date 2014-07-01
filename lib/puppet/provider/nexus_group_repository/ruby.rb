@@ -65,7 +65,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
     begin
       Nexus::Rest.destroy("/service/local/repo_groups/#{resource[:name]}")
     rescue Exception => e
-      raise Puppet::Error, "Error while deleting nexus_repository #{resource[:name]}: #{e}"
+      raise Puppet::Error, "Error while deleting nexus_group_repository #{resource[:name]}: #{e}"
     end
   end
 
