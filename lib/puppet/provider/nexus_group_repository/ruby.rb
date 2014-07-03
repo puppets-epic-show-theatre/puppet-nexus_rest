@@ -90,7 +90,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
       :provider                => resource[:provider_type],
       :exposed                 => resource[:exposed] == :true,
 
-      :repositories            => ([resource[:repositories]]).flatten
+      :repositories            => [resource[:repositories].split(",")].flatten()
     }
     {:data => data}
   end

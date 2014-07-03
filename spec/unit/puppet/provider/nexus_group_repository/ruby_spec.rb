@@ -14,7 +14,7 @@ describe provider_class do
       :label                   => 'Example Group Repository',
       :provider_type           => 'maven2',
       :exposed                 => :true,
-      :repositories            => [['repository-1', 'repository-2']]
+      :repositories            => ['repository-1', 'repository-2']
     })
     provider_class.new(resource)
   end
