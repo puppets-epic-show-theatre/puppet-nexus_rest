@@ -39,6 +39,10 @@ Puppet::Type.newtype(:nexus_group_repository) do
     Nexus::Config::file_path
   end
 
+  autorequire(:nexus_repository) do
+    self[:repositories] if self[:repositories] and self[:repositories].size() > 0
+  end
+
   def munge_boolean(value)
     return :true if [true, "true", :true].include? value
     return :false if [false, "false", :false].include? value
