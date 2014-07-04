@@ -1,5 +1,4 @@
 require 'uri'
-require 'puppet/property/list'
 
 Puppet::Type.newtype(:nexus_group_repository) do
   @doc = "Manages Nexus Group Repository through a REST API"
@@ -26,7 +25,7 @@ Puppet::Type.newtype(:nexus_group_repository) do
     munge { |value| @resource.munge_boolean(value) }
   end
 
-  newproperty(:repositories, :parent => Puppet::Property::List) do
+  newproperty(:repositories, :array_matching => :all) do
     desc 'A list of repositories contained in this Group Repository'
     defaultto []
     validate do |value|
@@ -34,10 +33,6 @@ Puppet::Type.newtype(:nexus_group_repository) do
         raise ArgumentError, "repositories in group must be provided in an array" if value.include?(',')
       end
     end
-    def membership
-      :inclusive_membership
-    end
-
   end
 
   autorequire(:file) do
@@ -48,12 +43,6 @@ Puppet::Type.newtype(:nexus_group_repository) do
     return :true if [true, "true", :true].include? value
     return :false if [false, "false", :false].include? value
     fail("Expected boolean parameter, got '#{value}'")
-  end
-
-  newparam(:inclusive_membership) do
-    desc "The list is considered a complete lists as opposed to minimum lists."
-    newvalues(:inclusive)
-    defaultto :inclusive
   end
 
 end
