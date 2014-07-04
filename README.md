@@ -114,6 +114,39 @@ nexus_smtp_settings { 'current':
 }
 ```
 
+### Repository Configuration ###
+
+```
+#!puppet
+
+nexus_repository { 'new-repository'
+  :label                   => 'A New Repository',
+  :provider_type           => 'maven2',             #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
+  :type                    => 'hosted',             #valid values: 'hosted', 'proxy', 'virtual'
+  :policy                  => 'snapshot',           #valid values: 'snapshot', 'release', 'mixed'
+  :exposed                 => true,                 #valid values: true, false
+  :write_policy            => 'allow_write_once',   #valid values: 'read_only', 'allow_write_once', 'allow_write'
+  :browseable              => true,                 #valid values: true, false
+  :indexable               => true,                 #valid values: true, false
+  :not_found_cache_ttl     => 1440,
+  :local_storage_url       => 'file:///some/path',
+  :download_remote_indexes => false                 #valid values: true, false
+}
+```
+
+```
+#!puppet
+
+nexus_group_repository { 'example-group-repo':
+  :label           => 'Example Group Repository',
+  :provider_type   => 'maven2',                 #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
+  :exposed         => true,                     #valid values: true, false
+  :repositories    => ['new-repository',        #note: these must be existing repositories
+                       'other-repository',
+                       'repository-3']
+}
+```
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
