@@ -139,9 +139,9 @@ nexus_repository { 'new-repository'
 
 nexus_group_repository { 'example-group-repo':
   :label           => 'Example Group Repository',
-  :provider_type   => 'maven2',                 #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
-  :exposed         => true,                     #valid values: true, false
-  :repositories    => ['new-repository',        #note: these must be existing repositories
+  :provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
+  :exposed         => true,                         #valid values: true, false
+  :repositories    => ['new-repository',            #note: these must be existing repositories
                        'other-repository',
                        'repository-3']
 }
