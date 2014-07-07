@@ -1,5 +1,6 @@
 require 'puppet/property/boolean'
 require 'puppet/property/keyvalue'
+require 'puppet/property/list'
 
 Puppet::Type.newtype(:nexus_scheduled_task) do
   @doc = 'A background task of a Nexus service.'
