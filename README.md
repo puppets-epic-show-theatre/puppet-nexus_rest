@@ -120,17 +120,17 @@ nexus_smtp_settings { 'current':
 #!puppet
 
 nexus_repository { 'new-repository'
-  :label                   => 'A New Repository',
-  :provider_type           => 'maven2',             #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
-  :type                    => 'hosted',             #valid values: 'hosted', 'proxy', 'virtual'
-  :policy                  => 'snapshot',           #valid values: 'snapshot', 'release', 'mixed'
-  :exposed                 => true,                 #valid values: true, false
-  :write_policy            => 'allow_write_once',   #valid values: 'read_only', 'allow_write_once', 'allow_write'
-  :browseable              => true,                 #valid values: true, false
-  :indexable               => true,                 #valid values: true, false
-  :not_found_cache_ttl     => 1440,
-  :local_storage_url       => 'file:///some/path',
-  :download_remote_indexes => false                 #valid values: true, false
+  label                   => 'A New Repository',   #required
+  provider_type           => 'maven2',             #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  type                    => 'hosted',             #valid values: 'hosted' (default), 'proxy', 'virtual'
+  policy                  => 'snapshot',           #valid values: 'snapshot', 'release' (default), 'mixed'
+  exposed                 => true,                 #valid values: true (default), false
+  write_policy            => 'allow_write_once',   #valid values: 'read_only', 'allow_write_once (default)', 'allow_write'
+  browseable              => true,                 #valid values: true (default), false
+  indexable               => true,                 #valid values: true (default), false
+  not_found_cache_ttl     => 1440,                 #1440 is default
+  local_storage_url       => 'file:///some/path',  #valid values: not specified (default), or absolute file path beginning with 'file:///'
+  download_remote_indexes => false                 #valid values: true, false (default)
 }
 ```
 
@@ -138,12 +138,12 @@ nexus_repository { 'new-repository'
 #!puppet
 
 nexus_group_repository { 'example-group-repo':
-  :label           => 'Example Group Repository',
-  :provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2', 'nuget', 'site', 'obr'
-  :exposed         => true,                         #valid values: true, false
-  :repositories    => ['new-repository',            #note: these must be existing repositories
-                       'other-repository',
-                       'repository-3']
+  label           => 'Example Group Repository',   #required
+  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  exposed         => true,                         #valid values: true (default), false
+  repositories    => ['new-repository',            #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
+                      'other-repository',
+                      'repository-3']
 }
 ```
 
