@@ -32,19 +32,17 @@ describe provider_class do
       })
 
       Nexus::Rest.should_receive(:get_all).with('/service/local/repo_groups/example-group').and_return({
-        'data' => [{
+        'data' => {
           'id'                      => 'example-group',
           'name'                    => 'Example Group Repository',
           'provider'                => 'maven2',
           'format'                  => 'maven2',
           'exposed'                 => true,
-          'repositories'            => [{
-            'id'                    => 'repository-3'
-          },
-          {
-            'id'                    => 'repository-4'
-          }]
-        }]
+          'repositories'            => [
+            {'id'                   => 'repository-3'},
+            {'id'                   => 'repository-4'}
+          ]
+        }
       })
       provider_class.instances[0]
     end
