@@ -15,13 +15,19 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
     begin
       groups = Nexus::Rest.get_all('/service/local/repo_groups')
       groups['data'].collect do |group|
+
+        #Nexus doesn't return a list of the repositories in a group when requesting all groups
+        repositories = Nexus::Rest.get_all("/service/local/repo_groups/#{group['id']}")['data'].collect { |group|
+          group['repositories'].collect { |repository| repository['id'] }
+        }
+
         new(
           :ensure                  => :present,
           :name                    => group['id'],
           :label                   => group['name'],
           :provider_type           => group.has_key?('format') ? group['format'].to_sym : nil,
           :exposed                 => group.has_key?('exposed') ? group['exposed'].to_s.to_sym : nil,
-          :repositories            => group.has_key?('repositories') ? [group['repositories']].flatten : []
+          :repositories            => [repositories].flatten
         )
       end
     rescue => e
@@ -90,7 +96,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
       :provider                => resource[:provider_type],
       :exposed                 => resource[:exposed] == :true,
 
-      :repositories            => [resource[:repositories]].flatten()
+      :repositories            => resource[:repositories].collect { |repository| {'id' => repository} }
     }
     {:data => data}
   end
