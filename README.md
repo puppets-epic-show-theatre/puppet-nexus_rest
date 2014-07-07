@@ -119,7 +119,7 @@ nexus_smtp_settings { 'current':
 ```
 #!puppet
 
-nexus_repository { 'new-repository'
+nexus_repository { 'new-repository':
   label                   => 'A New Repository',   #required
   provider_type           => 'maven2',             #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
   type                    => 'hosted',             #valid values: 'hosted' (default), 'proxy', 'virtual'
