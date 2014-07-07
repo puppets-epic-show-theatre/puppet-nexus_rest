@@ -27,8 +27,23 @@ describe provider_class do
           'name'                    => 'Example Group Repository',
           'provider'                => 'maven2',
           'format'                  => 'maven2',
+          'exposed'                 => true
+        }]
+      })
+
+      Nexus::Rest.should_receive(:get_all).with('/service/local/repo_groups/example-group').and_return({
+        'data' => [{
+          'id'                      => 'example-group',
+          'name'                    => 'Example Group Repository',
+          'provider'                => 'maven2',
+          'format'                  => 'maven2',
           'exposed'                 => true,
-          'repositories'            => ['repository-1', 'repository-2']
+          'repositories'            => [{
+            'id'                    => 'repository-3'
+          },
+          {
+            'id'                    => 'repository-4'
+          }]
         }]
       })
       provider_class.instances[0]
@@ -38,7 +53,7 @@ describe provider_class do
     it { expect(instance.label).to eq('Example Group Repository') }
     it { expect(instance.provider_type).to eq(:maven2) }
     it { expect(instance.exposed).to eq(:true) }
-    it { expect(instance.repositories).to eq(['repository-1', 'repository-2']) }
+    it { expect(instance.repositories).to eq(['repository-3', 'repository-4']) }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -68,7 +83,7 @@ describe provider_class do
       provider.create
     end
     it 'should map repositories to repositories' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repositories => ['repository-1', 'repository-2']))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repositories => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]))
       provider.create
     end
   end
@@ -108,7 +123,7 @@ describe provider_class do
       provider.flush
     end
     it 'should map repositories to repositories' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:repositories => ['repository-1', 'repository-2']))
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:repositories => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]))
       provider.repositories = ['repository-1', 'repository-2']
       provider.flush
     end
