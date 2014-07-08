@@ -136,10 +136,6 @@ describe provider_class do
       Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
       expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_repository_group example-group/)
     end
-    specify 'should fail if configuration prevents deletion of repositories' do
-      Nexus::Config.stub(:can_delete_repositories).and_return(false)
-      expect { provider.destroy }.to raise_error(RuntimeError, /current configuration prevents the deletion of nexus_repository_group example/)
-    end
   end
 
   it "should return false if it is not existing" do
