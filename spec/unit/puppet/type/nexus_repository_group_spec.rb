@@ -36,6 +36,7 @@ describe Puppet::Type.type(:nexus_repository_group) do
   it 'should accept some repositories' do
     Puppet::Type.type(:nexus_repository_group).new(
       :name                => 'group-repository',
+      :label               => 'group repository',
       :repositories        => ['repo-c', 'repo-d']
     )
 

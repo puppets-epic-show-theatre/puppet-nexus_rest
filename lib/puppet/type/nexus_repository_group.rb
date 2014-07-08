@@ -11,6 +11,7 @@ Puppet::Type.newtype(:nexus_repository_group) do
   end
 
   newproperty(:label) do
+    defaultto ''
     desc 'Human readable label of the Repository Group. The Nexus UI will show it as Group Name.'
   end
 
@@ -42,6 +43,10 @@ Puppet::Type.newtype(:nexus_repository_group) do
 
   autorequire(:nexus_repository) do
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
+  end
+
+  validate do
+    raise ArgumentError, "label must not be empty" if self[:ensure] == :present and (self[:label].empty?)
   end
 
 end
