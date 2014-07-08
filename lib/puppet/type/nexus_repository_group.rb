@@ -1,4 +1,5 @@
 require 'uri'
+require 'puppet/property/boolean'
 
 Puppet::Type.newtype(:nexus_repository_group) do
   @doc = "Manages Nexus Repository Group through a REST API"
@@ -19,10 +20,10 @@ Puppet::Type.newtype(:nexus_repository_group) do
     newvalues(:maven1, :maven2, :nuget, :site, :obr)
   end
 
-  newproperty(:exposed, :boolean => true) do
+  newproperty(:exposed, :parent => Puppet::Property::Boolean) do
     desc 'Controls if the Repository Group is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
     defaultto :true
-    munge { |value| @resource.munge_boolean(value) }
+    munge { |value| super(value).to_s.intern }
   end
 
   newproperty(:repositories, :array_matching => :all) do
@@ -41,12 +42,6 @@ Puppet::Type.newtype(:nexus_repository_group) do
 
   autorequire(:nexus_repository) do
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
-  end
-
-  def munge_boolean(value)
-    return :true if [true, "true", :true].include? value
-    return :false if [false, "false", :false].include? value
-    fail("Expected boolean parameter, got '#{value}'")
   end
 
 end
