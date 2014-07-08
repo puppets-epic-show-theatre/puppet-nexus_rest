@@ -15,6 +15,10 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     desc 'Name of the scheduled task. Although Nexus allows to use the same name for multiple tasks it is discouraged and likely to fail.'
   end
 
+  newparam(:id) do
+    desc 'A read-only parameter set by the nexus_scheduled_task.'
+  end
+
   newproperty(:enabled, :parent => Puppet::Property::Boolean) do
     desc 'Enable or disable the scheduled task.'
     defaultto :true
