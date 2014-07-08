@@ -1,32 +1,32 @@
 require 'uri'
 
-Puppet::Type.newtype(:nexus_group_repository) do
-  @doc = "Manages Nexus Group Repository through a REST API"
+Puppet::Type.newtype(:nexus_repository_group) do
+  @doc = "Manages Nexus Repository Group through a REST API"
 
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'Unique group identifier; once created cannot be changed unless the Group Repository is destroyed. The Nexus UI will show it as Group ID.'
+    desc 'Unique group identifier; once created cannot be changed unless the Repository Group is destroyed. The Nexus UI will show it as Group ID.'
   end
 
   newproperty(:label) do
-    desc 'Human readable label of the Group Repository. The Nexus UI will show it as Group Name.'
+    desc 'Human readable label of the Repository Group. The Nexus UI will show it as Group Name.'
   end
 
   newproperty(:provider_type) do
-    desc 'The content provider of the Group Repository'
+    desc 'The content provider of the Repository Group'
     defaultto :maven2
     newvalues(:maven1, :maven2, :nuget, :site, :obr)
   end
 
   newproperty(:exposed, :boolean => true) do
-    desc 'Controls if the Group Repository is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
+    desc 'Controls if the Repository Group is remotely accessible. Responds to the \'Publish URL\' setting in the UI.'
     defaultto :true
     munge { |value| @resource.munge_boolean(value) }
   end
 
   newproperty(:repositories, :array_matching => :all) do
-    desc 'A list of repositories contained in this Group Repository'
+    desc 'A list of repositories contained in this Repository Group'
     defaultto []
     validate do |value|
       unless value.empty?

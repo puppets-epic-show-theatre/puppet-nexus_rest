@@ -3,7 +3,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
 
-Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
+Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
   def initialize(value={})
@@ -29,7 +29,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
         )
       end
     rescue => e
-      raise Puppet::Error, "Error while retrieving all nexus_group_repository instances: #{e}"
+      raise Puppet::Error, "Error while retrieving all nexus_repository_group instances: #{e}"
     end
   end
 
@@ -46,7 +46,7 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
     begin
       Nexus::Rest.create('/service/local/repo_groups', map_resource_to_data)
     rescue Exception => e
-      raise Puppet::Error, "Error while creating nexus_group_repository #{resource[:name]}: #{e}"
+      raise Puppet::Error, "Error while creating nexus_repository_group #{resource[:name]}: #{e}"
     end
   end
 
@@ -55,21 +55,21 @@ Puppet::Type.type(:nexus_group_repository).provide(:ruby) do
       begin
         Nexus::Rest.update("/service/local/repo_groups/#{resource[:name]}", map_resource_to_data)
       rescue Exception => e
-        raise Puppet::Error, "Error while updating nexus_group_repository #{resource[:name]}: #{e}"
+        raise Puppet::Error, "Error while updating nexus_repository_group #{resource[:name]}: #{e}"
       end
       @property_hash = resource.to_hash
     end
   end
 
   def destroy
-    raise "The current configuration prevents the deletion of nexus_group_repository #{resource[:name]}; If this change is" +
+    raise "The current configuration prevents the deletion of nexus_repository_group #{resource[:name]}; If this change is" +
       " intended, please update the configuration file (#{Nexus::Config.file_path}) in order to perform this change." \
       unless Nexus::Config.can_delete_repositories
 
     begin
       Nexus::Rest.destroy("/service/local/repo_groups/#{resource[:name]}")
     rescue Exception => e
-      raise Puppet::Error, "Error while deleting nexus_group_repository #{resource[:name]}: #{e}"
+      raise Puppet::Error, "Error while deleting nexus_repository_group #{resource[:name]}: #{e}"
     end
   end
 
