@@ -114,7 +114,7 @@ nexus_smtp_settings { 'current':
 }
 ```
 
-## Repository Configuration ##
+### Repository Configuration ###
 
 ```
 nexus_repository_target { 'dummy-target-id':
