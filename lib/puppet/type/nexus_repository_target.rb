@@ -29,4 +29,9 @@ Puppet::Type.newtype(:nexus_repository_target) do
     end
   end
 
+  validate do
+    raise ArgumentError, "patterns must not be empty" if self[:ensure] == :present and (self[:patterns].empty?)
+    raise ArgumentError, "label must not be empty" if self[:ensure] == :present and (self[:label].empty?)
+  end
+
 end
