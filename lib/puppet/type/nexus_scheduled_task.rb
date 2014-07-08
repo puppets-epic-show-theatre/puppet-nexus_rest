@@ -48,9 +48,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
 
   newproperty(:reoccurrence) do
     desc "The frequency this task will run. Can be one of: `manual`, `once`, `daily`, `weekly`, `monthly` or
-      `advanced`. Specifying any value beside `manual` or `advanced` requires the `start_date` to be set. If `advanced`
-      is selected, the `cron_expression` property is required."
-    newvalues(:manual, :once, :daily, :weekly, :monthly, :advanced)
+      `advanced`."
+    newvalues(:manual, :once, :hourly, :daily, :weekly, :monthly, :advanced)
   end
 
   newproperty(:cron_expression) do
@@ -69,10 +68,19 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     munge { |value| Integer(value) }
   end
 
+  newproperty(:start_time) do
+    desc 'The start time in `hh:mm` the task should run. Mandatory when `reoccurrence` set to `once` or `hourly`.'
+    validate do |value|
+      unless value.nil?
+        raise ArgumentError, "Start time must match the following format: <hh::mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
+      end
+    end
+  end
+
   newproperty(:recurring_time) do
     desc 'The time this task should run.'
     validate do |value|
-      raise ArgumentError, "Recurring time must match the following format: <hh:mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d?/
+      raise ArgumentError, "Recurring time must match the following format: <hh:mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
     end
   end
 
@@ -89,9 +97,29 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   validate do
     reoccurrence = self[:reoccurrence]
     start_date_nil_or_empty = (self[:start_date].nil? or self[:start_date].to_s.empty?)
+    start_time_nil_or_empty = (self[:start_time].nil? or self[:start_time].to_s.empty?)
+    recurring_day_nil_or_empty = (self[:recurring_day].nil? or self[:recurring_day].to_s.empty?)
+    recurring_time_nil_or_empty = (self[:recurring_time].nil? or self[:recurring_time].to_s.empty?)
     cron_expression_nil_or_empty = (self[:cron_expression].nil? or self[:cron_expression].to_s.empty?)
-    fail("Setting reoccurrence to '#{reoccurrence}' requires start_date to be set as well") if reoccurrence != :manual and reoccurrence != :advanced and start_date_nil_or_empty
-    fail("Setting reoccurrence to 'advanced' requires cron_expression to be set as well") if reoccurrence == :advanced and cron_expression_nil_or_empty
+    missing_fields = Array.new
+
+    case reoccurrence
+      when :manual
+      when :once, :hourly
+        missing_fields << 'start_date' if start_date_nil_or_empty
+        missing_fields << 'start_time' if start_time_nil_or_empty
+      when :daily
+        missing_fields << 'start_date' if start_date_nil_or_empty
+        missing_fields << 'recurring_time' if recurring_time_nil_or_empty
+      when :weekly, :monthly
+        missing_fields << 'start_date' if start_date_nil_or_empty
+        missing_fields << 'recurring_day' if recurring_day_nil_or_empty
+        missing_fields << 'recurring_time' if recurring_time_nil_or_empty
+      when :advanced
+        missing_fields << 'cron_expression' if cron_expression_nil_or_empty
+    end
+
+    fail("Setting reoccurrence to '#{reoccurrence}' requires #{missing_fields.join(' and ')} to be set as well") unless missing_fields.empty?
   end
 
   newparam(:inclusive_membership) do
