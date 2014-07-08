@@ -6,8 +6,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository_target).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
-  WRITE_ONCE_ERROR_MESSAGE = "%s is write-once only and cannot be changed without force."
-
   def initialize(value={})
     super(value)
     @dirty_flag = false
@@ -21,6 +19,7 @@ Puppet::Type.type(:nexus_repository_target).provide(:ruby) do
           :ensure                  => :present,
           :name                    => target['id'],
           :label                   => target['name'],
+          :provider_type           => target.has_key?('contentClass') ? target['contentClass'].to_sym : nil,
           :patterns                => target.has_key?('patterns') ? [target['patterns']].flatten : []
         )
       end
@@ -89,10 +88,6 @@ Puppet::Type.type(:nexus_repository_target).provide(:ruby) do
   end
 
   mk_resource_methods
-
-  def type=(value)
-    raise Puppet::Error, WRITE_ONCE_ERROR_MESSAGE % 'type'
-  end
 
   def provider_type=(value)
     @dirty_flag = true

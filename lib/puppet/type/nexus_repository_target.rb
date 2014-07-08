@@ -6,23 +6,17 @@ Puppet::Type.newtype(:nexus_repository_target) do
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'Unique repository target identifier; once created cannot be changed unless the repository target is destroyed. The Nexus UI will not show this value.'
+    desc 'Unique Repository Target identifier; once created cannot be changed unless the Repository Target is destroyed. The Nexus UI will not show this value.'
   end
 
   newproperty(:label) do
-    desc 'Human readable label of the repository target. The Nexus UI will show it as Name.'
+    desc 'Human readable label of the Repository Target. The Nexus UI will show it as Name.'
   end
 
   newproperty(:provider_type) do
-    desc 'The content provider of the repository target. The Nexus UI will show this as Repository Type'
+    desc 'The content provider of the Repository Target. The Nexus UI will show this as Repository Type'
     defaultto :maven2
-    newvalues(:maven1, :maven2, :nuget, :obr, :p2, :site)
-  end
-
-  newproperty(:download_remote_indexes, :boolean => true) do
-    desc 'Indicates if the index stored on the remote repository should be downloaded and used for local searches. Applicable for proxy repositories only.'
-    defaultto :false
-    munge { |value| @resource.munge_boolean(value) }
+    newvalues(:maven1, :maven2, :nuget, :obr, :p2, :site, :any)
   end
 
   newproperty(:patterns, :array_matching => :all) do
