@@ -17,17 +17,21 @@ describe Puppet::Type.type(:nexus_repository_target) do
     }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
   end
 
-  it 'should accept hosted Maven1 repository' do
+  it 'should accept Maven1 repository target' do
     Puppet::Type.type(:nexus_repository_target).new(
       :name                => 'maven1-target',
-      :provider_type       => :maven1
+      :label               => 'Maven1 Target',
+      :provider_type       => :maven1,
+      :patterns            => ['^/com/acme/.*']
     )
   end
 
-  it 'should accept hosted Maven2 repository' do
+  it 'should accept Maven2 repository target' do
     Puppet::Type.type(:nexus_repository_target).new(
       :name                => 'maven2-target',
-      :provider_type       => :maven2
+      :label               => 'Maven2 Target',
+      :provider_type       => :maven2,
+      :patterns            => ['^/com/acme/.*']
     )
   end
 
