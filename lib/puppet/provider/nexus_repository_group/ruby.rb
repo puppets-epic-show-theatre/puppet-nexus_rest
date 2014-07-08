@@ -101,6 +101,10 @@ Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
     raise Puppet::Error, WRITE_ONCE_ERROR_MESSAGE % 'provider_type'
   end
 
+  def label=(value)
+    @dirty_flag = true
+  end
+
   def exposed=(value)
     @dirty_flag = true
   end
