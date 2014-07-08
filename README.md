@@ -137,8 +137,8 @@ nexus_repository { 'new-repository':
 ```
 #!puppet
 
-nexus_group_repository { 'example-group-repo':
-  label           => 'Example Group Repository',   #required
+nexus_repository_group { 'example-repo-group':
+  label           => 'Example Repository Group',   #required
   provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
   exposed         => true,                         #valid values: true (default), false
   repositories    => ['new-repository',            #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
