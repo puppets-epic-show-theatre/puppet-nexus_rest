@@ -114,6 +114,17 @@ nexus_smtp_settings { 'current':
 }
 ```
 
+## Repository Configuration ##
+
+```
+nexus_repository_target { 'dummy-target-id':
+  label         => 'dummy-target',                 #required
+  provider_type => 'maven2',                       #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'any'
+  patterns      => ['^/com/atlassian/.*$',         #[] is default value
+                    '^/io/atlassian/.*$'],
+}
+```
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
