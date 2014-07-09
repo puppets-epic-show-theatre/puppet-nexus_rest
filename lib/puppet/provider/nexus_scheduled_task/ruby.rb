@@ -8,26 +8,48 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   def self.instances
     begin
       repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
-      repositories['data'].collect do |scheduled_task|
-        new(
-          :ensure          => :present,
-          :id              => scheduled_task['id'],
-          :name            => scheduled_task['name'],
-          :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
-          :type_id         => scheduled_task['typeId'],
-          :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
-          :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
-          :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_keyvalue_string(scheduled_task['properties']) : :absent,
-          :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
-          :start_time      => scheduled_task.has_key?('startTime') ? scheduled_task['startTime'] : :absent,
-          :recurring_day   => scheduled_task.has_key?('recurringDay') ? scheduled_task['recurringDay'].join(',') : :absent,
-          :recurring_time  => scheduled_task.has_key?('recurringTime') ? scheduled_task['recurringTime'] : :absent,
-          :cron_expression => scheduled_task.has_key?('cronCommand') ? scheduled_task['cronCommand'] : :absent
-        )
-      end
+      repositories['data'].collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_scheduled_task instances: #{e}"
     end
+  end
+
+  # Map the current global configuration to a hash which is used to create a new resource instance.
+  #
+  # scheduled_task: A map of attributes as received from the scheduled task REST resource except that leading data has
+  # been stripped.
+  # {
+  #    ...
+  #    'securityRealms': ...
+  #    'globalConnectionSettings': ...
+  #    'systemNotificationSettings': ...
+  #    'smtpSettings': ...
+  #    ...
+  # }
+  #
+  # returns: A map of data representing the Puppet resource state.
+  # {
+  #    :puppet_attribute_1 => ...,
+  #    :puppet_attribute_2 => ...,
+  #    :puppet_attribute_3 => ...,
+  # }
+  #
+  def self.map_data_to_resource(scheduled_task)
+    {
+      :ensure          => :present,
+      :id              => scheduled_task['id'],
+      :name            => scheduled_task['name'],
+      :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
+      :type_id         => scheduled_task['typeId'],
+      :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
+      :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
+      :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_keyvalue_string(scheduled_task['properties']) : :absent,
+      :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
+      :start_time      => scheduled_task.has_key?('startTime') ? scheduled_task['startTime'] : :absent,
+      :recurring_day   => scheduled_task.has_key?('recurringDay') ? scheduled_task['recurringDay'].join(',') : :absent,
+      :recurring_time  => scheduled_task.has_key?('recurringTime') ? scheduled_task['recurringTime'] : :absent,
+      :cron_expression => scheduled_task.has_key?('cronCommand') ? scheduled_task['cronCommand'] : :absent
+    }
   end
 
   # Maps the properties data structure
