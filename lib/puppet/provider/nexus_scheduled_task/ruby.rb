@@ -10,13 +10,19 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
       repositories['data'].collect do |scheduled_task|
         new(
-          :ensure        => :present,
-          :id            => scheduled_task['id'],
-          :name          => scheduled_task['name'],
-          :enabled       => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : nil,
-          :type_id       => scheduled_task['typeId'],
-          :reoccurrence  => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : nil,
-          :task_settings => scheduled_task.has_key?('properties') ? map_properties_to_keyvalue_string(scheduled_task['properties']) : nil
+          :ensure          => :present,
+          :id              => scheduled_task['id'],
+          :name            => scheduled_task['name'],
+          :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
+          :type_id         => scheduled_task['typeId'],
+          :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
+          :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
+          :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_keyvalue_string(scheduled_task['properties']) : :absent,
+          :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
+          :start_time      => scheduled_task.has_key?('startTime') ? scheduled_task['startTime'] : :absent,
+          :recurring_day   => scheduled_task.has_key?('recurringDay') ? scheduled_task['recurringDay'].join(',') : :absent,
+          :recurring_time  => scheduled_task.has_key?('recurringTime') ? scheduled_task['recurringTime'] : :absent,
+          :cron_expression => scheduled_task.has_key?('cronCommand') ? scheduled_task['cronCommand'] : :absent
         )
       end
     rescue => e
