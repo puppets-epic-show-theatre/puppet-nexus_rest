@@ -153,7 +153,7 @@ nexus_repository_group { 'example-repo-group':
 nexus_repository_target { 'dummy-target-id':
   label         => 'dummy-target',                 #required
   provider_type => 'maven2',                       #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'any'
-  patterns      => ['^/com/atlassian/.*$',         #[] is default value
+  patterns      => ['^/com/atlassian/.*$',         #required, must be non-empty
                     '^/io/atlassian/.*$'],
 }
 ```
