@@ -21,6 +21,25 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     }
   end
 
+  let(:resource) do
+    {
+      :name           => 'Empty Trash',
+      :enabled        => :true,
+      :type_id        => 'EmptyTrashTask',
+      :reoccurrence   => :manual,
+      :task_settings  => 'EmptyTrashItemsOlderThan=;repositoryId=all_repo',
+      :start_date     => 1385242260000,
+      :recurring_day  => 'sunday',
+      :recurring_time => '21:31'
+    }
+  end
+
+  let(:instance) do
+    instance = described_class.new()
+    instance.resource = resource
+    instance
+  end
+
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
     Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
@@ -157,6 +176,20 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details.merge('cronCommand' => '0 0 12 * * ?')]})
 
       expect(described_class.instances[0].cron_expression).to eq('0 0 12 * * ?')
+    end
+  end
+
+  describe :create do
+    specify 'should use /service/local/schedules to create a new resource' do
+      Nexus::Rest.should_receive(:create).with('/service/local/schedules', anything())
+
+      expect { instance.create }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:create).and_raise('Operation failed')
+
+      expect { instance.create }.to raise_error(Puppet::Error, /Error while creating Nexus_scheduled_task\['Empty Trash'\]/)
     end
   end
 end

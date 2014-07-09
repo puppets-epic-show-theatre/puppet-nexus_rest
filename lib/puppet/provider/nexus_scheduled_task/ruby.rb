@@ -60,6 +60,18 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     end
   end
 
+  def create
+    begin
+      Nexus::Rest.create('/service/local/schedules', map_resource_to_data)
+    rescue Exception => e
+      raise Puppet::Error, "Error while creating Nexus_scheduled_task['#{resource[:name]}']: #{e}"
+    end
+  end
+
+  def map_resource_to_data
+    {}
+  end
+
   mk_resource_methods
 
 end
