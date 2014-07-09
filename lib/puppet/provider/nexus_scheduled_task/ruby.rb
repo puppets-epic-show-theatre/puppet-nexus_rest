@@ -30,15 +30,6 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     end
   end
 
-  def self.prefetch(resources)
-    scheduled_tasks = instances
-    resources.keys.each do |name|
-      if provider = scheduled_tasks.find { |scheduled_task| scheduled_task.name == name }
-        resources[name].provider = provider
-      end
-    end
-  end
-
   # Maps the properties data structure
   #
   # [
@@ -58,6 +49,15 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   #
   def self.map_properties_to_keyvalue_string(properties)
     properties.collect { |pair| "#{pair['key']}=#{pair['value']}" }.join(';')
+  end
+
+  def self.prefetch(resources)
+    scheduled_tasks = instances
+    resources.keys.each do |name|
+      if provider = scheduled_tasks.find { |scheduled_task| scheduled_task.name == name }
+        resources[name].provider = provider
+      end
+    end
   end
 
   mk_resource_methods
