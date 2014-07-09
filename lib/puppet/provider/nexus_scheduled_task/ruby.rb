@@ -30,6 +30,15 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     end
   end
 
+  def self.prefetch(resources)
+    scheduled_tasks = instances
+    resources.keys.each do |name|
+      if provider = scheduled_tasks.find { |scheduled_task| scheduled_task.name == name }
+        resources[name].provider = provider
+      end
+    end
+  end
+
   # Maps the properties data structure
   #
   # [
