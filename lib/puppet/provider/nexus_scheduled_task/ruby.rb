@@ -127,7 +127,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'schedule'   => @resource[:reoccurrence].to_s,
       'properties' => map_task_settings_to_properties,
     }
-    data['id'] = @resource[:id] unless @resource[:id] == :absent
+    data['id'] = @resource[:id] unless @resource[:id].nil?
     data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email].nil?
     data['startDate'] = @resource[:start_date].to_s unless @resource[:start_date].nil?
     data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?

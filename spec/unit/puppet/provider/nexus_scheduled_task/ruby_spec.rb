@@ -203,7 +203,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:id] = :absent
+      resource.delete(:id)
 
       expect(instance.map_resource_to_data['data']).to_not include('id')
     end
