@@ -193,7 +193,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     specify 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:create).and_raise('Operation failed')
 
-      expect { instance.create }.to raise_error(Puppet::Error, /Error while creating Nexus_scheduled_task\['Empty Trash'\]/)
+      expect { instance.create }.to raise_error(Puppet::Error, /Error while creating nexus_scheduled_task\['Empty Trash'\]/)
     end
   end
 
@@ -335,7 +335,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     specify 'should raise a human readable error message if the operation failed' do
       Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
 
-      expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting Nexus_scheduled_task\['Empty Trash'\]/)
+      expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_scheduled_task\['Empty Trash'\]/)
     end
   end
 end

@@ -94,7 +94,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     begin
       Nexus::Rest.create('/service/local/schedules', map_resource_to_data)
     rescue Exception => e
-      raise Puppet::Error, "Error while creating Nexus_scheduled_task['#{resource[:name]}']: #{e}"
+      raise Puppet::Error, "Error while creating #{@resource.class.name}['#{@resource[:name]}']: #{e}"
     end
   end
 
@@ -106,7 +106,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     begin
       Nexus::Rest.destroy("/service/local/schedules/#{resource[:id]}")
     rescue Exception => e
-      raise Puppet::Error, "Error while deleting Nexus_scheduled_task['#{resource[:name]}']: #{e}"
+      raise Puppet::Error, "Error while deleting #{@resource.class.name}['#{@resource[:name]}']: #{e}"
     end
   end
 
