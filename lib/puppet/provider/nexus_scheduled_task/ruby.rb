@@ -95,6 +95,11 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   end
 
   def destroy
+    begin
+      Nexus::Rest.destroy("/service/local/schedules/#{resource[:id]}")
+    rescue Exception => e
+      raise Puppet::Error, "Error while deleting Nexus_scheduled_task['#{resource[:name]}']: #{e}"
+    end
   end
 
   # Returns the resource in a representation as expected by Nexus:

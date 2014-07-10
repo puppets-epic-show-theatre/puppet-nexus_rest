@@ -319,4 +319,19 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect(instance.map_resource_to_data['data']).to include('cronCommand' => '0 0 12 * * ?')
     end
   end
+
+  describe :destroy do
+    specify 'should use /service/local/repositories/schedules to delete an existing resource' do
+      resource[:id] = 'a1b2'
+      Nexus::Rest.should_receive(:destroy).with('/service/local/schedules/a1b2')
+
+      expect { instance.destroy }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
+
+      expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting Nexus_scheduled_task\['Empty Trash'\]/)
+    end
+  end
 end
