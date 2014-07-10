@@ -52,7 +52,9 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
 
   newproperty(:cron_expression) do
     desc 'A cron expression that will control the running of the task.'
-    defaultto ''
+    validate do |value|
+      raise ArgumentError, "Cron expression must be a non-empty string" if value.empty?
+    end
   end
 
   newproperty(:start_date) do

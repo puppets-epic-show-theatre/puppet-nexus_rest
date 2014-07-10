@@ -312,7 +312,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:cron_expression] = :absent
+      resource.delete(:cron_expression)
 
       expect(instance.map_resource_to_data['data']).to_not include('cronCommand')
     end

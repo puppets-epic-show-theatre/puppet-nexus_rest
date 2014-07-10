@@ -202,8 +202,8 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
   end
 
   describe :cron_expression do
-    specify 'should default to empty value' do
-      expect(described_class.new(defaults)[:cron_expression]).to eq('')
+    specify 'should not accept empty value' do
+      expect { described_class.new(defaults.merge(:cron_expression => '')) }.to raise_error(Puppet::Error, /Cron expression must be a non-empty string/)
     end
 
     specify 'should accept regular cron expression' do

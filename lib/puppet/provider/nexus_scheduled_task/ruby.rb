@@ -128,7 +128,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     data['startTime'] = resource[:start_time] unless resource[:start_time].nil?
     data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day].nil?
     data['recurringTime'] = resource[:recurring_time] unless resource[:recurring_time].nil?
-    data['cronCommand'] = resource[:cron_expression] unless resource[:cron_expression] == :absent
+    data['cronCommand'] = resource[:cron_expression] unless resource[:cron_expression].nil?
     { 'data' => data }
   end
 
