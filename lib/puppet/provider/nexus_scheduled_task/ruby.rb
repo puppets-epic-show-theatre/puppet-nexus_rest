@@ -43,7 +43,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       :type_id         => scheduled_task['typeId'],
       :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
       :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
-      :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_keyvalue_string(scheduled_task['properties']) : :absent,
+      :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_task_settings(scheduled_task['properties']) : :absent,
       :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
       :start_time      => scheduled_task.has_key?('startTime') ? scheduled_task['startTime'] : :absent,
       :recurring_day   => scheduled_task.has_key?('recurringDay') ? scheduled_task['recurringDay'].join(',') : :absent,
@@ -67,10 +67,13 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   #
   # into a string as expected by the keyvalue property
   #
-  # <key1>=<value1>;<key2>=<value2>
+  # {
+  #   '<key1>' => '<value1>',
+  #   '<key2>' => '<value2>',
+  # }
   #
-  def self.map_properties_to_keyvalue_string(properties)
-    properties.collect { |pair| "#{pair['key']}=#{pair['value']}" }.join(';')
+  def self.map_properties_to_task_settings(properties)
+    properties.inject({}) { |result, pair| result.merge(pair['key'] => pair['value']) }
   end
 
   def self.prefetch(resources)
@@ -117,7 +120,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'enabled'    => resource[:enabled] == :true,
       'typeId'     => resource[:type_id],
       'schedule'   => resource[:reoccurrence].to_s,
-      'properties' => map_keyvalue_string_to_properties,
+      'properties' => map_task_settings_to_properties,
     }
     data['id'] = resource[:id] unless resource[:id] == :absent
     data['alertEmail'] = resource[:alert_email] unless resource[:alert_email] == :absent
@@ -129,13 +132,12 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     { 'data' => data }
   end
 
-  def map_keyvalue_string_to_properties
-    resource[:task_settings].split(';').collect do |pair|
-      pair_splitted = pair.split('=')
-      key = pair_splitted[0]
-      value = pair_splitted[1].nil? ? '' : pair_splitted[1]
-      { 'key' => key, 'value' => value }
+  def map_task_settings_to_properties
+    result = []
+    resource[:task_settings].each do |key, value|
+      result << { 'key' => key, 'value' => value }
     end
+    result
   end
 
   def exists?

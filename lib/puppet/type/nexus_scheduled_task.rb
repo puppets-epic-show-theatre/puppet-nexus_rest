@@ -32,14 +32,9 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     end
   end
 
-  newproperty(:task_settings, :parent => Puppet::Property::KeyValue) do
+  newproperty(:task_settings) do
     desc 'Type specific settings to configure the task.'
-    validate do |value|
-      raise ArgumentError, "Task settings contains restricted character: = (got #{value})" unless value.values.select { |item| item.include?('=') }.empty?
-    end
-    def membership
-      :inclusive_membership
-    end
+    default {}
   end
 
   newproperty(:alert_email) do

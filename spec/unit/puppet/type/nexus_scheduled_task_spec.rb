@@ -60,10 +60,6 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect { described_class.new(defaults.merge(:task_settings => {:foo => 'bar'})) }.to_not raise_error
     end
 
-    specify 'should not accept hash with invalid characters' do
-      expect { described_class.new(defaults.merge(:task_settings => {:foo => 'b=r'})) }.to raise_error(Puppet::Error, /contains restricted character: =/)
-    end
-
     specify 'should accept hash with two entries' do
       expect { described_class.new(defaults.merge(:task_settings => {:prop1 => 'value1', :prop2 => 'value2'})) }.to_not raise_error
     end

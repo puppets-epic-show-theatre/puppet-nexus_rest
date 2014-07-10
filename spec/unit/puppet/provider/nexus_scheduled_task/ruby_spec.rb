@@ -27,7 +27,10 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       :enabled         => :true,
       :type_id         => 'EmptyTrashTask',
       :reoccurrence    => :manual,
-      :task_settings   => 'EmptyTrashItemsOlderThan=;repositoryId=all_repo',
+      :task_settings   => {
+        'EmptyTrashItemsOlderThan' => '',
+        'repositoryId'             => 'all_repo'
+      },
       :start_date      => 1385242260000,
       :recurring_day   => 'sunday',
       :recurring_time  => '21:31',
@@ -115,7 +118,10 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     specify 'should map properties to task_settings' do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details]})
 
-      expect(described_class.instances[0].task_settings).to eq('EmptyTrashItemsOlderThan=;repositoryId=all_repo')
+      expect(described_class.instances[0].task_settings).to eq({
+        'EmptyTrashItemsOlderThan' => '',
+        'repositoryId'             => 'all_repo'
+      })
     end
 
     specify 'should map absent start_date to :absent' do
