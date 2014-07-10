@@ -161,43 +161,43 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   end
 
   def enabled=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def type_id=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def task_settings=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def alert_email=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def reoccurrence=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def start_date=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def start_time=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def recurring_time=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def recurring_day=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
   def cron_expression=(value)
-    @dirty_flag = true
+    @update_required = true
   end
 
 end
