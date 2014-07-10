@@ -41,7 +41,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       :name            => scheduled_task['name'],
       :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
       :type_id         => scheduled_task['typeId'],
-      :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
+      :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : '',
       :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
       :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_task_settings(scheduled_task['properties']) : :absent,
       :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
@@ -123,11 +123,11 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'properties' => map_task_settings_to_properties,
     }
     data['id'] = resource[:id] unless resource[:id] == :absent
-    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email] == :absent
-    data['startDate'] = resource[:start_date].to_s unless resource[:start_date]  == :absent
-    data['startTime'] = resource[:start_time] unless resource[:start_time] == :absent
-    data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day] == :absent
-    data['recurringTime'] = resource[:recurring_time] unless resource[:recurring_time] == :absent
+    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email].empty?
+    data['startDate'] = resource[:start_date].to_s unless resource[:start_date].nil?
+    data['startTime'] = resource[:start_time] unless resource[:start_time].nil?
+    data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day].nil?
+    data['recurringTime'] = resource[:recurring_time] unless resource[:recurring_time].nil?
     data['cronCommand'] = resource[:cron_expression] unless resource[:cron_expression] == :absent
     { 'data' => data }
   end

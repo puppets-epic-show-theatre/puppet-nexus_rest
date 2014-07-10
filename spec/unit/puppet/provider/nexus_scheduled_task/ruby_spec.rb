@@ -38,9 +38,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
   end
 
   let(:instance) do
-    instance = described_class.new()
-    instance.resource = resource
-    instance
+    described_class.new(Puppet::Type::Nexus_scheduled_task.new(resource))
   end
 
   before(:each) do
@@ -97,10 +95,10 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect(described_class.instances[0].type_id).to eq('EmptyTrashTask')
     end
 
-    specify 'should map absent alert_email to :absent' do
+    specify 'should map absent alert_email to empty string' do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details]})
 
-      expect(described_class.instances[0].alert_email).to eq(:absent)
+      expect(described_class.instances[0].alert_email).to eq('')
     end
 
     specify 'should map absent alertEmail to alert_email' do
@@ -241,7 +239,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:alert_email] = :absent
+      resource[:alert_email] = ''
 
       expect(instance.map_resource_to_data['data']).to_not include('alertEmail')
     end
@@ -272,13 +270,13 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:start_date] = :absent
+      resource.delete(:start_date)
 
       expect(instance.map_resource_to_data['data']).to_not include('startDate')
     end
 
     specify do
-      resource[:start_time] = :absent
+      resource.delete(:start_time)
 
       expect(instance.map_resource_to_data['data']).to_not include('startTime')
     end
@@ -296,7 +294,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:recurring_day] = :absent
+      resource.delete(:recurring_day)
 
       expect(instance.map_resource_to_data['data']).to_not include('recurringDay')
     end
@@ -308,7 +306,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:recurring_time] = :absent
+      resource.delete(:recurring_time)
 
       expect(instance.map_resource_to_data['data']).to_not include('recurringTime')
     end
