@@ -76,6 +76,11 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     properties.inject({}) { |result, pair| result.merge(pair['key'] => pair['value']) }
   end
 
+  def map_task_settings_to_properties
+    task_settings = resource[:task_settings]
+    task_settings.keys.sort.collect { |key| { 'key' => key, 'value' => task_settings[key] } }
+  end
+
   def self.prefetch(resources)
     scheduled_tasks = instances
     resources.keys.each do |name|
@@ -132,10 +137,6 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     { 'data' => data }
   end
 
-  def map_task_settings_to_properties
-    task_settings = resource[:task_settings]
-    task_settings.keys.sort.collect { |key| { 'key' => key, 'value' => task_settings[key] } }
-  end
 
   def exists?
     @property_hash[:ensure] == :present
