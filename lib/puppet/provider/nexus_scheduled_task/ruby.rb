@@ -90,8 +90,51 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     end
   end
 
+
+  def flush
+  end
+
+  def destroy
+  end
+
+  # Returns the resource in a representation as expected by Nexus:
+  #
+  # {
+  #   :data => {
+  #              :id   => <resource name>
+  #              :name => <resource label>
+  #              ...
+  #            }
+  # }
   def map_resource_to_data
-    {}
+    data = {
+      'name'       => resource[:name],
+      'enabled'    => resource[:enabled] == :true,
+      'typeId'     => resource[:type_id],
+      'schedule'   => resource[:reoccurrence].to_s,
+      'properties' => map_keyvalue_string_to_properties,
+    }
+    data['id'] = resource[:id] unless resource[:id] == :absent
+    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email] == :absent
+    data['startDate'] = resource[:start_date].to_s unless resource[:start_date]  == :absent
+    data['startTime'] = resource[:start_time] unless resource[:start_time] == :absent
+    data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day] == :absent
+    data['recurringTime'] = resource[:recurring_time] unless resource[:recurring_time] == :absent
+    data['cronCommand'] = resource[:cron_expression] unless resource[:cron_expression] == :absent
+    { 'data' => data }
+  end
+
+  def map_keyvalue_string_to_properties
+    resource[:task_settings].split(';').collect do |pair|
+      pair_splitted = pair.split('=')
+      key = pair_splitted[0]
+      value = pair_splitted[1].nil? ? '' : pair_splitted[1]
+      { 'key' => key, 'value' => value }
+    end
+  end
+
+  def exists?
+    @property_hash[:ensure] == :present
   end
 
   mk_resource_methods

@@ -23,14 +23,14 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
 
   let(:resource) do
     {
-      :name           => 'Empty Trash',
-      :enabled        => :true,
-      :type_id        => 'EmptyTrashTask',
-      :reoccurrence   => :manual,
-      :task_settings  => 'EmptyTrashItemsOlderThan=;repositoryId=all_repo',
-      :start_date     => 1385242260000,
-      :recurring_day  => 'sunday',
-      :recurring_time => '21:31'
+      :name            => 'Empty Trash',
+      :enabled         => :true,
+      :type_id         => 'EmptyTrashTask',
+      :reoccurrence    => :manual,
+      :task_settings   => 'EmptyTrashItemsOlderThan=;repositoryId=all_repo',
+      :start_date      => 1385242260000,
+      :recurring_day   => 'sunday',
+      :recurring_time  => '21:31',
     }
   end
 
@@ -190,6 +190,133 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       Nexus::Rest.should_receive(:create).and_raise('Operation failed')
 
       expect { instance.create }.to raise_error(Puppet::Error, /Error while creating Nexus_scheduled_task\['Empty Trash'\]/)
+    end
+  end
+
+  describe :map_resource_to_data do
+    specify 'should return all changes within data hash' do
+      expect(instance.map_resource_to_data.keys).to eq(['data'])
+    end
+
+    specify do
+      resource[:id] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('id')
+    end
+
+    specify do
+      resource[:id] = 'a1b2'
+
+      expect(instance.map_resource_to_data['data']).to include('id' => 'a1b2')
+    end
+
+    specify do
+      resource[:name] = 'Empty Trash'
+
+      expect(instance.map_resource_to_data['data']).to include('name' => 'Empty Trash')
+    end
+
+    specify do
+      resource[:enabled] = :true
+
+      expect(instance.map_resource_to_data['data']).to include('enabled' => true)
+    end
+
+    specify do
+      resource[:enabled] = :false
+
+      expect(instance.map_resource_to_data['data']).to include('enabled' => false)
+    end
+
+    specify do
+      resource[:type_id] = 'EmptyTrashTask'
+
+      expect(instance.map_resource_to_data['data']).to include('typeId' => 'EmptyTrashTask')
+    end
+
+    specify do
+      resource[:alert_email] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('alertEmail')
+    end
+
+    specify do
+      resource[:alert_email] = 'ops@example.com'
+
+      expect(instance.map_resource_to_data['data']).to include('alertEmail' => 'ops@example.com')
+    end
+
+    specify do
+      resource[:schedule] = :manual
+
+      expect(instance.map_resource_to_data['data']).to include('schedule' => 'manual')
+    end
+
+    specify do
+      expect(instance.map_resource_to_data['data']).to include('properties' => [
+        {'key'=> 'EmptyTrashItemsOlderThan', 'value' => ''},
+        {'key' => 'repositoryId', 'value' => 'all_repo'}
+      ])
+    end
+
+    specify do
+      resource[:start_date] = 1385242260000
+
+      expect(instance.map_resource_to_data['data']).to include('startDate' => '1385242260000')
+    end
+
+    specify do
+      resource[:start_date] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('startDate')
+    end
+
+    specify do
+      resource[:start_time] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('startTime')
+    end
+
+    specify do
+      resource[:start_time] = '1:23'
+
+      expect(instance.map_resource_to_data['data']).to include('startTime' => '1:23')
+    end
+
+    specify do
+      resource[:recurring_day] = 'sunday'
+
+      expect(instance.map_resource_to_data['data']).to include('recurringDay' => ['sunday'])
+    end
+
+    specify do
+      resource[:recurring_day] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('recurringDay')
+    end
+
+    specify do
+      resource[:recurring_time] = '21:31'
+
+      expect(instance.map_resource_to_data['data']).to include('recurringTime' => '21:31')
+    end
+
+    specify do
+      resource[:recurring_time] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('recurringTime')
+    end
+
+    specify do
+      resource[:cron_expression] = :absent
+
+      expect(instance.map_resource_to_data['data']).to_not include('cronCommand')
+    end
+
+    specify do
+      resource[:cron_expression] = '0 0 12 * * ?'
+
+      expect(instance.map_resource_to_data['data']).to include('cronCommand' => '0 0 12 * * ?')
     end
   end
 end
