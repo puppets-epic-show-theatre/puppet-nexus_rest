@@ -66,16 +66,12 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
   end
 
   describe :alert_email do
-    specify 'should default to empty email address' do
-      expect(described_class.new(defaults)[:alert_email]).to eq('')
-    end
-
     specify 'should accept valid email address' do
       expect { described_class.new(defaults.merge(:alert_email => 'jdoe@example.com')) }.to_not raise_error
     end
 
-    specify 'should accept empty email address' do
-      expect { described_class.new(defaults.merge(:alert_email => '')) }.to_not raise_error
+    specify 'should not accept empty email address' do
+      expect { described_class.new(defaults.merge(:alert_email => '')) }.to raise_error(Puppet::Error, /Alert email must be a valid email address/)
     end
 
     specify 'should not accept invalid email address' do

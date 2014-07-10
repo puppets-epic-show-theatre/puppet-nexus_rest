@@ -39,9 +39,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
 
   newproperty(:alert_email) do
     desc 'The email address where an email will be sent in case that task execution will fail.'
-    defaultto ''
     validate do |value|
-      raise ArgumentError, "Alert email must be a valid email address, got '#{value}'." unless value.empty? or value =~ /@/
+      raise ArgumentError, "Alert email must be a valid email address, got '#{value}'." unless value =~ /@/
     end
   end
 

@@ -41,7 +41,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       :name            => scheduled_task['name'],
       :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
       :type_id         => scheduled_task['typeId'],
-      :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : '',
+      :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
       :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
       :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_task_settings(scheduled_task['properties']) : :absent,
       :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
@@ -123,7 +123,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'properties' => map_task_settings_to_properties,
     }
     data['id'] = resource[:id] unless resource[:id] == :absent
-    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email].empty?
+    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email].nil?
     data['startDate'] = resource[:start_date].to_s unless resource[:start_date].nil?
     data['startTime'] = resource[:start_time] unless resource[:start_time].nil?
     data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day].nil?

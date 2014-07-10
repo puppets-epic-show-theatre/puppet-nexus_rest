@@ -98,7 +98,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     specify 'should map absent alert_email to empty string' do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details]})
 
-      expect(described_class.instances[0].alert_email).to eq('')
+      expect(described_class.instances[0].alert_email).to eq(:absent)
     end
 
     specify 'should map absent alertEmail to alert_email' do
@@ -239,7 +239,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:alert_email] = ''
+      resource.delete(:alert_email)
 
       expect(instance.map_resource_to_data['data']).to_not include('alertEmail')
     end
