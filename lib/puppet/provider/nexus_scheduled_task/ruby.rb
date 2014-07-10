@@ -77,7 +77,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   end
 
   def map_task_settings_to_properties
-    task_settings = resource[:task_settings]
+    task_settings = @resource[:task_settings]
     task_settings.keys.sort.collect { |key| { 'key' => key, 'value' => task_settings[key] } }
   end
 
@@ -104,7 +104,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
   def destroy
     begin
-      Nexus::Rest.destroy("/service/local/schedules/#{resource[:id]}")
+      Nexus::Rest.destroy("/service/local/schedules/#{@resource[:id]}")
     rescue Exception => e
       raise Puppet::Error, "Error while deleting #{@resource.class.name}['#{@resource[:name]}']: #{e}"
     end
@@ -121,19 +121,19 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   # }
   def map_resource_to_data
     data = {
-      'name'       => resource[:name],
-      'enabled'    => resource[:enabled] == :true,
-      'typeId'     => resource[:type_id],
-      'schedule'   => resource[:reoccurrence].to_s,
+      'name'       => @resource[:name],
+      'enabled'    => @resource[:enabled] == :true,
+      'typeId'     => @resource[:type_id],
+      'schedule'   => @resource[:reoccurrence].to_s,
       'properties' => map_task_settings_to_properties,
     }
-    data['id'] = resource[:id] unless resource[:id] == :absent
-    data['alertEmail'] = resource[:alert_email] unless resource[:alert_email].nil?
-    data['startDate'] = resource[:start_date].to_s unless resource[:start_date].nil?
-    data['startTime'] = resource[:start_time] unless resource[:start_time].nil?
-    data['recurringDay'] = resource[:recurring_day].split(',') unless resource[:recurring_day].nil?
-    data['recurringTime'] = resource[:recurring_time] unless resource[:recurring_time].nil?
-    data['cronCommand'] = resource[:cron_expression] unless resource[:cron_expression].nil?
+    data['id'] = @resource[:id] unless @resource[:id] == :absent
+    data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email].nil?
+    data['startDate'] = @resource[:start_date].to_s unless @resource[:start_date].nil?
+    data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?
+    data['recurringDay'] = @resource[:recurring_day].split(',') unless @resource[:recurring_day].nil?
+    data['recurringTime'] = @resource[:recurring_time] unless @resource[:recurring_time].nil?
+    data['cronCommand'] = @resource[:cron_expression] unless @resource[:cron_expression].nil?
     { 'data' => data }
   end
 
