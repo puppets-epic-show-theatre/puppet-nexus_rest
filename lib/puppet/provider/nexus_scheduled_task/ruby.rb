@@ -133,11 +133,8 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   end
 
   def map_task_settings_to_properties
-    result = []
-    resource[:task_settings].each do |key, value|
-      result << { 'key' => key, 'value' => value }
-    end
-    result
+    task_settings = resource[:task_settings]
+    task_settings.keys.sort.collect { |key| { 'key' => key, 'value' => task_settings[key] } }
   end
 
   def exists?
