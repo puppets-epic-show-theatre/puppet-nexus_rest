@@ -89,6 +89,10 @@ Puppet::Type.type(:nexus_repository_target).provide(:ruby) do
 
   mk_resource_methods
 
+  def label=(value)
+    @dirty_flag = true
+  end
+
   def provider_type=(value)
     @dirty_flag = true
   end
