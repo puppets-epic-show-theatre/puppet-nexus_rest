@@ -324,6 +324,23 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
   end
 
+  describe :flush do
+    specify 'should use /service/local/schedules/<id> to update an existing resource' do
+      resource[:id] = 'a1b2'
+      instance.mark_config_dirty
+      Nexus::Rest.should_receive(:update).with('/service/local/schedules/a1b2', anything())
+
+      expect { instance.flush }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      instance.mark_config_dirty
+      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
+
+      expect { instance.flush }.to raise_error(Puppet::Error, /Error while updating nexus_scheduled_task\['Empty Trash'\]/)
+    end
+  end
+
   describe :destroy do
     specify 'should use /service/local/repositories/schedules to delete an existing resource' do
       resource[:id] = 'a1b2'

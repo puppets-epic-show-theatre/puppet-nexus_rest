@@ -5,6 +5,11 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 
 Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
+  def initialize(value={})
+    super(value)
+    @update_required = false
+  end
+
   def self.instances
     begin
       repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
@@ -98,8 +103,15 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     end
   end
 
-
   def flush
+    if @update_required
+      begin
+        Nexus::Rest.update("/service/local/schedules/#{@resource[:id]}", map_resource_to_data)
+        @property_hash = resource.to_hash
+      rescue Exception => e
+        raise Puppet::Error, "Error while updating #{@resource.class.name}['#{@resource[:name]}']: #{e}"
+      end
+    end
   end
 
   def destroy
@@ -143,5 +155,49 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   end
 
   mk_resource_methods
+
+  def mark_config_dirty
+    @update_required = true
+  end
+
+  def enabled=(value)
+    @dirty_flag = true
+  end
+
+  def type_id=(value)
+    @dirty_flag = true
+  end
+
+  def task_settings=(value)
+    @dirty_flag = true
+  end
+
+  def alert_email=(value)
+    @dirty_flag = true
+  end
+
+  def reoccurrence=(value)
+    @dirty_flag = true
+  end
+
+  def start_date=(value)
+    @dirty_flag = true
+  end
+
+  def start_time=(value)
+    @dirty_flag = true
+  end
+
+  def recurring_time=(value)
+    @dirty_flag = true
+  end
+
+  def recurring_day=(value)
+    @dirty_flag = true
+  end
+
+  def cron_expression=(value)
+    @dirty_flag = true
+  end
 
 end
