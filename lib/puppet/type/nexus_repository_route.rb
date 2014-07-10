@@ -53,6 +53,7 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   autorequire(:nexus_repository_group) do
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
+    self[:repository_group] if self[:repository_group] != '*'
   end
 
   autorequire(:nexus_repository) do
