@@ -149,7 +149,6 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     { 'data' => data }
   end
 
-
   def exists?
     @property_hash[:ensure] == :present
   end
