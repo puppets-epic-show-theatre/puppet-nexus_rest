@@ -72,7 +72,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:start_time) do
-    desc 'The start time in `hh:mm` the task should run. Mandatory when `reoccurrence` set to `once` or `hourly`.'
+    desc 'The start time in `hh:mm` the task should run (according to the timezone of the service). Mandatory when `reoccurrence` set to `once` or `hourly`.'
     validate do |value|
       unless value.nil?
         raise ArgumentError, "Start time must match the following format: <hh::mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
@@ -81,7 +81,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:recurring_time) do
-    desc 'The time this task should run.'
+    desc 'The time this task should run (according to the timezone of the service).'
     validate do |value|
       raise ArgumentError, "Recurring time must match the following format: <hh:mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
     end
