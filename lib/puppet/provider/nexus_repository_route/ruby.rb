@@ -13,25 +13,26 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
 
   def self.instances
     begin
-      order = 0
+      order = -1
 
       routes = Nexus::Rest.get_all('/service/local/repo_routes')
       routes['data'].collect do |route|
+        order += 1
 
         repositories = route['repositories'].collect { |repository| repository['id'] }
+        id = route['resourceURI'].scan(/.*\/([^\/]*)$/).first.pop
 
         new(
-          #:name                    => "nexus_repository_route_#{order}",
+          :name                    => "nexus_repository_route_#{order}",
           :ensure                  => :present,
-          :id                      => route['id'],
-          :order                   => order,
-          :url_pattern             => route['url_pattern'],
-          :rule_type               => route.has_key?('rule_type') ? route['rule_type'].to_s.to_sym : nil,
+          :id                      => id,
+          :position                => "#{order}",
+          :url_pattern             => route['pattern'],
+          :rule_type               => route.has_key?('ruleType') ? route['ruleType'].to_s.to_sym : nil,
           :repository_group        => route['groupId'],
           :repositories            => repositories.collect
         )
 
-        order += 1
       end
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_repository_route instances: #{e}"
