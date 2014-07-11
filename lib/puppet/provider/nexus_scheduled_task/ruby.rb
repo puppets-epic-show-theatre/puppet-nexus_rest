@@ -106,7 +106,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   def flush
     if @update_required
       begin
-        Nexus::Rest.update("/service/local/schedules/#{@resource[:id]}", map_resource_to_data)
+        Nexus::Rest.update("/service/local/schedules/#{@property_hash[:id]}", map_resource_to_data)
         @property_hash = resource.to_hash
       rescue Exception => e
         raise Puppet::Error, "Error while updating #{@resource.class.name}['#{@resource[:name]}']: #{e}"
@@ -116,7 +116,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
   def destroy
     begin
-      Nexus::Rest.destroy("/service/local/schedules/#{@resource[:id]}")
+      Nexus::Rest.destroy("/service/local/schedules/#{@property_hash[:id]}")
     rescue Exception => e
       raise Puppet::Error, "Error while deleting #{@resource.class.name}['#{@resource[:name]}']: #{e}"
     end
@@ -139,7 +139,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'schedule'   => @resource[:reoccurrence].to_s,
       'properties' => map_task_settings_to_properties,
     }
-    data['id'] = @resource[:id] unless @resource[:id].nil?
+    data['id'] = @property_hash[:id] unless @property_hash[:id].nil?
     data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email].nil?
     data['startDate'] = @resource[:start_date].to_s unless @resource[:start_date].nil?
     data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?
