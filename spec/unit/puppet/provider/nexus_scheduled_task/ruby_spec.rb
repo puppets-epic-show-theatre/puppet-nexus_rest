@@ -203,13 +203,11 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource.delete(:id)
-
       expect(instance.map_resource_to_data['data']).to_not include('id')
     end
 
     specify do
-      resource[:id] = 'a1b2'
+      instance.set({:id => 'a1b2'})
 
       expect(instance.map_resource_to_data['data']).to include('id' => 'a1b2')
     end
@@ -326,7 +324,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
 
   describe :flush do
     specify 'should use /service/local/schedules/<id> to update an existing resource' do
-      resource[:id] = 'a1b2'
+      instance.set({:id => 'a1b2'})
       instance.mark_config_dirty
       Nexus::Rest.should_receive(:update).with('/service/local/schedules/a1b2', anything())
 
@@ -343,7 +341,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
 
   describe :destroy do
     specify 'should use /service/local/repositories/schedules to delete an existing resource' do
-      resource[:id] = 'a1b2'
+      instance.set({:id => 'a1b2'})
       Nexus::Rest.should_receive(:destroy).with('/service/local/schedules/a1b2')
 
       expect { instance.destroy }.to_not raise_error
