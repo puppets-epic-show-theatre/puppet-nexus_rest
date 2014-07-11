@@ -41,7 +41,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     desc 'The email address where an email will be sent in case that task execution will fail. Set to `absent` to disable.'
     defaultto :absent
     validate do |value|
-      raise ArgumentError, "Alert email must not be empty'." if value.empty?
+      raise ArgumentError, "Alert email must not be empty'." if value.to_s.empty?
       raise ArgumentError, "Alert email must be a valid email address, got '#{value}'." unless value =~ /@/ or value.intern == :absent
     end
     munge { |value| value.intern == :absent ? value.intern : value }
