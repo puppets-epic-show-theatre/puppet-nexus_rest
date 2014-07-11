@@ -66,6 +66,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
   end
 
   describe :alert_email do
+    specify 'should default to absent' do
+      expect(described_class.new(defaults)[:alert_email]).to eq(:absent)
+    end
+
     specify 'should accept valid email address' do
       expect { described_class.new(defaults.merge(:alert_email => 'jdoe@example.com')) }.to_not raise_error
     end

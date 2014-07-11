@@ -237,7 +237,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource.delete(:alert_email)
+      resource[:alert_email] = :absent
 
       expect(instance.map_resource_to_data['data']).to_not include('alertEmail')
     end

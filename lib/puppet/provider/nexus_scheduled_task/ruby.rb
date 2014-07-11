@@ -140,7 +140,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       'properties' => map_task_settings_to_properties,
     }
     data['id'] = @property_hash[:id] unless @property_hash[:id].nil?
-    data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email].nil?
+    data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email] == :absent
     data['startDate'] = @resource[:start_date].to_s unless @resource[:start_date].nil?
     data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?
     data['recurringDay'] = @resource[:recurring_day].split(',') unless @resource[:recurring_day].nil?
