@@ -17,8 +17,8 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   newproperty(:position) do
     desc 'The position of the route configuration in the list of route configurations. These should be unique integers beginning from 0 and incrementing by steps of 1.'
-    defaultto :0
-    munge { |value| Integer(value) }
+    defaultto '-1'
+    munge { |value| "#{Integer(value)}" }
   end
 
   newproperty(:url_pattern) do
@@ -61,10 +61,12 @@ Puppet::Type.newtype(:nexus_repository_route) do
   end
 
   validate do
-    raise ArgumentError, "route position must be non-negative integer" if self[:position] < 0
-    raise ArgumentError, "route url_pattern must not be empty" if self[:position].empty?
-    raise ArgumentError, "route repository_group must not be empty" if self[:repository_group].empty?
-    raise ArgumentError, "route repositories list must not be empty" if self[:repositories].empty?
+    if self[:ensure] == :present
+      raise ArgumentError, "route position must be non-negative integer" if Integer(self[:position]) < 0
+      raise ArgumentError, "route url_pattern must not be empty" if self[:url_pattern].empty?
+      raise ArgumentError, "route repository_group must not be empty" if self[:repository_group].empty?
+      raise ArgumentError, "route repositories list must not be empty" if self[:repositories].empty?
+    end
   end
 
 end
