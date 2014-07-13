@@ -224,6 +224,14 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect(described_class.new(defaults)[:start_date]).to be_nil
     end
 
+    specify 'should accept zero' do
+      expect { described_class.new(defaults.merge(:start_date => 0)) }.to_not raise_error
+    end
+
+    specify 'should accept valid date' do
+      expect { described_class.new(defaults.merge(:start_date => 1405296000000)) }.to_not raise_error
+    end
+
     specify 'should not accept empty strings' do
       expect { described_class.new(defaults.merge(:start_date => '')) }.to raise_error(Puppet::Error, /must be a non-negative integer/)
     end

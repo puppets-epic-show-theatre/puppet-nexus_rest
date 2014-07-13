@@ -65,7 +65,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     validate do |value|
       unless value.nil?
         raise ArgumentError, "Start date must be a non-negative integer, got '#{value}'" unless value.to_s =~ /\d+/
-        raise ArgumentError, "Start date must be bigger than zero, got #{value}" unless value.to_i > 0
+        raise ArgumentError, "Start date must be bigger than zero, got #{value}" unless value.to_i >= 0
       end
     end
     munge { |value| Integer(value) }
