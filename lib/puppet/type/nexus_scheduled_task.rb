@@ -90,7 +90,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   newproperty(:recurring_day, :parent => Puppet::Property::List) do
     desc 'The day this task should run.'
     validate do |value|
-      raise ArgumentError, "Reccuring day must not be empty" if value.empty?
+      raise ArgumentError, "Reccuring day must not be empty" if value.to_s.empty?
     end
     def membership
       :inclusive_membership

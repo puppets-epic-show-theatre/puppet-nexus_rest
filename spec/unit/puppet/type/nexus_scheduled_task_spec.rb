@@ -294,6 +294,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect { described_class.new(defaults.merge(:recurring_day => 'saturday')) }.to_not raise_error
     end
 
+    specify 'should accept day as integer' do
+      expect { described_class.new(defaults.merge(:recurring_day => 1)) }.to_not raise_error
+    end
+
     specify 'should accept day as string' do
       expect { described_class.new(defaults.merge(:recurring_day => '1')) }.to_not raise_error
     end
