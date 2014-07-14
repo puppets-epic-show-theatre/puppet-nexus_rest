@@ -98,31 +98,27 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   validate do
-    reoccurrence = self[:reoccurrence]
-    start_date_nil_or_empty = (self[:start_date].nil? or self[:start_date].to_s.empty?)
-    start_time_nil_or_empty = (self[:start_time].nil? or self[:start_time].to_s.empty?)
-    recurring_day_nil_or_empty = (self[:recurring_day].nil? or self[:recurring_day].to_s.empty?)
-    recurring_time_nil_or_empty = (self[:recurring_time].nil? or self[:recurring_time].to_s.empty?)
-    cron_expression_nil_or_empty = (self[:cron_expression].nil? or self[:cron_expression].to_s.empty?)
     missing_fields = Array.new
 
-    case reoccurrence
+    case self[:reoccurrence]
       when :manual
       when :once, :hourly
-        missing_fields << 'start_date' if start_date_nil_or_empty
-        missing_fields << 'start_time' if start_time_nil_or_empty
+        missing_fields << collect_empty_properties([:start_date, :start_time])
       when :daily
-        missing_fields << 'start_date' if start_date_nil_or_empty
-        missing_fields << 'recurring_time' if recurring_time_nil_or_empty
+        missing_fields << collect_empty_properties([:start_date, :recurring_time])
       when :weekly, :monthly
-        missing_fields << 'start_date' if start_date_nil_or_empty
-        missing_fields << 'recurring_day' if recurring_day_nil_or_empty
-        missing_fields << 'recurring_time' if recurring_time_nil_or_empty
+        missing_fields << collect_empty_properties([:start_date, :recurring_day, :recurring_time])
       when :advanced
-        missing_fields << 'cron_expression' if cron_expression_nil_or_empty
+        missing_fields << collect_empty_properties([:cron_expression])
     end
 
-    fail("Setting reoccurrence to '#{reoccurrence}' requires #{missing_fields.join(' and ')} to be set as well") unless missing_fields.empty?
+    fail("Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.flatten.join(' and ')} to be set as well") unless missing_fields.flatten.empty?
+  end
+
+  # Returns an array containing the names of the properties whose value is either nil or an empty string.
+  #
+  def collect_empty_properties(properties)
+    properties.collect { |property| property if self[property].nil? or self[property].to_s.empty? }.compact
   end
 
   newparam(:inclusive_membership) do
