@@ -306,6 +306,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect { described_class.new(defaults.merge(:recurring_day => '')) }.to raise_error(Puppet::Error, /must not be empty/)
     end
 
+    specify 'should not accept a comma-separated string' do
+      expect { described_class.new(defaults.merge(:recurring_day => '1,2')) }.to raise_error(Puppet::Error, /must be provided as an array/)
+    end
+
     specify 'should accept valid weekday' do
       expect { described_class.new(defaults.merge(:recurring_day => 'saturday')) }.to_not raise_error
     end
