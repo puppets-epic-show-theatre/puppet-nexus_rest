@@ -69,4 +69,56 @@ describe provider_class do
       provider.create
     end
   end
+
+  describe 'flush' do
+    before(:each) do
+      # mark resources as 'dirty'
+      provider.rule_type = :inclusive
+      provider.instance_variable_get(:@property_hash)[:id] = '195adcafe5'
+    end
+    it 'should use /service/local/repo_groups/<repo_route_id>' do
+      Nexus::Rest.should_receive(:update).with('/service/local/repo_routes/195adcafe5', anything())
+      provider.flush
+    end
+    it 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
+      expect { provider.flush }.to raise_error(Puppet::Error, /Error while updating nexus_repository_route 0/)
+    end
+    it 'should map url_pattern to pattern' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:pattern =>  '.*/com/atlassian/.*'))
+      provider.flush
+    end
+    it 'should map rule_type to ruleType' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:ruleType => :inclusive))
+      provider.flush
+    end
+    it 'should map repository_group to groupId' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:groupId => 'repo-group-1'))
+      provider.flush
+    end
+    it 'should map repositories to repositories' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:repositories => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]))
+      provider.flush
+    end
+  end
+
+  describe 'destroy' do
+    before(:each) do
+      # mark resources as 'dirty'
+      provider.instance_variable_get(:@property_hash)[:id] = '195adcafe5'
+    end
+    it 'should use /service/local/repo_routes/<repo_route_id>' do
+      Nexus::Rest.should_receive(:destroy).with('/service/local/repo_routes/195adcafe5')
+      provider.destroy
+    end
+    it 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
+      expect { provider.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_repository_route 0/)
+    end
+  end
+
+  it "should return false if it is not existing" do
+    # the dummy example isn't returned by self.instances
+    expect(provider.exists?).to be_false
+  end
 end
