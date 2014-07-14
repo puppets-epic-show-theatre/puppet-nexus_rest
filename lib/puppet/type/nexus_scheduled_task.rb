@@ -93,7 +93,10 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
       raise ArgumentError, "Reccuring day must not be empty" if value.to_s.empty?
       raise ArgumentError, "Multiple reccuring days must be provided as an array, not a comma-separated list." if value.to_s.include?(',')
     end
-    munge { |value| value.downcase if value.is_a?(String) }
+    munge do |value|
+      munged_value = super(value)
+      munged_value.is_a?(String) ? munged_value.downcase : munged_value
+    end
     def membership
       :inclusive_membership
     end
