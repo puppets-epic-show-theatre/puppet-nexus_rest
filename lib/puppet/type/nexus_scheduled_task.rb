@@ -92,6 +92,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     validate do |value|
       raise ArgumentError, "Reccuring day must not be empty" if value.to_s.empty?
     end
+    munge { |value| value.downcase if value.is_a?(String) }
     def membership
       :inclusive_membership
     end

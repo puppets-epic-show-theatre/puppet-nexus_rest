@@ -298,6 +298,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect(described_class.new(defaults)[:recurring_day]).to be_nil
     end
 
+    specify 'should munge day of week to lowercase' do
+      expect(described_class.new(defaults.merge(:recurring_day => 'MONDAY'))[:recurring_day]).to eq('monday')
+    end
+
     specify 'should not accept empty value' do
       expect { described_class.new(defaults.merge(:recurring_day => '')) }.to raise_error(Puppet::Error, /must not be empty/)
     end
