@@ -98,27 +98,24 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   validate do
-    missing_fields = Array.new
-
     case self[:reoccurrence]
       when :manual
       when :once, :hourly
-        missing_fields << collect_empty_properties([:start_date, :start_time])
+        ensure_nonempty_property_values([:start_date, :start_time])
       when :daily
-        missing_fields << collect_empty_properties([:start_date, :recurring_time])
+        ensure_nonempty_property_values([:start_date, :recurring_time])
       when :weekly, :monthly
-        missing_fields << collect_empty_properties([:start_date, :recurring_day, :recurring_time])
+        ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
       when :advanced
-        missing_fields << collect_empty_properties([:cron_expression])
+        ensure_nonempty_property_values([:cron_expression])
     end
-
-    fail("Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.flatten.join(' and ')} to be set as well") unless missing_fields.flatten.empty?
   end
 
-  # Returns an array containing the names of the properties whose value is either nil or an empty string.
+  # Ensure all listed properties have non-empty values set.
   #
-  def collect_empty_properties(properties)
-    properties.collect { |property| property if self[property].nil? or self[property].to_s.empty? }.compact
+  def ensure_nonempty_property_values(properties)
+    missing_fields = properties.collect { |property| property if self[property].nil? or self[property].to_s.empty? }.compact
+    fail("Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.join(' and ')} to be set as well") unless missing_fields.empty?
   end
 
   newparam(:inclusive_membership) do
