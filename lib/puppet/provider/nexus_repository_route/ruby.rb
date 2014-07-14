@@ -59,17 +59,17 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
   def flush
     if @dirty_flag
       begin
-        Nexus::Rest.update("/service/local/repo_routes/#{resource[:name]}", map_resource_to_data)
+        Nexus::Rest.update("/service/local/repo_routes/#{@property_hash[:id]}", map_resource_to_data)
+        @property_hash = resource.to_hash
       rescue Exception => e
         raise Puppet::Error, "Error while updating nexus_repository_route #{resource[:name]}: #{e}"
       end
-      @property_hash = resource.to_hash
     end
   end
 
   def destroy
     begin
-      Nexus::Rest.destroy("/service/local/repo_routes/#{resource[:name]}")
+      Nexus::Rest.destroy("/service/local/repo_routes/#{@property_hash[:id]}")
     rescue Exception => e
       raise Puppet::Error, "Error while deleting nexus_repository_route #{resource[:name]}: #{e}"
     end
