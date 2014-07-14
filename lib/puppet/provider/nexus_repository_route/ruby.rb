@@ -32,7 +32,7 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
             :url_pattern             => route['pattern'],
             :rule_type               => route.has_key?('ruleType') ? route['ruleType'].to_s.to_sym : nil,
             :repository_group        => route['groupId'],
-            :repositories            => repositories.collect
+            :repositories            => repositories
           )
         }
       else
