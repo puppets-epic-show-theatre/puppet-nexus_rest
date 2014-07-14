@@ -16,24 +16,29 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
       order = -1
 
       routes = Nexus::Rest.get_all('/service/local/repo_routes')
-      routes['data'].collect do |route|
-        order += 1
 
-        repositories = route['repositories'].collect { |repository| repository['id'] }
-        id = route['resourceURI'].scan(/.*\/([^\/]*)$/).first.pop
+      if !routes.empty?
+        #sorting by id to give some sense of stability
+        [routes['data']].flatten.sort_by { |route| route['resourceURI'] }.collect { |route|
+          order += 1
 
-        new(
-          :name                    => "nexus_repository_route_#{order}",
-          :ensure                  => :present,
-          :id                      => id,
-          :position                => "#{order}",
-          :url_pattern             => route['pattern'],
-          :rule_type               => route.has_key?('ruleType') ? route['ruleType'].to_s.to_sym : nil,
-          :repository_group        => route['groupId'],
-          :repositories            => repositories.collect
-        )
+          repositories = route['repositories'].collect { |repository| repository['id'] }
+          id = route['resourceURI'].scan(/.*\/([^\/]*)$/).first.pop
 
+          new(
+            :name                    => "#{order}",
+            :ensure                  => :present,
+            :id                      => id,
+            :url_pattern             => route['pattern'],
+            :rule_type               => route.has_key?('ruleType') ? route['ruleType'].to_s.to_sym : nil,
+            :repository_group        => route['groupId'],
+            :repositories            => repositories.collect
+          )
+        }
+      else
+        []
       end
+
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_repository_route instances: #{e}"
     end
