@@ -3,6 +3,7 @@ require 'puppet/property/boolean'
 
 Puppet::Type.newtype(:nexus_repository_route) do
   @doc = "Manages Nexus Repository Routes through a REST API"
+  @@nexus_all_group_repositories_marker = '*'
 
   ensurable
 
@@ -46,8 +47,8 @@ Puppet::Type.newtype(:nexus_repository_route) do
   end
 
   autorequire(:nexus_repository_group) do
+    self[:repository_group] if self[:repository_group] != @@nexus_all_group_repositories_marker
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
-    self[:repository_group] if self[:repository_group] != '*'
   end
 
   autorequire(:nexus_repository) do
