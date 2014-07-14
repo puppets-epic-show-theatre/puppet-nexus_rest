@@ -90,15 +90,20 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
   # }
   def map_resource_to_data
     data = {
-      :url_pattern             => resource[:url_pattern],
-      :rule_type               => resource[:rule_type],
-      :repository_group        => resource[:repository_group],
-      :repositories            => resource[:repositories].collect { |repository| {'id' => repository} }
+      :id              => @property_hash[:id],
+      :pattern         => resource[:url_pattern],
+      :ruleType        => resource[:rule_type],
+      :groupId         => resource[:repository_group],
+      :repositories    => resource[:repositories].collect { |repository| {'id' => repository} }
     }
     {:data => data}
   end
 
   mk_resource_methods
+
+  def id=(value)
+    @dirty_flag = true
+  end
 
   def url_pattern=(value)
     @dirty_flag = true
@@ -108,7 +113,7 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
     @dirty_flag = true
   end
 
-  def repository_group=(value)
+  def repositories=(value)
     @dirty_flag = true
   end
 
