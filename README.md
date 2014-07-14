@@ -141,9 +141,24 @@ nexus_repository_group { 'example-repo-group':
   label           => 'Example Repository Group',   #required
   provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
   exposed         => true,                         #valid values: true (default), false
-  repositories    => ['new-repository',            #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
+  repositories    => [                             #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
+                      'new-repository',
                       'other-repository',
-                      'repository-3']
+                      'repository-3'
+                     ]
+}
+```
+
+```
+#!puppet
+
+nexus_repository_target { 'dummy-target-id':
+  label         => 'dummy-target',                 #required
+  provider_type => 'maven2',                       #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'any'
+  patterns      => [                               #required, must be non-empty
+                        '^/com/atlassian/.*$',
+                        '^/io/atlassian/.*$'
+                   ]
 }
 ```
 
