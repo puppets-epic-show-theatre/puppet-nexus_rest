@@ -40,9 +40,9 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
   end
 
   def self.prefetch(resources)
-    groups = instances
+    routes = instances
     resources.keys.each do |name|
-      if provider = groups.find { |group| group.order == resources[name].order }
+      if provider = routes.find { |route| route.name == name }
         resources[name].provider = provider
       end
     end
