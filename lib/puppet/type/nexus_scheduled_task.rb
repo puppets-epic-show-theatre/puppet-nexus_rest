@@ -106,6 +106,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
         ensure_nonempty_property_values([:start_date, :recurring_time])
       when :weekly
         ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
+        ensure_recurring_day_in(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
       when :monthly
         ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
         ensure_recurring_day_in([('1'..'31').to_a, 'last'].flatten)

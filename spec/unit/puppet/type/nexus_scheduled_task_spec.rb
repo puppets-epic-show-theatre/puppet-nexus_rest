@@ -174,6 +174,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     specify 'should not accept missing start_date, recurring_day and reccuring_time' do
       expect { described_class.new(defaults.merge(:reoccurrence => :weekly)) }.to raise_error(Puppet::Error, /requires start_date and recurring_day and recurring_time/)
     end
+
+    specify 'should not accept recurring_day as day of month' do
+      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1', :recurring_day => '1', :recurring_time => '0:10')) }.to raise_error(Puppet::Error, /Recurring day must be one of/)
+    end
   end
 
 
