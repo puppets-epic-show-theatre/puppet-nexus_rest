@@ -6,18 +6,12 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   ensurable
 
-  newparam(:name, :namevar => true) do
-    desc 'Unique route identifier; once created cannot be changed unless the Repository Route is destroyed. This is not stored in Nexus.'
-  end
-
-  newproperty(:id) do
+  newparam(:id) do
     desc 'Read only value used to manage the resource, do not specify this in the manifest.'
-    defaultto ''
   end
 
-  newproperty(:position) do
+  newparam(:position, :namevar => true) do
     desc 'The position of the route configuration in the list of route configurations. These should be unique integers beginning from 0 and incrementing by steps of 1.'
-    defaultto '-1'
     munge { |value| "#{Integer(value)}" }
   end
 
