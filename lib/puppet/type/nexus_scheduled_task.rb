@@ -104,8 +104,11 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
         ensure_nonempty_property_values([:start_date, :start_time])
       when :daily
         ensure_nonempty_property_values([:start_date, :recurring_time])
-      when :weekly, :monthly
+      when :weekly
         ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
+      when :monthly
+        ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
+        ensure_recurring_day_in([('1'..'31').to_a, 'last'].flatten)
       when :advanced
         ensure_nonempty_property_values([:cron_expression])
     end
@@ -116,6 +119,15 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   def ensure_nonempty_property_values(properties)
     missing_fields = properties.collect { |property| property if self[property].nil? or self[property].to_s.empty? }.compact
     fail("Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.join(' and ')} to be set as well") unless missing_fields.empty?
+  end
+
+  # Ensure all items of the recurring_day property are included in the given list of items.
+  #
+  # Note: make sure to pass an array with elements of the type string; otherwise there may be issues with the data types.
+  def ensure_recurring_day_in(valid_items)
+    self[:recurring_day].split(',').each do |item|
+      fail("Recurring day must be one of #{valid_items}, got '#{item}'") unless valid_items.include?(item.to_s)
+    end
   end
 
   newparam(:inclusive_membership) do
