@@ -140,4 +140,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     newvalues(:inclusive)
     defaultto :inclusive
   end
+
+  autorequire(:file) do
+    Nexus::Config::file_path
+  end
 end
