@@ -154,13 +154,17 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   def start_date_in_millis
     year,month,day = /(\d{4})-(\d{2})-(\d{2})/.match(@resource[:start_date]).captures
     start_date = Time.gm(year, month, day)
-    start_date.to_i * 1000
+    start_date_in_millis = start_date.to_i * 1000
+    debug("Converted start_date #{@resource[:start_date]} to #{start_date_in_millis}")
+    start_date_in_millis
   end
 
   # Returns the given start date as a String matching `YYYY-MM-DD`.
   #
   def self.start_date_formatted(start_date_in_millis)
-    Time.at(start_date_in_millis / 1000).strftime("%Y-%m-%d")
+    start_date_formatted = Time.at(start_date_in_millis / 1000).strftime("%Y-%m-%d")
+    debug("Converted startDate timestamp #{start_date_in_millis} to #{start_date_formatted}")
+    start_date_formatted
   end
 
   def exists?
