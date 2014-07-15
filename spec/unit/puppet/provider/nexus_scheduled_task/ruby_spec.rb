@@ -53,6 +53,13 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect(described_class.instances).to have(2).items
     end
 
+    specify 'should apply ordering base on id' do
+      Nexus::Rest.should_receive(:get_all_plus_n).twice.with('/service/local/schedules').and_return({'data' => [{'id' => '20'}, {'id' => '9'}]})
+
+      expect(described_class.instances[0].id).to eq('9')
+      expect(described_class.instances[1].id).to eq('20')
+    end
+
     specify do
       Nexus::Rest.should_receive(:get_all_plus_n).and_raise('Operation failed')
 

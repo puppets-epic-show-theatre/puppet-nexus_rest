@@ -13,7 +13,8 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   def self.instances
     begin
       repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
-      repositories['data'].collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
+      sorted = repositories['data'].sort { |x,y| Integer(x['id']) <=> Integer(y['id']) }
+      sorted.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_scheduled_task instances: #{e}"
     end
