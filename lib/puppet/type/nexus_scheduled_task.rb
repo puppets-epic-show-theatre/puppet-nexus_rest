@@ -5,10 +5,6 @@ require 'puppet/property/list'
 Puppet::Type.newtype(:nexus_scheduled_task) do
   @doc = 'A background task of a Nexus service.'
 
-  @@known_task_types = {
-    'Optimize Repository Index' => 'OptimizeIndexTask',
-  }
-
   ensurable
 
   newparam(:name, :namevar => true) do
