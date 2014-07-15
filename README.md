@@ -1,4 +1,4 @@
-# Nexus REST #
+# Puppet Module for Sonatype Nexus #
 
 ## Overview ##
 
