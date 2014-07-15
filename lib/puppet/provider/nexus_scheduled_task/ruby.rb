@@ -49,7 +49,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
       :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
       :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_task_settings(scheduled_task['properties']) : :absent,
-      :start_date      => scheduled_task.has_key?('startDate') ? Integer(scheduled_task['startDate']) : :absent,
+      :start_date      => scheduled_task.has_key?('startDate') ? start_date_formatted(Integer(scheduled_task['startDate'])) : :absent,
       :start_time      => scheduled_task.has_key?('startTime') ? scheduled_task['startTime'] : :absent,
       :recurring_day   => scheduled_task.has_key?('recurringDay') ? scheduled_task['recurringDay'].join(',') : :absent,
       :recurring_time  => scheduled_task.has_key?('recurringTime') ? scheduled_task['recurringTime'] : :absent,
@@ -141,12 +141,26 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     }
     data['id'] = @property_hash[:id] unless @property_hash[:id].nil?
     data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email] == :absent
-    data['startDate'] = @resource[:start_date].to_s unless @resource[:start_date].nil?
+    data['startDate'] = start_date_in_millis.to_s unless @resource[:start_date].nil?
     data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?
     data['recurringDay'] = @resource[:recurring_day].split(',') unless @resource[:recurring_day].nil?
     data['recurringTime'] = @resource[:recurring_time] unless @resource[:recurring_time].nil?
     data['cronCommand'] = @resource[:cron_expression] unless @resource[:cron_expression].nil?
     { 'data' => data }
+  end
+
+  # Returns the current start date in millis as expected by the Nexus REST API.
+  #
+  def start_date_in_millis
+    year,month,day = /(\d{4})-(\d{2})-(\d{2})/.match(@resource[:start_date]).captures
+    start_date = Time.gm(year, month, day)
+    start_date.to_i * 1000
+  end
+
+  # Returns the given start date as a String matching `YYYY-MM-DD`.
+  #
+  def self.start_date_formatted(start_date_in_millis)
+    Time.at(start_date_in_millis / 1000).strftime("%Y-%m-%d")
   end
 
   def exists?

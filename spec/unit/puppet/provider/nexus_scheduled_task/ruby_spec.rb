@@ -31,7 +31,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
         'EmptyTrashItemsOlderThan' => '',
         'repositoryId'             => 'all_repo'
       },
-      :start_date      => 1385242260000,
+      :start_date      => '1970-01-01',
       :recurring_day   => 'sunday',
       :recurring_time  => '21:31',
     }
@@ -129,9 +129,10 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify 'should map startDate to start_date' do
-      Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details.merge('startDate' => '1385242260000')]})
+      # 1402790400000 is Sunday, June 15, 2014 12:00:00 AM GMT
+      Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details.merge('startDate' => '1402790400000')]})
 
-      expect(described_class.instances[0].start_date).to eq(1385242260000)
+      expect(described_class.instances[0].start_date).to eq('2014-06-15')
     end
 
     specify 'should map absent start_time to :absent' do
@@ -262,9 +263,10 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:start_date] = 1385242260000
+      resource[:start_date] = '2014-06-15'
 
-      expect(instance.map_resource_to_data['data']).to include('startDate' => '1385242260000')
+      # 1402790400000 is Sunday, June 15, 2014 12:00:00 AM GMT
+      expect(instance.map_resource_to_data['data']).to include('startDate' => '1402790400000')
     end
 
     specify do

@@ -102,7 +102,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
 
   describe 'reoccurrence once' do
     specify 'should accept valid input' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :once, :start_date => '1404789546000', :start_time => '00:00')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :once, :start_date => '2014-07-14', :start_time => '00:00')) }.to_not raise_error
     end
 
     specify 'should not accept missing start_date' do
@@ -110,7 +110,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
 
     specify 'should not accept missing start_time' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :once, :start_date => '1')) }.to raise_error(Puppet::Error, /requires start_time/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :once, :start_date => '1970-01-01')) }.to raise_error(Puppet::Error, /requires start_time/)
     end
 
     specify 'should not accept missing start_date and start_time' do
@@ -120,7 +120,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
 
   describe 'reoccurrence hourly' do
     specify 'should accept valid input' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :hourly, :start_date => '1', :start_time => '20:30')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :hourly, :start_date => '1970-01-01', :start_time => '20:30')) }.to_not raise_error
     end
 
     specify 'should not accept missing start_date' do
@@ -128,7 +128,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
 
     specify 'should not accept missing start_time' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :hourly, :start_date => '1')) }.to raise_error(Puppet::Error, /requires start_time/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :hourly, :start_date => '1970-01-01')) }.to raise_error(Puppet::Error, /requires start_time/)
     end
 
     specify 'should not accept missing start_date and start_time' do
@@ -138,15 +138,15 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
 
   describe 'reoccurrence daily' do
     specify 'should accept valid input' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :daily, :start_date => '1', :recurring_time => '03:00')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :daily, :start_date => '1970-01-01', :recurring_time => '03:00')) }.to_not raise_error
     end
 
-    specify 'should not accept missing start_date' do
+    specify 'should not accept missing :start_date' do
       expect { described_class.new(defaults.merge(:reoccurrence => :daily, :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /requires start_date/)
     end
 
     specify 'should not accept missing recurring_time' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :daily, :start_date => '1')) }.to raise_error(Puppet::Error, /requires recurring_time/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :daily, :start_date => '1970-01-01')) }.to raise_error(Puppet::Error, /requires recurring_time/)
     end
 
     specify 'should not accept missing start_date and reccuring_time' do
@@ -156,7 +156,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
 
   describe 'reoccurrence weekly' do
     specify 'should accept valid input' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1', :recurring_day => 'monday', :recurring_time => '0:10')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1970-01-01', :recurring_day => 'monday', :recurring_time => '0:10')) }.to_not raise_error
     end
 
     specify 'should not accept missing start_date' do
@@ -164,11 +164,11 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
 
     specify 'should not accept missing recurring_day' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /requires recurring_day/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1970-01-01', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /requires recurring_day/)
     end
 
     specify 'should not accept missing recurring_time' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1', :recurring_day => 'monday')) }.to raise_error(Puppet::Error, /requires recurring_time/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1970-01-01', :recurring_day => 'monday')) }.to raise_error(Puppet::Error, /requires recurring_time/)
     end
 
     specify 'should not accept missing start_date, recurring_day and reccuring_time' do
@@ -176,18 +176,18 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
 
     specify 'should not accept recurring_day as day of month' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1', :recurring_day => '1', :recurring_time => '0:10')) }.to raise_error(Puppet::Error, /Recurring day must be one of/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :weekly, :start_date => '1970-01-01', :recurring_day => '1', :recurring_time => '0:10')) }.to raise_error(Puppet::Error, /Recurring day must be one of/)
     end
   end
 
 
   describe 'reoccurrence monthly' do
     specify 'should accept valid input' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1', :recurring_day => 'last', :recurring_time => '23:59')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1970-01-01', :recurring_day => 'last', :recurring_time => '23:59')) }.to_not raise_error
     end
 
     specify 'should accept recurring_day as day of month' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1', :recurring_day => [1, 2, 30, 31], :recurring_time => '23:59')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1970-01-01', :recurring_day => [1, 2, 30, 31], :recurring_time => '23:59')) }.to_not raise_error
     end
 
     specify 'should not accept missing start_date' do
@@ -195,15 +195,15 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
 
     specify 'should not accept missing recurring_day' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /requires recurring_day/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1970-01-01', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /requires recurring_day/)
     end
 
     specify 'should not accept recurring_day as weekday' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1', :recurring_day => 'monday', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /Recurring day must be one of/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1970-01-01', :recurring_day => 'monday', :recurring_time => '00:00')) }.to raise_error(Puppet::Error, /Recurring day must be one of/)
     end
 
     specify 'should not accept missing recurring_time' do
-      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1', :recurring_day => 'last')) }.to raise_error(Puppet::Error, /requires recurring_time/)
+      expect { described_class.new(defaults.merge(:reoccurrence => :monthly, :start_date => '1970-01-01', :recurring_day => 'last')) }.to raise_error(Puppet::Error, /requires recurring_time/)
     end
 
     specify 'should not accept missing start_date, recurring_day and reccuring_time' do
@@ -236,24 +236,24 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect(described_class.new(defaults)[:start_date]).to be_nil
     end
 
-    specify 'should accept zero' do
-      expect { described_class.new(defaults.merge(:start_date => 0)) }.to_not raise_error
+    specify 'should accept epoch' do
+      expect { described_class.new(defaults.merge(:start_date => '1970-01-01')) }.to_not raise_error
     end
 
     specify 'should accept valid date' do
-      expect { described_class.new(defaults.merge(:start_date => 1405296000000)) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:start_date => '2014-06-15')) }.to_not raise_error
     end
 
     specify 'should not accept empty strings' do
-      expect { described_class.new(defaults.merge(:start_date => '')) }.to raise_error(Puppet::Error, /must be a non-negative integer/)
+      expect { described_class.new(defaults.merge(:start_date => '')) }.to raise_error(Puppet::Error, /must not be empty/)
     end
 
     specify 'should not accept characters' do
-      expect { described_class.new(defaults.merge(:start_date => 'invalid')) }.to raise_error(Puppet::Error, /must be a non-negative integer/)
+      expect { described_class.new(defaults.merge(:start_date => 'invalid')) }.to raise_error(Puppet::Error, /must match YYYY-MM-DD/)
     end
 
-    specify 'should not accept negative values' do
-      expect { described_class.new(defaults.merge(:start_date => -1)) }.to raise_error(Puppet::Error, /must be bigger than zero/)
+    specify 'should not accept numeric values' do
+      expect { described_class.new(defaults.merge(:start_date => 1)) }.to raise_error(Puppet::Error, /must match YYYY-MM-DD/)
     end
   end
 
