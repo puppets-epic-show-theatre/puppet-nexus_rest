@@ -141,7 +141,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     }
     data['id'] = @property_hash[:id] unless @property_hash[:id].nil?
     data['alertEmail'] = @resource[:alert_email] unless @resource[:alert_email] == :absent
-    data['startDate'] = start_date_in_millis.to_s unless @resource[:start_date].nil?
+    data['startDate'] = start_date_in_millis(@resource[:start_date]).to_s unless @resource[:start_date].nil?
     data['startTime'] = @resource[:start_time] unless @resource[:start_time].nil?
     data['recurringDay'] = @resource[:recurring_day].split(',') unless @resource[:recurring_day].nil?
     data['recurringTime'] = @resource[:recurring_time] unless @resource[:recurring_time].nil?
@@ -149,13 +149,13 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     { 'data' => data }
   end
 
-  # Returns the current start date in millis as expected by the Nexus REST API.
+  # Returns a given date in milliseconds (as expected by the Nexus API). Date expected to match match `YYYY-MM-DD`.
   #
-  def start_date_in_millis
-    year,month,day = /(\d{4})-(\d{2})-(\d{2})/.match(@resource[:start_date]).captures
+  def start_date_in_millis(start_date_formatted)
+    year,month,day = /(\d{4})-(\d{2})-(\d{2})/.match(start_date_formatted).captures
     start_date = Time.gm(year, month, day)
     start_date_in_millis = start_date.to_i * 1000
-    debug("Converted start_date #{@resource[:start_date]} to #{start_date_in_millis}")
+    debug("Converted start_date #{start_date_formatted} to #{start_date_in_millis}")
     start_date_in_millis
   end
 
