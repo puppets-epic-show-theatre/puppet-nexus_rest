@@ -355,4 +355,16 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_scheduled_task\['Empty Trash'\]/)
     end
   end
+
+  # 1402790400000 is Sunday, June 15, 2014 12:00:00 AM GMT
+
+  describe :start_date_in_millis do
+    specify { expect(instance.start_date_in_millis('2014-06-15', '00:00')).to eq(1402790400000) }
+    specify { expect(instance.start_date_in_millis('2014-06-15', '12:00')).to eq(1402833600000) }
+    specify { expect(instance.start_date_in_millis('2014-06-15', '23:59')).to eq(1402876740000) }
+  end
+
+  describe :start_date_formatted do
+    specify { expect(described_class.start_date_formatted(1402790400000)).to eq('2014-06-15') }
+  end
 end
