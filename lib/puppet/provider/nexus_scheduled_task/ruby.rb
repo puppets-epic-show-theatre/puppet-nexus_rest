@@ -14,7 +14,18 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     begin
       repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
       sorted = repositories['data'].sort { |x,y| Integer(x['id']) <=> Integer(y['id']) }
-      sorted.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
+      accepted_tasks = sorted.inject({}) do |accepted_tasks, scheduled_task|
+        name = scheduled_task['name']
+        if accepted_tasks[name] then
+          warning("Found multiple scheduled tasks with the same name '#{name}'. Only the first task will be managed, " +
+            "the task with the id #{scheduled_task['id']} will be ignored by Puppet. Please review the task " +
+            "configuration through the web interface (e.g. rename the duplicates ones or delete them).")
+        else
+          accepted_tasks[name] = scheduled_task
+        end
+        accepted_tasks
+      end
+      accepted_tasks.values.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_scheduled_task instances: #{e}"
     end

@@ -48,16 +48,62 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
 
   describe :instances do
     specify do
-      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/schedules').and_return({'data' => [{'id' => '1'}, {'id' => '2'}]})
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/schedules').and_return(
+        {
+          'data' => [
+            {
+              'id'   => '1',
+              'name' => 'task 1'
+            },
+            {
+              'id'   => '2',
+              'name' => 'task 2'
+            }
+          ]
+        }
+      )
 
       expect(described_class.instances).to have(2).items
     end
 
     specify 'should apply ordering base on id' do
-      Nexus::Rest.should_receive(:get_all_plus_n).twice.with('/service/local/schedules').and_return({'data' => [{'id' => '20'}, {'id' => '9'}]})
+      Nexus::Rest.should_receive(:get_all_plus_n).twice.with('/service/local/schedules').and_return(
+        {
+          'data' => [
+            {
+              'id'   => '20',
+              'name' => 'second task'
+            },
+            {
+              'id'   => '9',
+              'name' => 'first task'
+            }
+          ]
+        }
+      )
 
       expect(described_class.instances[0].id).to eq('9')
       expect(described_class.instances[1].id).to eq('20')
+    end
+
+    specify 'should remove duplicate item' do
+      Nexus::Rest.should_receive(:get_all_plus_n).twice.with('/service/local/schedules').and_return(
+        {
+          'data' => [
+            {
+              'id'   => '1',
+              'name' => 'duplicate'
+            },
+            {
+              'id'   => '2',
+              'name' => 'duplicate'
+            }
+          ]
+        }
+      )
+
+      expect(described_class.instances).to have(1).item
+      expect(described_class.instances[0].id).to eq('1')
     end
 
     specify do
