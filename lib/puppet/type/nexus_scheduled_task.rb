@@ -100,22 +100,24 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   validate do
-    raise ArgumentError, "Type is a mandatory property" if self[:ensure] == :present and self[:type].nil?
-
-    case self[:reoccurrence]
-      when :manual
-      when :once, :hourly
-        ensure_nonempty_property_values([:start_date, :start_time])
-      when :daily
-        ensure_nonempty_property_values([:start_date, :recurring_time])
-      when :weekly
-        ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
-        ensure_recurring_day_in(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
-      when :monthly
-        ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
-        ensure_recurring_day_in([('1'..'31').to_a, 'last'].flatten)
-      when :advanced
-        ensure_nonempty_property_values([:cron_expression])
+    if self[:ensure] == :present
+      raise ArgumentError, "Type is a mandatory property" if self[:type].nil?
+  
+      case self[:reoccurrence]
+        when :manual
+        when :once, :hourly
+          ensure_nonempty_property_values([:start_date, :start_time])
+        when :daily
+          ensure_nonempty_property_values([:start_date, :recurring_time])
+        when :weekly
+          ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
+          ensure_recurring_day_in(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
+        when :monthly
+          ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
+          ensure_recurring_day_in([('1'..'31').to_a, 'last'].flatten)
+        when :advanced
+          ensure_nonempty_property_values([:cron_expression])
+      end
     end
   end
 
