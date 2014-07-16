@@ -100,6 +100,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   validate do
+    raise ArgumentError, "Type is a mandatory property" if self[:ensure] == :present and self[:type].nil?
+
     case self[:reoccurrence]
       when :manual
       when :once, :hourly
