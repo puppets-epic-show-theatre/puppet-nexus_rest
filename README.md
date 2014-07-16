@@ -1,4 +1,4 @@
-# Nexus REST #
+# Puppet Module for Sonatype Nexus #
 
 ## Overview ##
 
@@ -111,6 +111,54 @@ nexus_smtp_settings { 'current':
   password_value         => 'keepitsecret',
   communication_security => none,
   sender_email           => 'nexus@example.com',
+}
+```
+
+### Repository Configuration ###
+
+```
+#!puppet
+
+nexus_repository { 'new-repository':
+  label                   => 'A New Repository',   #required
+  provider_type           => 'maven2',             #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  type                    => 'hosted',             #valid values: 'hosted' (default), 'proxy', 'virtual'
+  policy                  => 'snapshot',           #valid values: 'snapshot', 'release' (default), 'mixed'
+  exposed                 => true,                 #valid values: true (default), false
+  write_policy            => 'allow_write_once',   #valid values: 'read_only', 'allow_write_once (default)', 'allow_write'
+  browseable              => true,                 #valid values: true (default), false
+  indexable               => true,                 #valid values: true (default), false
+  not_found_cache_ttl     => 1440,                 #1440 is default
+  local_storage_url       => 'file:///some/path',  #valid values: not specified (default), or absolute file path beginning with 'file:///'
+  download_remote_indexes => false                 #valid values: true, false (default)
+}
+```
+
+```
+#!puppet
+
+nexus_repository_group { 'example-repo-group':
+  label           => 'Example Repository Group',   #required
+  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  exposed         => true,                         #valid values: true (default), false
+  repositories    => [                             #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
+                      'new-repository',
+                      'other-repository',
+                      'repository-3'
+                     ]
+}
+```
+
+```
+#!puppet
+
+nexus_repository_target { 'dummy-target-id':
+  label         => 'dummy-target',                 #required
+  provider_type => 'maven2',                       #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'any'
+  patterns      => [                               #required, must be non-empty
+                        '^/com/atlassian/.*$',
+                        '^/io/atlassian/.*$'
+                   ]
 }
 ```
 
