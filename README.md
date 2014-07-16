@@ -144,9 +144,9 @@ Notes:
 Due to the complexity of the resource it is strongly recommended to configure the task via the user interface and use
 `puppet resource` to generate the corresponding Puppet manifest.
 
-#### Date and time dependencies ###
+#### Date and time related properties ###
 
-Setting `reoccurrence` to a certain value requires to specify additional properties:
+Setting `reoccurrence` to one of the following values requires to specify additional properties:
 
 * `manual` - no futher property required
 * `once` - `start_date` and `start_time`
@@ -156,7 +156,9 @@ Setting `reoccurrence` to a certain value requires to specify additional propert
 * `monthly` - `start_date`, `recurring_time` and `recurring_day`
 * `advanced` - `cron_expression`
 
-It is expected that `start_date` matches `YYYY-MM-DD and `start_time` / `recurrence_time` match `HH:MM` (including leading zeros).
+It is expected that `start_date` matches `YYYY-MM-DD` and `start_time` / `recurrence_time` match `HH:MM` (including
+leading zeros). Furthermore, you keep your manifest clean and not specify properties that are not required (e.g.
+specify `cron_expression` for a `manual` task).
 
 ## Limitations ##
 
