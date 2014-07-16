@@ -100,6 +100,10 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
   end
 
   describe :reoccurrence do
+    specify 'should default to absent' do
+      expect(described_class.new(defaults)[:reoccurrence]).to eq(:manual)
+    end
+
     specify 'should not accept empty value' do
       expect { described_class.new(defaults.merge(:reoccurrence => '')) }.to raise_error(Puppet::Error, /Invalid value/)
     end

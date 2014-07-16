@@ -51,6 +51,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   newproperty(:reoccurrence) do
     desc "The frequency this task will run. Can be one of: `manual`, `once`, `daily`, `weekly`, `monthly` or
       `advanced`."
+    defaultto :manual
     newvalues(:manual, :once, :hourly, :daily, :weekly, :monthly, :advanced)
   end
 
