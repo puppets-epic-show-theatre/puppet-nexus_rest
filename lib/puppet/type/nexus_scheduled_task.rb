@@ -131,7 +131,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   # Note: make sure to pass an array with elements of the type string; otherwise there may be issues with the data types.
   def ensure_recurring_day_in(valid_items)
     self[:recurring_day].split(',').each do |item|
-      raise ArgumentError, "Recurring day must be one of #{valid_items}, got '#{item}'" unless valid_items.include?(item.to_s)
+      raise ArgumentError, "Recurring day must be one of [#{valid_items.join(', ')}], got '#{item}'" unless valid_items.include?(item.to_s)
     end
   end
 
