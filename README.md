@@ -122,9 +122,9 @@ task to empty the trash once a day:
 ```
 nexus_scheduled_task { 'Empty Trash':
   ensure         => 'present',              # present or absent
-  enabled        => true,                   # true or false
+  enabled        => true,                   # true (default) or false
   type           => 'Empty Trash',          # required, just use the name as provided in the user interface
-  alert_email    => 'ops@example.com',      # optional; use `absent` to disable the email notification
+  alert_email    => 'ops@example.com',      # optional; use `absent` (default) to disable the email notification
   reoccurrence   => 'daily',                # one of `manual` (default), `once`, `daily`, `weekly`, `monthly` or `advanced`
   start_date     => '2014-05-31',
   recurring_time => '20:00',
