@@ -61,19 +61,15 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   newproperty(:start_date) do
     desc 'The date this task should start running, specified as `YYYY-MM-DD`. Mandatory unless `reoccurrence` is `manual` or `advanced`.'
     validate do |value|
-      unless value.nil?
-        raise ArgumentError, "Start date must not be empty" if value.to_s.empty?
-        raise ArgumentError, "Start date must match YYYY-MM-DD, got '#{value}'" unless value.to_s =~ /\d{4}-\d{2}-\d{2}/
-      end
+      raise ArgumentError, "Start date must not be empty" if value.to_s.empty?
+      raise ArgumentError, "Start date must match YYYY-MM-DD, got '#{value}'" unless value.to_s =~ /\d{4}-\d{2}-\d{2}/
     end
   end
 
   newproperty(:start_time) do
     desc 'The start time in `hh:mm` the task should run (according to the timezone of the service). Mandatory when `reoccurrence` set to `once` or `hourly`.'
     validate do |value|
-      unless value.nil?
-        raise ArgumentError, "Start time must match the following format: <hh::mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
-      end
+      raise ArgumentError, "Start time must match the following format: <hh::mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
     end
   end
 
