@@ -18,17 +18,22 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
       routes = Nexus::Rest.get_all('/service/local/repo_routes')
 
       if !routes.empty?
+        #obtain complete data for each route
+        routes['data'] = routes['data'].collect { |route|
+          #the use "resourceURI" path to get the complete route
+          route = Nexus::Rest.get_all(URI(route['resourceURI']).path)['data']
+        }.flatten
+
         #sorting by id to give some sense of stability
         [routes['data']].flatten.sort_by { |route| route['resourceURI'] }.collect { |route|
           order += 1
 
           repositories = route['repositories'].collect { |repository| repository['id'] }
-          id = route['resourceURI'].scan(/.*\/([^\/]*)$/).first.pop
 
           new(
             :name                    => "#{order}",
             :ensure                  => :present,
-            :id                      => id,
+            :id                      => route['id'],
             :url_pattern             => route['pattern'],
             :rule_type               => route.has_key?('ruleType') ? route['ruleType'].to_s.to_sym : nil,
             :repository_group        => route['groupId'],
