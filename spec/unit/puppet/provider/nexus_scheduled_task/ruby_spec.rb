@@ -30,10 +30,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       :task_settings   => {
         'EmptyTrashItemsOlderThan' => '',
         'repositoryId'             => 'all_repo'
-      },
-      :start_date      => '1970-01-01',
-      :recurring_day   => 'sunday',
-      :recurring_time  => '21:31',
+      }
     }
   end
 
@@ -302,7 +299,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:schedule] = :manual
+      resource[:reoccurrence] = :manual
 
       expect(instance.map_resource_to_data['data']).to include('schedule' => 'manual')
     end
@@ -315,7 +312,9 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
+      resource[:reoccurrence] = :once
       resource[:start_date] = '2014-06-15'
+      resource[:start_time] = '10:00'
 
       # 1402790400000 is Sunday, June 15, 2014 12:00:00 AM GMT
       expect(instance.map_resource_to_data['data']).to include('startDate' => '1402790400000')
@@ -334,13 +333,18 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
+      resource[:reoccurrence] = :once
+      resource[:start_date] = '2014-06-15'
       resource[:start_time] = '1:23'
 
       expect(instance.map_resource_to_data['data']).to include('startTime' => '1:23')
     end
 
     specify do
+      resource[:reoccurrence] = :weekly
+      resource[:start_date] = '2014-06-01'
       resource[:recurring_day] = 'sunday'
+      resource[:recurring_time] = '21:31'
 
       expect(instance.map_resource_to_data['data']).to include('recurringDay' => ['sunday'])
     end
@@ -352,6 +356,8 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
+      resource[:reoccurrence] = :daily
+      resource[:start_date] = '2014-06-01'
       resource[:recurring_time] = '21:31'
 
       expect(instance.map_resource_to_data['data']).to include('recurringTime' => '21:31')
@@ -370,6 +376,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
+      resource[:reoccurrence] = :advanced
       resource[:cron_expression] = '0 0 12 * * ?'
 
       expect(instance.map_resource_to_data['data']).to include('cronCommand' => '0 0 12 * * ?')

@@ -109,20 +109,33 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
 
       case self[:reoccurrence]
         when :manual
+          reject_properties([:start_date, :start_time, :recurring_day, :recurring_time, :cron_expression])
         when :once, :hourly
+          reject_properties([:recurring_day, :recurring_time, :cron_expression])
           ensure_nonempty_property_values([:start_date, :start_time])
         when :daily
+          reject_properties([:start_time, :recurring_day, :cron_expression])
           ensure_nonempty_property_values([:start_date, :recurring_time])
         when :weekly
+          reject_properties([:start_time, :cron_expression])
           ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
           ensure_recurring_day_in(['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'])
         when :monthly
+          reject_properties([:start_time, :cron_expression])
           ensure_nonempty_property_values([:start_date, :recurring_day, :recurring_time])
           ensure_recurring_day_in([('1'..'31').to_a, 'last'].flatten)
         when :advanced
+          reject_properties([:start_date, :start_time, :recurring_day, :recurring_time])
           ensure_nonempty_property_values([:cron_expression])
       end
     end
+  end
+
+  # Ensure none of the listed properties is specified (the properties references a value).
+  #
+  def reject_properties(properties)
+    rejected_properties = properties.collect { |property| property unless self[property].nil? }.compact
+    raise ArgumentError, "#{rejected_properties.join(' and ')} not allowed when reoccurrence is set to '#{self[:reoccurrence]}'" unless rejected_properties.empty?
   end
 
   # Ensure all listed properties have non-empty values set.
