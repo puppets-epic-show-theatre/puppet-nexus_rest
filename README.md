@@ -152,13 +152,17 @@ Setting `reoccurrence` to one of the following values requires to specify additi
 * `once` - `start_date` and `start_time`
 * `hourly` - `start_date` and `start_time`
 * `daily` - `start_date` and  `recurring_time`
-* `weekly` - `start_date`, `recurring_time` and `recurring_day`
-* `monthly` - `start_date`, `recurring_time` and `recurring_day`
+* `weekly` - `start_date`, `recurring_time` and `recurring_day` (`recurring_day` should be a day of the _week_, e.g.
+  `monday`, `tuesday`, ..., `sunday`)
+* `monthly` - `start_date`, `recurring_time` and `recurring_day` (`recurring_day` should be a day of the _month_, e.g.
+  1, 2, .... 29, 30, 31 or `last`)
 * `advanced` - `cron_expression`
 
 It is expected that `start_date` matches `YYYY-MM-DD` and `start_time` / `recurrence_time` match `HH:MM` (including
-leading zeros). Furthermore, you keep your manifest clean and not specify properties that are not required (e.g.
-specify `cron_expression` for a `manual` task).
+leading zeros). The `recurring_day` accepts multiple values as a list (e.g. `[1, 2, 'last'])`.
+
+Furthermore, you should keep your manifest clean and not specify properties that are not required (e.g. specify
+`cron_expression` for a `manual` task).
 
 ## Limitations ##
 
