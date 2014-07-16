@@ -26,7 +26,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
       the type id. The plugin ships a list of known type names; if a type name is not known, it is passed unmodified
       to Nexus.'
     validate do |value|
-      raise ArgumentError, "Type must not be empty" if value.empty?
+      raise ArgumentError, "Type must not be empty" if value.to_s.empty?
     end
   end
 

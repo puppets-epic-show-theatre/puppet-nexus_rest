@@ -39,8 +39,9 @@ module Nexus
     # created on the fly using the the `type_id` as `name`.
     #
     def self.find_type_by_id(type_id)
-      known_type = @@known_types.find { |type| type.id == type_id }
-      known_type ? known_type : Type.new(type_id, type_id)
+      needle = type_id.to_s
+      known_type = @@known_types.find { |type| type.id == needle }
+      known_type ? known_type : Type.new(needle, needle)
     end
 
     # Returns a type instance identified by the given `type_name`; if the `type_name` is not known, a new type instance
@@ -48,8 +49,9 @@ module Nexus
     # first is considered.
     #
     def self.find_type_by_name(type_name)
-      known_type = @@known_types.find { |type| type.name == type_name }
-      known_type ? known_type : Type.new(type_name, type_name)
+      needle = type_name.to_s
+      known_type = @@known_types.find { |type| type.name == needle }
+      known_type ? known_type : Type.new(needle, needle)
     end
   end
 end
