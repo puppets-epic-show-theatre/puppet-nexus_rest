@@ -8,7 +8,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'Name of the scheduled task. Although Nexus allows to use the same name for multiple tasks it is discouraged and likely to fail.'
+    desc 'Name of the scheduled task. Although Nexus allows to use the same name for multiple tasks, the module will
+      print a warning and ignore and subsequent task with the same name.'
   end
 
   newparam(:id) do
@@ -31,12 +32,14 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:task_settings) do
-    desc 'Type specific settings to configure the task.'
+    desc 'Type specific settings to configure the task. It is recommended to configure the task through the user
+      interface and use `puppet resource` to generate the expected value.'
     default {}
   end
 
   newproperty(:alert_email) do
-    desc 'The email address where an email will be sent in case that task execution will fail. Set to `absent` to disable.'
+    desc 'The email address where an email will be sent to in case that task execution failed. Set to `absent` to
+      disable the email notification.'
     defaultto :absent
     validate do |value|
       raise ArgumentError, "Alert email must not be empty'." if value.to_s.empty?
@@ -59,7 +62,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:start_date) do
-    desc 'The date this task should start running, specified as `YYYY-MM-DD`. Mandatory unless `reoccurrence` is `manual` or `advanced`.'
+    desc 'The date this task should start running, specified as `YYYY-MM-DD`. Mandatory unless `reoccurrence` is
+      `manual` or `advanced`.'
     validate do |value|
       raise ArgumentError, "Start date must not be empty" if value.to_s.empty?
       raise ArgumentError, "Start date must match YYYY-MM-DD, got '#{value}'" unless value.to_s =~ /\d{4}-\d{2}-\d{2}/
@@ -67,7 +71,8 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:start_time) do
-    desc 'The start time in `hh:mm` the task should run (according to the timezone of the service). Mandatory when `reoccurrence` set to `once` or `hourly`.'
+    desc 'The start time in `hh:mm` the task should run (according to the timezone of the service). Mandatory when
+      `reoccurrence` set to `once` or `hourly`.'
     validate do |value|
       raise ArgumentError, "Start time must match the following format: <hh::mm>, got '#{value}'" unless value.to_s =~ /\d\d?:\d\d/
     end
@@ -81,7 +86,9 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   end
 
   newproperty(:recurring_day, :parent => Puppet::Property::List) do
-    desc 'The day this task should run.'
+    desc 'The day this task should run. Accepts a list of days. When `reoccurrence` is set to `weekly`, only days of
+      the week (`monday`, `tuesday`, ...) are valid. When `reoccurrence` is set to `monthly`, only days of the month
+      are valid (1, 2, 3, 4, ... 29, 30, 31 and `last`).'
     validate do |value|
       raise ArgumentError, "Reccuring day must not be empty" if value.to_s.empty?
       raise ArgumentError, "Multiple reccuring days must be provided as an array, not a comma-separated list." if value.to_s.include?(',')
