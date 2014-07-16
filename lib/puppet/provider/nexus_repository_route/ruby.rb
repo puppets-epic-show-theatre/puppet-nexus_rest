@@ -25,7 +25,7 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
         }.flatten
 
         #sorting by id to give some sense of stability
-        [routes['data']].flatten.sort_by { |route| route['resourceURI'] }.collect { |route|
+        [routes['data']].flatten.sort_by { |route| route['id'] }.collect { |route|
           order += 1
 
           repositories = route['repositories'].collect { |repository| repository['id'] }

@@ -35,7 +35,6 @@ describe provider_class do
       Nexus::Rest.should_receive(:get_all).with('/service/local/repo_routes/2badbeef5').and_return({
         'data' => {
           'id'                      => '2badbeef5',
-          'resourceURI'            => 'http://nexus-server.local/service/local/repo_routes/2badbeef5',
           'pattern'                => '.*/io/atlassian/.*',
           'ruleType'               => 'inclusive',
           'groupId'                => 'repo-group-2',
