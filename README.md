@@ -116,8 +116,8 @@ nexus_smtp_settings { 'current':
 
 ### Scheduled Tasks ###
 
-You can easily manage all of your scheduled tasks from within Puppet. E.g. the following resource would create a daily
-empty trash job:
+You can easily manage all of your scheduled tasks from within Puppet. For instance the following resource would setup a
+task to empty the trash once a day:
 
 ```
 nexus_scheduled_task { 'Empty Trash':
