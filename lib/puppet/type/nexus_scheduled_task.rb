@@ -21,10 +21,12 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     munge { |value| super(value).to_s.intern }
   end
 
-  newproperty(:type_id) do
-    desc 'The machine readable type of the service that will be scheduled to run.'
+  newproperty(:type) do
+    desc 'The type of the task that will be scheduled to run. Can be the type name (as shown in the user interface) or
+      the type id. The plugin ships a list of known type names; if a type name is not known, it is passed unmodified
+      to Nexus.'
     validate do |value|
-      raise ArgumentError, "Type id must not be empty" if value.nil? or value.empty?
+      raise ArgumentError, "Type must not be empty" if value.empty?
     end
   end
 

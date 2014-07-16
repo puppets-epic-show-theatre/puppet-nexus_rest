@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:nexus_scheduled_task) do
-  let(:defaults) { {:name => 'any', :type_id => 'any', :reoccurrence => :manual} }
+  let(:defaults) { {:name => 'any', :type => 'any', :reoccurrence => :manual} }
   before :each do
     @provider_class = described_class.provide(:simple) do
       mk_resource_methods
@@ -41,13 +41,13 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
     end
   end
 
-  describe :type_id do
+  describe :type do
     specify 'should accept regular type' do
-      expect { described_class.new(defaults.merge(:type_id => 'OptimizeIndexTask')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:type => 'Empty Trash')) }.to_not raise_error
     end
 
     specify 'should not accept empty value' do
-      expect { described_class.new(defaults.merge(:type_id => '')) }.to raise_error(Puppet::Error, /Type id must not be empty/)
+      expect { described_class.new(defaults.merge(:type => '')) }.to raise_error(Puppet::Error, /Type must not be empty/)
     end
   end
 
