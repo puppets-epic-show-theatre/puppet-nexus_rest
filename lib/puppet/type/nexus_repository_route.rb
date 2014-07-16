@@ -57,10 +57,14 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   validate do
     if self[:ensure] == :present
-      raise ArgumentError, "route position must be non-negative integer" if Integer(self[:position]) < 0
-      raise ArgumentError, "route url_pattern must not be empty" if self[:url_pattern].empty?
-      raise ArgumentError, "route repository_group must not be empty" if self[:repository_group].empty?
-      raise ArgumentError, "route repositories list must not be empty" if self[:repositories].empty?
+      raise ArgumentError, 'route position must be non-negative integer' if Integer(self[:position]) < 0
+      raise ArgumentError, 'route url_pattern must not be empty' if self[:url_pattern].empty?
+      raise ArgumentError, 'route repository_group must not be empty' if self[:repository_group].empty?
+      if self[:rule_type] == :blocking
+        raise ArgumentError, 'route repositories must be empty if rule_type is \'blocking\'' if !self[:repositories].empty?
+      else
+        raise ArgumentError, 'route repositories must not be empty if rule_type is not \'blocking\'' if self[:repositories].empty?
+      end
     end
   end
 
