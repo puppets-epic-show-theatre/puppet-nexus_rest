@@ -48,7 +48,7 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect { described_class.new(defaults.merge(:ensure => :present)) }.to raise_error(Puppet::Error, /Type is a mandatory property/)
     end
 
-  specify 'is not mandatory when ensure => absent' do
+    specify 'is not mandatory when ensure => absent' do
       defaults.delete(:type)
 
       expect { described_class.new(defaults.merge(:ensure => :absent)) }.to_not raise_error
