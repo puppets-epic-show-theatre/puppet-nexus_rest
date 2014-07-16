@@ -123,7 +123,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   #
   def ensure_nonempty_property_values(properties)
     missing_fields = properties.collect { |property| property if self[property].nil? or self[property].to_s.empty? }.compact
-    fail("Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.join(' and ')} to be set as well") unless missing_fields.empty?
+    raise ArgumentError, "Setting reoccurrence to '#{self[:reoccurrence]}' requires #{missing_fields.join(' and ')} to be set as well" unless missing_fields.empty?
   end
 
   # Ensure all items of the recurring_day property are included in the given list of items.
@@ -131,7 +131,7 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
   # Note: make sure to pass an array with elements of the type string; otherwise there may be issues with the data types.
   def ensure_recurring_day_in(valid_items)
     self[:recurring_day].split(',').each do |item|
-      fail("Recurring day must be one of #{valid_items}, got '#{item}'") unless valid_items.include?(item.to_s)
+      raise ArgumentError, "Recurring day must be one of #{valid_items}, got '#{item}'" unless valid_items.include?(item.to_s)
     end
   end
 
