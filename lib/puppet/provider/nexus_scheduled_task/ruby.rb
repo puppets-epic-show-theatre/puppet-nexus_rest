@@ -162,9 +162,30 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     { 'data' => data }
   end
 
+  #
+  # Note: the current implementation essentially drops any time component of the start_date timestamp. This has to be
+  # done in order to work nicely with the Nexus REST API which ...
+  #
+  # * Expects to receive a date as timestamp with only YYYY-MM-DD being set; all other fields like hour or minute
+  #   should be set to 0 (they are not set to zero internally)
+  # * Returns a date as timestamp with the time component being set (to start_time or recurring_time, depending on
+  #   the reoccurrence)
+  #
+  # So to send back a valid start date, we have to drop the time component. Otherwise the date will start to flip
+  # in every Puppet run:
+  #
+  # * Puppet sends the new date
+  # * Nexus will add the start_time or recurring_time (depending on the reoccurrence)
+  # * Start date overflows into the next day
+  # * Next run, Puppet notice the date has change and wants to set it back
+  # * Puppet sends the new (old) date
+  # * ...
+  #
+
   # Returns a given date in milliseconds (as expected by the Nexus API). Date expected to match match `YYYY-MM-DD`.
   #
   def start_date_in_millis(start_date_formatted)
+    # see the note above
     year,month,day = /(\d{4})-(\d{2})-(\d{2})/.match(start_date_formatted).captures
     start_date = Time.gm(year, month, day)
     start_date_in_millis = start_date.to_i * 1000
@@ -175,6 +196,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   # Returns the given start date as a String matching `YYYY-MM-DD`.
   #
   def self.start_date_formatted(start_date_in_millis)
+    # see the note above
     start_date_formatted = Time.at(start_date_in_millis / 1000).strftime("%Y-%m-%d")
     debug("Converted startDate timestamp #{start_date_in_millis} to #{start_date_formatted}")
     start_date_formatted
