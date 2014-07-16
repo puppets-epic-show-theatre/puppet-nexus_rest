@@ -2,6 +2,7 @@ require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'config.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'scheduled_tasks.rb'))
 
 Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
@@ -57,7 +58,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       :id              => scheduled_task['id'],
       :name            => scheduled_task['name'],
       :enabled         => scheduled_task.has_key?('enabled') ? scheduled_task['enabled'].to_s.to_sym : :absent,
-      :type_id         => scheduled_task['typeId'],
+      :type_id         => Nexus::ScheduledTasks.find_type_by_id(scheduled_task['typeId']).name,
       :alert_email     => scheduled_task.has_key?('alertEmail') ? scheduled_task['alertEmail'] : :absent,
       :reoccurrence    => scheduled_task.has_key?('schedule') ? scheduled_task['schedule'].to_sym : :absent,
       :task_settings   => scheduled_task.has_key?('properties') ? map_properties_to_task_settings(scheduled_task['properties']) : :absent,
@@ -147,7 +148,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
     data = {
       'name'       => @resource[:name],
       'enabled'    => @resource[:enabled] == :true,
-      'typeId'     => @resource[:type_id],
+      'typeId'     => Nexus::ScheduledTasks.find_type_by_name(@resource[:type_id]).id,
       'schedule'   => @resource[:reoccurrence].to_s,
       'properties' => map_task_settings_to_properties,
     }

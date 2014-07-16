@@ -145,7 +145,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     specify 'should map typeId to type_id' do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [empty_trash_task_details]})
 
-      expect(described_class.instances[0].type_id).to eq('EmptyTrashTask')
+      expect(described_class.instances[0].type_id).to eq('Empty Trash')
     end
 
     specify 'should map absent alert_email to empty string' do
@@ -285,7 +285,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
 
     specify do
-      resource[:type_id] = 'EmptyTrashTask'
+      resource[:type_id] = 'Empty Trash'
 
       expect(instance.map_resource_to_data['data']).to include('typeId' => 'EmptyTrashTask')
     end
