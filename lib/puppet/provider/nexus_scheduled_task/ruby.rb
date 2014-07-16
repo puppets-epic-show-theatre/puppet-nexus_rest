@@ -83,7 +83,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   #   }
   # ]
   #
-  # into a string as expected by the keyvalue property
+  # into a simple key-value Ruby hash
   #
   # {
   #   '<key1>' => '<value1>',
