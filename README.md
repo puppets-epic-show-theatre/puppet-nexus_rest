@@ -114,6 +114,50 @@ nexus_smtp_settings { 'current':
 }
 ```
 
+### Scheduled Tasks ###
+
+You can easily manage all of your scheduled tasks from within Puppet. E.g. the following resource would create a daily
+empty trash job:
+
+```
+nexus_scheduled_task { 'Empty Trash':
+  ensure         => 'present',              # present or absent
+  enabled        => true,                   # true or false
+  type           => 'Empty Trash',          # required, just use the name as provided in the user interface
+  alert_email    => 'ops@example.com',      # optional; use `absent` to disable the email notification
+  reoccurrence   => 'daily',                # one of `manual` (default), `once`, `daily`, `weekly`, `monthly` or `advanced`
+  start_date     => '2014-05-31',
+  recurring_time => '20:00',
+  task_settings  => {'EmptyTrashItemsOlderThan' => '14', 'repositoryId' => 'all_repo'},
+}
+```
+
+Notes:
+
+* `type` responds to the name or the id; if the type name is provided, the module will try to translate it to the type
+  id; if that fails, the given name is passed through to Nexus. In case the given type name doesn't work, try to
+  provide the type id directly
+* Date and times are base on the timezone that is used on the server running Nexus. As Puppet should normally run on
+  same server this shouldn't cause any trouble. However, when using the web ui on a computer with a different timezone,
+  the values shown there are relative to that timezone and can appear different.
+
+Due to the complexity of the resource it is strongly recommended to configure the task via the user interface and use
+`puppet resource` to generate the corresponding Puppet manifest.
+
+#### Date and time dependencies ###
+
+Setting `reoccurrence` to a certain value requires to specify additional properties:
+
+* `manual` - no futher property required
+* `once` - `start_date` and `start_time`
+* `hourly` - `start_date` and `start_time`
+* `daily` - `start_date` and  `recurring_time`
+* `weekly` - `start_date`, `recurring_time` and `recurring_day`
+* `monthly` - `start_date`, `recurring_time` and `recurring_day`
+* `advanced` - `cron_expression`
+
+It is expected that `start_date` matches `YYYY-MM-DD and `start_time` / `recurrence_time` match `HH:MM` (including leading zeros).
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
