@@ -168,6 +168,8 @@ You can easily manage all of your scheduled tasks from within Puppet. For instan
 task to empty the trash once a day:
 
 ```
+#!puppet
+
 nexus_scheduled_task { 'Empty Trash':
   ensure         => 'present',              # present or absent
   enabled        => true,                   # true (default) or false
