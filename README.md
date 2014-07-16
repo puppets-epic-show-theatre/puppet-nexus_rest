@@ -190,6 +190,8 @@ Notes:
 * Date and times are base on the timezone that is used on the server running Nexus. As Puppet should normally run on
   same server this shouldn't cause any trouble. However, when using the web ui on a computer with a different timezone,
   the values shown there are relative to that timezone and can appear different.
+* Be very careful with one-off tasks (`reoccurrence => 'once'`); due to the way Nexus works, it will reject any updates
+  of the one-off task once the scheduled date has passed. This will cause you Puppet run to fail. You have been warned.
 
 Due to the complexity of the resource it is strongly recommended to configure the task via the user interface and use
 `puppet resource` to generate the corresponding Puppet manifest.
