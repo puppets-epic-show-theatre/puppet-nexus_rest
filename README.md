@@ -1,4 +1,4 @@
-# Nexus REST #
+# Puppet Module for Sonatype Nexus #
 
 ## Overview ##
 
@@ -141,7 +141,7 @@ nexus_repository_group { 'example-repo-group':
   label           => 'Example Repository Group',   #required
   provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
   exposed         => true,                         #valid values: true (default), false
-  repositories    => [                             #note: these must be existing `nexus_repository` resources  with the same `provider_type` as the repository group, order is significant, [] is default
+  repositories    => [                             #note: these must be existing repositories with the same `provider_type` as the repository group, order is significant, [] is default
                       'new-repository',
                       'other-repository',
                       'repository-3'
@@ -161,31 +161,6 @@ nexus_repository_target { 'dummy-target-id':
                    ]
 }
 ```
-
-```
-#!puppet
-
-nexus_repository_route { 'example-repo-route':
-  position          => '0',                        #required, first route should be '0', second '1', and so on
-  url_pattern       => '.*/com/atlassian/.*',      #required
-  rule_type         => 'inclusive',                #valid values: 'inclusive' (default), 'exclusive', 'blocking'
-  repository_group  => 'example-repo-group',       #required, must be an existing `nexus_repository_group` resource
-  repositories      => [                           #required, these must be existing `nexus_repository` or `nexus_repository_group` resources
-                            'new-repository',
-                            'other-repository',
-                            'repository-3'
-                       ]
-}
-```
-
-Note: The `position` property in `nexus_repository_route` is due to a workaround.
-Unfortunately, Nexus' repository routes have no writable properties that can be
-used as an id. System instances are sorted and associated with catalog resources
-by matching their index in the sorted list with the `position` property.
-
-Since the instances are sorted by a randomly generated id, it may take two runs
-of `puppet apply` for the resources to fall into place. Several
-`nexus_repository_route` resources may be modified each time a new one is added.
 
 ## Limitations ##
 
