@@ -50,7 +50,7 @@ describe provider_class do
     it { expect(instance.url_pattern).to eq('.*/io/atlassian/.*') }
     it { expect(instance.rule_type).to eq(:inclusive) }
     it { expect(instance.repository_group).to eq('repo-group-2') }
-    it { expect(instance.repositories).to eq(['repository-3', 'repository-4']) }
+    it { expect(instance.repositories).to eq("repository-3,repository-4") }
   end
 
   describe 'create' do
