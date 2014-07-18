@@ -170,7 +170,7 @@ nexus_repository_route { 'example-repo-route':
   url_pattern       => '.*/com/atlassian/.*',      #required
   rule_type         => 'inclusive',                #valid values: 'inclusive' (default), 'exclusive', 'blocking'
   repository_group  => 'example-repo-group',       #required, must be an existing `nexus_repository_group` resource
-  repositories      => [                           #required, these must be existing `nexus_repository` or `nexus_repository_group` resources
+  repositories      => [                           #required if `rule_type` is not 'blocking', these must be existing `nexus_repository` or `nexus_repository_group` resources. must not be defined if `rule_type` is 'blocking'.
                             'new-repository',
                             'other-repository',
                             'repository-3'
