@@ -12,7 +12,7 @@ describe Puppet::Type.type(:nexus_repository_route) do
       Puppet::Type.type(:nexus_repository_route).new(
         :name          => 'not a number'
       )
-    }.to raise_error(Puppet::ResourceError, /invalid value for Integer/)
+    }.to raise_error(Puppet::ResourceError, /position must be a non-negative integer, got 'not a number'/)
   end
 
   it 'should reject non-integer position' do
@@ -20,7 +20,7 @@ describe Puppet::Type.type(:nexus_repository_route) do
       Puppet::Type.type(:nexus_repository_route).new(
         :position          => 'not a number'
       )
-    }.to raise_error(Puppet::ResourceError, /invalid value for Integer/)
+    }.to raise_error(Puppet::ResourceError, /position must be a non-negative integer, got 'not a number'/)
   end
 
   it 'should accept an integer name' do

@@ -14,12 +14,13 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   newparam(:position, :namevar => true) do
     desc 'The position of the route configuration in the list of route configurations. These should be unique integers beginning from 0 and incrementing by steps of 1.'
-    munge { |value| "#{Integer(value)}" }
+    validate do |value|
+      raise ArgumentError, "position must be a non-negative integer, got '#{value}'" unless value =~ /^\d+$/
+    end
   end
 
   newproperty(:url_pattern) do
     desc 'Regular expression used to match the artifact path.'
-    defaultto ''
   end
 
   newproperty(:rule_type) do
@@ -67,9 +68,9 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   validate do
     if self[:ensure] == :present
-      raise ArgumentError, 'route position must be non-negative integer' if Integer(self[:position]) < 0
-      raise ArgumentError, 'route url_pattern must not be empty' if self[:url_pattern].empty?
-      raise ArgumentError, 'route repository_group must not be empty' if self[:repository_group].empty?
+      raise ArgumentError, 'position must be a non-negative integer' if !self[:position]
+      raise ArgumentError, 'route url_pattern must not be empty' if !self[:url_pattern] || self[:url_pattern].empty?
+      raise ArgumentError, 'route repository_group must not be empty' if !self[:repository_group] || self[:repository_group].empty?
       if self[:rule_type] == :blocking
         raise ArgumentError, 'route repositories must be empty if rule_type is \'blocking\'' if !self[:repositories].empty?
       else
