@@ -1,5 +1,6 @@
 require 'uri'
 require 'puppet/property/boolean'
+require 'puppet/property/list'
 
 Puppet::Type.newtype(:nexus_repository_route) do
   @doc = "Manages Nexus Repository Routes through a REST API"
@@ -29,17 +30,20 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   newproperty(:repository_group) do
     desc 'The id of Repository Group that the route will be applied to'
-    defaultto ''
   end
 
-  newproperty(:repositories, :array_matching => :all) do
+  newproperty(:repositories, :parent => Puppet::Property::List) do
     desc 'Ordered list list of repositories and repository_groups that should be considered when the pattern is matched for a query in '
-    defaultto []
     validate do |value|
       unless value.empty?
         raise ArgumentError, "repositories in route must be provided in an array" if value.include?(',')
       end
     end
+
+    def membership
+      :inclusive_membership
+    end
+
   end
 
   autorequire(:file) do
@@ -53,6 +57,12 @@ Puppet::Type.newtype(:nexus_repository_route) do
 
   autorequire(:nexus_repository) do
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
+  end
+
+  newparam(:inclusive_membership) do
+    desc "The list is considered a complete lists as opposed to minimum lists."
+    newvalues(:inclusive)
+    defaultto :inclusive
   end
 
   validate do

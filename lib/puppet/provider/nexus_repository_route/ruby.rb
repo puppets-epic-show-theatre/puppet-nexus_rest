@@ -104,7 +104,7 @@ Puppet::Type.type(:nexus_repository_route).provide(:ruby) do
       :pattern         => resource[:url_pattern],
       :ruleType        => resource[:rule_type],
       :groupId         => resource[:repository_group],
-      :repositories    => resource[:repositories].collect { |repository| {'id' => repository} }
+      :repositories    => resource[:repositories].split(',').collect { |repository| {'id' => repository} }
     }
     {:data => data}
   end
