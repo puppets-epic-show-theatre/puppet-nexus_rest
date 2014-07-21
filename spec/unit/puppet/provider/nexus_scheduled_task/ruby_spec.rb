@@ -63,7 +63,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect(described_class.instances).to have(2).items
     end
 
-    specify 'should order duplicate items base on id' do
+    specify 'should not accept duplicate items' do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/schedules').and_return(
         {
           'data' => [
@@ -79,27 +79,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
         }
       )
 
-      expect(described_class.instances[0].id).to eq('9')
-    end
-
-    specify 'should remove duplicate item' do
-      Nexus::Rest.should_receive(:get_all_plus_n).twice.with('/service/local/schedules').and_return(
-        {
-          'data' => [
-            {
-              'id'   => '1',
-              'name' => 'duplicate'
-            },
-            {
-              'id'   => '2',
-              'name' => 'duplicate'
-            }
-          ]
-        }
-      )
-
-      expect(described_class.instances).to have(1).item
-      expect(described_class.instances[0].id).to eq('1')
+      expect { described_class.instances }.to raise_error(Puppet::Error, /Found multiple scheduled tasks with the same name 'duplicate'/)
     end
 
     specify do

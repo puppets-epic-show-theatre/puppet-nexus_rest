@@ -13,20 +13,18 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
   def self.instances
     begin
-      repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')
-      sorted = repositories['data'].sort { |x,y| Integer(x['id']) <=> Integer(y['id']) }
-      accepted_tasks = sorted.inject({}) do |accepted_tasks, scheduled_task|
+      repositories = Nexus::Rest.get_all_plus_n('/service/local/schedules')['data']
+      repositories.inject([]) do |processed_task_names, scheduled_task|
         name = scheduled_task['name']
-        if accepted_tasks[name] then
-          warning("Found multiple scheduled tasks with the same name '#{name}'. Only the first task will be managed, " +
-            "the task with the id #{scheduled_task['id']} will be ignored by Puppet. Please review the task " +
-            "configuration through the web interface (e.g. rename the duplicates ones or delete them).")
+        if processed_task_names.include?(name) then
+          fail("Found multiple scheduled tasks with the same name '#{name}'. The name must be unique so Puppet is able " +
+            "to match the existing task to the resource declared in the manifest. Please resolve the configuration " +
+            "problem through the web interface (e.g. by renaming or deleting the duplicates ones) and run Puppet again.")
         else
-          accepted_tasks[name] = scheduled_task
+          processed_task_names << name
         end
-        accepted_tasks
       end
-      accepted_tasks.values.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
+      repositories.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_scheduled_task instances: #{e}"
     end
