@@ -17,6 +17,10 @@ module Nexus
       }
     end
 
+    # Request the given resource from the configured Nexus instance.
+    #
+    # Returns the JSON response as received, does not apply any post-processing.
+    #
     def self.get_all(resource_name)
       request { |nexus|
         begin
@@ -40,12 +44,15 @@ module Nexus
     # Due to unknown reasons, some REST resources do not expose all attributes in the list view. Hence, an additional
     # REST request is made for each returned resource.
     #
+    # Returns a hash similar like the original resource; the hash will always contain `data => [ ... ]` in the result,
+    # even through it was originally not returned by the specified resource.
+    #
     def self.get_all_plus_n(resource_name)
       resource_list = get_all(resource_name)
-      if !resource_list or !resource_list['data']
+      if !resource_list
         resource_list
       elsif
-        resource_details = resource_list['data'].collect { |resource| get_all("#{resource_name}/#{resource['id']}") }
+        resource_details = resource_list.fetch('data', []).collect { |resource| get_all("#{resource_name}/#{resource['id']}") }
 
         # At this point, resource_details is a list of data hashes similar like
         #
