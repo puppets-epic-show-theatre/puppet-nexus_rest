@@ -34,4 +34,7 @@ Puppet::Type.newtype(:nexus_repository_target) do
     raise ArgumentError, "label must not be empty" if self[:ensure] == :present and (self[:label].empty?)
   end
 
+  autorequire(:file) do
+    Nexus::Config::file_path
+  end
 end
