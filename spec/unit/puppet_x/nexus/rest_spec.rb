@@ -97,9 +97,13 @@ describe Nexus::Rest do
       expect { Nexus::Rest.get_all_plus_n('/service/local/repositories') }.to raise_error(RuntimeError, /repository-1/)
     end
 
+    specify 'should return `data => []` even when the result is nil' do
+      Nexus::Rest.stub(:get_all).and_return(nil)
+      expect(Nexus::Rest.get_all_plus_n('/service/local/repositories')).to eq({'data' => []})
+    end
+
     specify 'should return `data => []` when there are no results' do
       stub = stub_request(:any, /.*/).to_return(:body => '{ }')
-
       expect(Nexus::Rest.get_all_plus_n('/service/local/repositories')).to eq({'data' => []})
     end
   end

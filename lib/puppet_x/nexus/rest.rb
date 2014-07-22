@@ -50,7 +50,7 @@ module Nexus
     def self.get_all_plus_n(resource_name)
       resource_list = get_all(resource_name)
       if !resource_list
-        resource_list
+        {'data' => []}
       elsif
         resource_details = resource_list.fetch('data', []).collect { |resource| get_all("#{resource_name}/#{resource['id']}") }
 
