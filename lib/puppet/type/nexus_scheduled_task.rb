@@ -35,6 +35,24 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
     desc 'Type specific settings to configure the task. It is recommended to configure the task through the user
       interface and use `puppet resource` to generate the expected value.'
     default {}
+
+    def insync?(is)
+      # When comparing hashes, it seems that Ruby 1.8.7 is a little bit picky about the order of the keys. Furthermore
+      # by casting everything into a string before comparing, type comparison issues like `true` and `'true'` are
+      # resolved and don't cause any trouble.
+      #
+      return @should.any? do |wanted|
+        wanted.keys.sort == is.keys.sort and wanted.none? do |wanted_key_value_pair|
+          wanted_key = wanted_key_value_pair[0]
+          wanted_value = wanted_key_value_pair[1]
+          wanted_value.to_s != is[wanted_key].to_s
+        end
+      end
+    end
+
+    def change_to_s(current_value, new_value)
+      "changed '#{current_value.inspect}' to '#{new_value.inspect}'"
+    end
   end
 
   newproperty(:alert_email) do
