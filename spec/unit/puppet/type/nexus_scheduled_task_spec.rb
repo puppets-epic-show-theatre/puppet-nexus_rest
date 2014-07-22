@@ -92,12 +92,20 @@ describe Puppet::Type.type(:nexus_scheduled_task) do
       expect { described_class.new(defaults.merge(:type => 'Empty Trash')) }.to_not raise_error
     end
 
-    specify 'should not accept empty value' do
+    specify 'should not accept empty' do
       expect { described_class.new(defaults.merge(:type => '')) }.to raise_error(Puppet::Error, /Type must not be empty/)
     end
   end
 
   describe :task_settings do
+    specify 'should not accept empty string' do
+      expect { described_class.new(defaults.merge(:task_settings => '')) }.to raise_error(Puppet::Error, /Task settings must be of type Hash/)
+    end
+
+    specify 'should not accept any string at all' do
+      expect { described_class.new(defaults.merge(:task_settings => 'any')) }.to raise_error(Puppet::Error, /Task settings must be of type Hash/)
+    end
+
     specify 'should accept empty hash' do
       expect { described_class.new(defaults.merge(:task_settings => {})) }.to_not raise_error
     end

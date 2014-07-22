@@ -36,6 +36,10 @@ Puppet::Type.newtype(:nexus_scheduled_task) do
       interface and use `puppet resource` to generate the expected value.'
     default {}
 
+    validate do |value|
+      fail("Task settings must be of type Hash, got type #{value.class} with value '#{value}'") unless value.is_a?(Hash)
+    end
+
     def insync?(is)
       # When comparing hashes, it seems that Ruby 1.8.7 is a little bit picky about the order of the keys. Furthermore
       # by casting everything into a string before comparing, type comparison issues like `true` and `'true'` are
