@@ -187,6 +187,60 @@ Since the instances are sorted by a randomly generated id, it may take two runs
 of `puppet apply` for the resources to fall into place. Several
 `nexus_repository_route` resources may be modified each time a new one is added.
 
+### Scheduled Tasks ###
+
+You can easily manage all of your scheduled tasks from within Puppet. For instance the following resource would setup a
+task to empty the trash once a day:
+
+```
+#!puppet
+
+nexus_scheduled_task { 'Empty Trash':
+  ensure         => 'present',              # present or absent
+  enabled        => true,                   # true (default) or false
+  type           => 'Empty Trash',          # required, just use the name as provided in the user interface
+  alert_email    => 'ops@example.com',      # optional; use `absent` (default) to disable the email notification
+  reoccurrence   => 'daily',                # one of `manual` (default), `once`, `daily`, `weekly`, `monthly` or `advanced`
+  start_date     => '2014-05-31',
+  recurring_time => '20:00',
+  task_settings  => {'EmptyTrashItemsOlderThan' => '14', 'repositoryId' => 'all_repo'},
+}
+```
+
+Notes:
+
+* `type` responds to the name or the id; if the type name is provided, the module will try to translate it to the type
+  id; if that fails, the given name is passed through to Nexus. In case the given type name doesn't work, try to
+  provide the type id directly
+* Date and times are base on the timezone that is used on the server running Nexus. As Puppet should normally run on
+  same server this shouldn't cause any trouble. However, when using the web ui on a computer with a different timezone,
+  the values shown there are relative to that timezone and can appear different.
+* Be very careful with one-off tasks (`reoccurrence => 'once'`); due to the way Nexus works, it will reject any updates
+  of the one-off task once the scheduled date has passed. This will cause you Puppet run to fail. You have been warned.
+
+Due to the complexity of the resource it is strongly recommended to configure the task via the user interface and use
+`puppet resource` to generate the corresponding Puppet manifest.
+
+#### Date and time related properties ###
+
+Setting `reoccurrence` to one of the following values requires to specify additional properties:
+
+* `manual` - no futher property required
+* `once` - `start_date` and `start_time`
+* `hourly` - `start_date` and `start_time`
+* `daily` - `start_date` and  `recurring_time`
+* `weekly` - `start_date`, `recurring_time` and `recurring_day` (`recurring_day` should be a day of the _week_, e.g.
+  `monday`, `tuesday`, ..., `sunday`)
+* `monthly` - `start_date`, `recurring_time` and `recurring_day` (`recurring_day` should be a day of the _month_, e.g.
+  1, 2, .... 29, 30, 31 or `last`)
+* `advanced` - `cron_expression`
+
+It is expected that `start_date` matches `YYYY-MM-DD` and `start_time` / `recurrence_time` match `HH:MM` (including
+leading zeros). The `recurring_day` accepts multiple values as a list (e.g. `[1, 2, 'last'])`.
+
+Furthermore, you should keep your manifest clean and not specify properties that are not required (e.g. specify
+`cron_expression` for a `manual` task).
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
