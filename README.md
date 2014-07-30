@@ -43,7 +43,7 @@ information about where Nexus is listening and which credentials to use to enfor
 recommended to manage the file within Puppet and limit the visibility to the root and / or the Puppet user.
 
 Any change is enforced through Nexus' REST api. Hence, the Nexus service has to be running before any modification can
-be made. In general, any relationship between the `service { 'nexus' }` resource and resources provided by this module
+be made. In general, any relationship between the `service { 'nexus': }` resource and resources provided by this module
 should be made explicit in the Puppet manifest itself. This module doesn't express any autorequire dependency ('soft
 dependency') on the service resource itself - this is up to the client. However, any resource provided by this module
 will wait a certain amount of time in order to given Nexus the chance to properly start up. The default timeout is 150
