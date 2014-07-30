@@ -69,15 +69,13 @@ module Nexus
       if config[CONFIG_CAN_DELETE_REPOSITORIES].nil?
         raise Puppet::ParseError, "Config file #{file_path} must contain a value for key '#{CONFIG_CAN_DELETE_REPOSITORIES}'."
       end
-      config[CONFIG_CONNECTION_TIMEOUT] = 10 if config[CONFIG_CONNECTION_TIMEOUT].nil?
-      config[CONFIG_CONNECTION_OPEN_TIMEOUT] = 10 if config[CONFIG_CONNECTION_OPEN_TIMEOUT].nil?
 
       {
         CONFIG_NEXUS_BASE_URL          => config[CONFIG_NEXUS_BASE_URL].chomp('/'),
         CONFIG_ADMIN_USERNAME          => config[CONFIG_ADMIN_USERNAME],
         CONFIG_ADMIN_PASSWORD          => config[CONFIG_ADMIN_PASSWORD],
-        CONFIG_CONNECTION_TIMEOUT      => Integer(config[CONFIG_CONNECTION_TIMEOUT]),
-        CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config[CONFIG_CONNECTION_OPEN_TIMEOUT]),
+        CONFIG_CONNECTION_TIMEOUT      => Integer(config.fetch(CONFIG_CONNECTION_TIMEOUT, 10)),
+        CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config.fetch(CONFIG_CONNECTION_OPEN_TIMEOUT, 10)),
         CONFIG_CAN_DELETE_REPOSITORIES => config[CONFIG_CAN_DELETE_REPOSITORIES],
         CONFIG_HEALTH_CHECK_RETRIES    => Integer(config.fetch(CONFIG_HEALTH_CHECK_RETRIES, 50)),
         CONFIG_HEALTH_CHECK_TIMEOUT    => Integer(config.fetch(CONFIG_HEALTH_CHECK_TIMEOUT, 3)),
