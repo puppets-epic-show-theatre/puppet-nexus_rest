@@ -100,6 +100,26 @@ describe Nexus::Config do
       YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'connection_open_timeout' => '60'}))
       expect(Nexus::Config.read_config[:connection_open_timeout]).to be(60)
     end
+
+    specify 'should use default health check retries if not specified' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials)
+      expect(Nexus::Config.read_config[:health_check_retries]).to be(50)
+    end
+
+    specify 'should read health check retries' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'health_check_retries' => '100'}))
+      expect(Nexus::Config.read_config[:health_check_retries]).to be(100)
+    end
+
+    specify 'should use default health check timeout if not specified' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials)
+      expect(Nexus::Config.read_config[:health_check_timeout]).to be(3)
+    end
+
+    specify 'should read health check timeout' do
+      YAML.should_receive(:load_file).and_return(base_url_and_credentials.merge({'health_check_timeout' => '10'}))
+      expect(Nexus::Config.read_config[:health_check_timeout]).to be(10)
+    end
   end
 
   describe :resolve do

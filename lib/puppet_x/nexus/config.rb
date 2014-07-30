@@ -11,6 +11,8 @@ module Nexus
     CONFIG_CONNECTION_TIMEOUT = :connection_timeout
     CONFIG_CONNECTION_OPEN_TIMEOUT = :connection_open_timeout
     CONFIG_CAN_DELETE_REPOSITORIES = :can_delete_repositories
+    CONFIG_HEALTH_CHECK_RETRIES = :health_check_retries
+    CONFIG_HEALTH_CHECK_TIMEOUT = :health_check_timeout
 
     def self.configure
       @config ||= read_config
@@ -77,6 +79,8 @@ module Nexus
         CONFIG_CONNECTION_TIMEOUT      => Integer(config[CONFIG_CONNECTION_TIMEOUT]),
         CONFIG_CONNECTION_OPEN_TIMEOUT => Integer(config[CONFIG_CONNECTION_OPEN_TIMEOUT]),
         CONFIG_CAN_DELETE_REPOSITORIES => config[CONFIG_CAN_DELETE_REPOSITORIES],
+        CONFIG_HEALTH_CHECK_RETRIES    => Integer(config.fetch(CONFIG_HEALTH_CHECK_RETRIES, 50)),
+        CONFIG_HEALTH_CHECK_TIMEOUT    => Integer(config.fetch(CONFIG_HEALTH_CHECK_TIMEOUT, 3)),
       }
     end
   end

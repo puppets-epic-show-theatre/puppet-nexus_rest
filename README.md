@@ -31,6 +31,11 @@ can_delete_repositories: false
 # timeout in seconds for reading the answer from the Nexus service
 # connection_timeout: 10
 
+# Number of retries before giving up on the health check and consider the service not running.
+# health_check_retries: 50
+
+# Timeout in seconds to wait between single health checks.
+# health_check_timeout: 3
 ```
 
 This file needs to exist on the machine where the Nexus is running. It will provide the module with the required
