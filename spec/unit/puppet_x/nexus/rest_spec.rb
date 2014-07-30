@@ -13,6 +13,12 @@ describe Nexus::Rest do
     })
   end
 
+  before(:each) do
+    # health check always successful ...
+    service = double('Dummy service').as_null_object
+    Nexus::Rest.stub(:init_service).and_return(service)
+  end
+
   after(:each) do
     Nexus::Config.reset
   end

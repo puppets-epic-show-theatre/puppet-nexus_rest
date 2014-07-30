@@ -1,6 +1,7 @@
 require 'json'
 require 'yaml'
 require 'rest_client'
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x', 'nexus', 'service.rb'))
 
 module Nexus
   class Rest
@@ -22,6 +23,7 @@ module Nexus
     # Returns the JSON response as received, does not apply any post-processing.
     #
     def self.get_all(resource_name)
+      service.ensure_running
       request { |nexus|
         begin
           response = nexus[resource_name].get(:accept => :json)
@@ -36,6 +38,17 @@ module Nexus
         rescue => e
           raise "Could not parse the JSON response from Nexus (url: #{nexus.url}, resource: #{resource_name}): #{e} (response: #{response})"
         end
+      }
+    end
+
+    def self.service
+      @service ||= init_service
+    end
+
+    def self.init_service
+      Nexus::Config.configure { |nexus_base_url, options|
+        client = Nexus::Service::HealthCheckClient.new(options)
+        return Nexus::Service.new(client, options)
       }
     end
 
