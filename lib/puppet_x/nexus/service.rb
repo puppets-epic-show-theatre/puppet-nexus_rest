@@ -17,22 +17,23 @@ module Nexus
     # If the retry limit has been reached, the method will raise an exception.
     #
     def ensure_running
-      0.upto(@retries - 1) do |iteration|
+      for i in 1..@retries do
         result = @client.check_health
         case result.status
           when :not_running
-            Puppet.debug(result.log_message)
-            Puppet.debug("Waiting #{@timeout} seconds before talking again to Nexus service ...")
+            Puppet.debug("%s Waiting #{@timeout} seconds before trying again." % result.log_message)
             sleep(@timeout)
           when :running
-            Puppet.debug("Nexus service is now running, waited #{@timeout * iteration} seconds.")
+              Puppet.debug("Nexus service is running.")
             return
           when :broken
             fail(result.log_message)
           else
         end
       end
-      fail("Nexus service did not start up within timeout of #{@timeout * @retries} seconds")
+      fail("Nexus service did not start up within #{@timeout * @retries} seconds. You should check the Nexus log " +
+        "files to see if something is wrong or consider increasing the timeout if the service is not starting up in " +
+        "time.")
     end
 
     class Status
@@ -97,7 +98,7 @@ module Nexus
             else Service::Status.not_running(NOT_RUNNING_MSG % current_state)
           end
         rescue => e
-          return Service::Status.not_running(e)
+          return Service::Status.not_running("Caught an exception while checking status of Nexus service: #{e}.")
         end
       end
     end

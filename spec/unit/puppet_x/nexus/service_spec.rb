@@ -59,7 +59,7 @@ describe Nexus::Service do
 
     specify "should retry no more than configured" do
       client.should_receive(:check_health).at_most(configuration[:health_check_retries]).times.and_return(Nexus::Service::Status.not_running('still starting'))
-      expect { service.ensure_running }.to raise_error(RuntimeError, /Nexus service did not start up within timeout/)
+      expect { service.ensure_running }.to raise_error(RuntimeError, /Nexus service did not start up within 0 seconds/)
     end
   end
 end
