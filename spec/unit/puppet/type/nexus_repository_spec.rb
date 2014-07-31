@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe Puppet::Type.type(:nexus_repository) do
+  let(:defaults) { {:name => 'any'} }
+
   describe 'by default' do
     let(:repository) { Puppet::Type.type(:nexus_repository).new(:name => 'default') }
 
@@ -48,5 +50,13 @@ describe Puppet::Type.type(:nexus_repository) do
         :local_storage_url   => ''
       )
     }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
+  end
+
+  specify 'should accept absolute local_storage_url' do
+    expect { described_class.new(defaults.merge(:local_storage_url => '/absolute/path')) }.to_not raise_error
+  end
+
+  specify 'should not accept absolute local_storage_url' do
+    expect { described_class.new(defaults.merge(:local_storage_url => 'relative/path')) }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
   end
 end

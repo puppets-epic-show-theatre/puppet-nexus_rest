@@ -1,3 +1,4 @@
+require 'pathname'
 require 'uri'
 
 Puppet::Type.newtype(:nexus_repository) do
@@ -66,7 +67,8 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'Override the default local storage; should match the file URI scheme, set to undef to use the default location.'
     # TODO: add state transition from <value> to undef (currently no notification)
     validate do |value|
-      fail("Invalid local_storage_url #{value}; expected either 'default' or an URI matching the file scheme.") unless value.nil? or URI.parse(value).scheme == 'file'
+      fail("Invalid local_storage_url #{value}; expected either 'default', absolute path or an URI matching the file scheme (file:///...).") unless \
+        value.nil? or Pathname.new(value).absolute? or URI.parse(value).scheme == 'file'
     end
   end
 
