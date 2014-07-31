@@ -3,6 +3,35 @@ require 'rest_client'
 
 module Nexus
 
+  # Ensures the referenced Nexus instance is up and running. It does the health check only once and caches the result.
+  #
+  class CachingService
+
+    # delegatee - the actual Nexus::Service to be used to do the health checking
+    #
+    def initialize(delegatee)
+      @delegatee = delegatee
+    end
+
+    # See Nexus::Service.ensure_running.
+    #
+    def ensure_running
+      if @last_result == :not_running
+        fail("Nexus service failed a previous health check.")
+      elsif @last_result == :running
+        Puppet.debug("Nexus service is running (already checked ealier).")
+      else
+        begin
+          @delegatee.ensure_running
+          @last_result = :running
+        rescue => e
+          @last_result = :not_running
+          raise e
+        end
+      end
+    end
+  end
+
   class Service
 
     def initialize(client, configuration)

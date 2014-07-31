@@ -43,6 +43,28 @@ describe Nexus::Service do
     end
   end
 
+  describe 'CachingService.ensure_running' do
+    let(:delegatee) { double('The real service') }
+    let(:service) { Nexus::CachingService.new(delegatee) }
+
+    specify 'should delegate to the real service' do
+      delegatee.should_receive(:ensure_running).and_return()
+      expect { service.ensure_running }.to_not raise_error
+    end
+
+    specify 'should cache result' do
+      delegatee.should_receive(:ensure_running).exactly(1).times.and_return()
+      service.ensure_running
+      expect { service.ensure_running }.to_not raise_error
+    end
+
+    specify 'should cache a negative result as well' do
+      delegatee.should_receive(:ensure_running).exactly(1).times.and_raise('service is borked')
+      expect { service.ensure_running }.to raise_error(RuntimeError, /service is borked/)
+      expect { service.ensure_running }.to raise_error(RuntimeError, /Nexus service failed a previous health check/)
+    end
+  end
+
   describe :ensure_running do
     let(:client) { double('Dummy Health Check Client') }
     let(:service) { Nexus::Service.new(client, configuration) }
