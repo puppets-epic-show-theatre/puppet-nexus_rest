@@ -48,7 +48,8 @@ module Nexus
     def self.init_service
       Nexus::Config.configure { |nexus_base_url, options|
         client = Nexus::Service::HealthCheckClient.new(options)
-        return Nexus::Service.new(client, options)
+        service = Nexus::Service.new(client, options)
+        Nexus::CachingService.new(service)
       }
     end
 
