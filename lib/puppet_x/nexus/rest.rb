@@ -87,6 +87,7 @@ module Nexus
     end
 
     def self.create(resource_name, data)
+      service.ensure_running
       request { |nexus|
         begin
           nexus[resource_name].post JSON.generate(data), :accept => :json, :content_type => :json
@@ -99,6 +100,7 @@ module Nexus
     end
 
     def self.update(resource_name, data)
+      service.ensure_running
       request { |nexus|
         begin
           nexus[resource_name].put JSON.generate(data), :accept => :json, :content_type => :json
@@ -111,6 +113,7 @@ module Nexus
     end
 
     def self.destroy(resource_name)
+      service.ensure_running
       request { |nexus|
         begin
           nexus[resource_name].delete :accept => :json
