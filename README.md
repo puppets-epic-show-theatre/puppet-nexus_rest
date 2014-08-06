@@ -2,7 +2,36 @@
 
 ## Overview ##
 
-This module provides a couple of types and providers to manage the configuration of
+Puppet Module for Sonatype Nexus allows more elegant configuration of Nexus 
+instances in Puppet. The module uses Nexus' REST interfact to manage configuration.
+This method of managing Nexus instances has many advantages over other methods.
+
+An alternative method of managing Nexus configuration is to modify xml files in the
+`sonatype-work/nexus/conf` directory. This option has a few problems:
+
+ * Need to restart Nexus to make sure new XML configuration files are processed
+ * Ephemeral changes (staging repositories, for example) are lost after a Puppet run
+ * Have to manage and maintain XML configuration templates and files
+ * When Nexus changes XML configuration files, Puppet will overwrite them and restart Nexus
+
+The other alternative is to use [Puppet Augeas](https://docs.puppetlabs.com/guides/augeas.html),
+which allows more intelligent management of XML content, but this approach still shares several
+disadvatnages and has its own:
+
+ * Need to restart Nexus to make sure new XML configuration files are processed
+ * Have to manage and maintain XML configuration templates and files
+ * Introduce additional complexity to Puppet manifests
+
+This Puppet Module aims to address addresses all of these disadvantages.
+
+
+
+!!!!
+MORE HERE, SHOW EXAMPLE OF PUPPET FILE MANAGEMENT vs. PUPPET NEXUS MODULE MANAGEMENT
+!!!!
+
+
+The module provides a couple of types and providers to manage the configuration of
 [Sonatype Nexus](http://nexus.sonatype.org/) via the exposed REST interface.
 
 ## Usage ##
