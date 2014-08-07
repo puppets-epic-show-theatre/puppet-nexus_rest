@@ -2,9 +2,9 @@
 
 ## Overview ##
 
-Puppet Module for Sonatype Nexus allows more elegant configuration of Nexus 
-instances in Puppet. The module uses Nexus' REST interfact to manage configuration.
-This method of managing Nexus instances has many advantages over other methods.
+Puppet Module for Sonatype Nexus aims to offer native configuration of Nexus
+instances in Puppet. The module uses Nexus' REST interfact to manage configuration,
+this method of managing Nexus instances has many advantages over other methods.
 
 An alternative method of managing Nexus configuration is to modify xml files in the
 `sonatype-work/nexus/conf` directory. This option has a few problems:
@@ -22,17 +22,65 @@ disadvatnages and has its own:
  * Have to manage and maintain XML configuration templates and files
  * Introduce additional complexity to Puppet manifests
 
-This Puppet Module aims to address addresses all of these disadvantages.
+This Puppet Module aims to address addresses all of these disadvantages. At this point
+not all options covered by XML configuration are covered by this module, but the module is
+designed to be easily extensible and pull requests are welcome. This module could be 
+capable of managing anything configurable through the Nexus UI.
 
+In a nutshell, Puppet Module for Sonatype Nexus allows configuration to go from this: 
 
+```
+  #manifest/.../config.pp
+  file { ".../sonatype-work/nexus/conf/nexus.xml":
+    content => template('buildeng_nexus/common/opt/nexus/current/conf/nexus.properties.erb'),
+    owner   => $buildeng_nexus::common::params::user,
+    group   => $buildeng_nexus::common::params::group,
+    notify  => Class['buildeng_nexus::common::service'],
+  }
+```
 
-!!!!
-MORE HERE, SHOW EXAMPLE OF PUPPET FILE MANAGEMENT vs. PUPPET NEXUS MODULE MANAGEMENT
-!!!!
+```
+  #templates/.../sonatype-work/sonatype/conf/nexus.xml.erb
+  ...
+  <repositories>
+    <repository>
+      <id>public</id>
+      <name>Public Repository</name>
+      <providerRole>org.sonatype.nexus.proxy.repository.Repository</providerRole>
+      <providerHint>maven2</providerHint>
+      <localStatus>IN_SERVICE</localStatus>
+      <userManaged>true</userManaged>
+      <exposed>true</exposed>
+      <browseable>true</browseable>
+      <writePolicy>ALLOW_WRITE</writePolicy>
+      <indexable>true</indexable>
+      <searchable>true</searchable>
+      <localStorage>
+        <provider>file</provider>
+        <url>.../sonatype-work/nexus/storage/public</url>
+      </localStorage>
+      <externalConfiguration>
+        <repositoryPolicy>RELEASE</repositoryPolicy>
+      </externalConfiguration>
+    </repository>
+    ...
+  </repositories>
+  ...
+```
+ 
 
+To this:
 
-The module provides a couple of types and providers to manage the configuration of
-[Sonatype Nexus](http://nexus.sonatype.org/) via the exposed REST interface.
+```
+  #manifest/.../config.pp
+  nexus_repository { 'public':
+    label                   => 'Public Repository',
+    provider_type           => 'maven2',
+    type                    => 'hosted',
+    policy                  => 'release',
+  }
+```
+
 
 ## Usage ##
 
