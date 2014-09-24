@@ -59,4 +59,25 @@ describe Puppet::Type.type(:nexus_repository) do
   specify 'should not accept absolute local_storage_url' do
     expect { described_class.new(defaults.merge(:local_storage_url => 'relative/path')) }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
   end
+
+  it 'should accept proxy repository' do
+    Puppet::Type.type(:nexus_repository).new(
+      :name                => 'proxy-repo',
+      :type                => :proxy,
+      :provider_type       => :maven2,
+      :remote_storage      => 'http://maven-proxy/',
+    )
+  end
+
+  it 'should not accept proxy-only values if not proxy type' do
+    expect {
+      Puppet::Type.type(:nexus_repository).new(
+        :name                => 'proxy-repo',
+        :type                => :hosted,
+        :provider_type       => :maven2,
+        :remote_storage      => 'http://maven-proxy/',
+      )
+    }.to raise_error(Puppet::ResourceError, /'remote_storage' must not be set/)
+  end
+
 end
