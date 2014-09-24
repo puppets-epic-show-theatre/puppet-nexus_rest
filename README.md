@@ -3,7 +3,7 @@
 ## Overview ##
 
 Puppet Module for Sonatype Nexus aims to offer native configuration of Nexus
-instances in Puppet. The module uses Nexus' REST interfact to manage configuration,
+instances in Puppet. The module uses Nexus' REST interface to manage configuration,
 this method of managing Nexus instances has many advantages over other methods.
 
 An alternative method of managing Nexus configuration is to modify xml files in the
@@ -16,7 +16,7 @@ An alternative method of managing Nexus configuration is to modify xml files in 
 
 The other alternative is to use [Puppet Augeas](https://docs.puppetlabs.com/guides/augeas.html),
 which allows more intelligent management of XML content, but this approach still shares several
-disadvatnages and has its own:
+disadvantages and has its own:
 
  * Need to restart Nexus to make sure new XML configuration files are processed
  * Have to manage and maintain XML configuration templates and files
