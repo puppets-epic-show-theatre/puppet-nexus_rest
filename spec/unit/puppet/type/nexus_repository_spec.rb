@@ -69,10 +69,20 @@ describe Puppet::Type.type(:nexus_repository) do
     )
   end
 
-  it 'should not accept proxy-only values if not proxy type' do
+  it 'should not accept proxy if no remote_storage is defined' do
     expect {
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'proxy-repo',
+        :type                => :proxy,
+        :provider_type       => :maven2,
+      )
+    }.to raise_error(Puppet::ResourceError, /'remote_storage' must be set/)
+  end
+
+  it 'should not accept proxy-only values if not proxy type' do
+    expect {
+      Puppet::Type.type(:nexus_repository).new(
+        :name                => 'non-proxy-repo',
         :type                => :hosted,
         :provider_type       => :maven2,
         :remote_storage      => 'http://maven-proxy/',
