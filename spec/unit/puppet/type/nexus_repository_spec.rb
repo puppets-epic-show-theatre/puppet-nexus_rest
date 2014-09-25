@@ -64,7 +64,7 @@ describe Puppet::Type.type(:nexus_repository) do
       :name                => 'proxy-repo',
       :type                => :proxy,
       :provider_type       => :maven2,
-      :remote_storage      => 'http://maven-proxy/',
+      :remote_storage      => 'http://maven-proxy/'
     )
   end
 
@@ -73,7 +73,7 @@ describe Puppet::Type.type(:nexus_repository) do
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'proxy-repo',
         :type                => :proxy,
-        :provider_type       => :maven2,
+        :provider_type       => :maven2
       )
     }.to raise_error(Puppet::ResourceError, /'remote_storage' must be set/)
   end
@@ -84,7 +84,7 @@ describe Puppet::Type.type(:nexus_repository) do
         :name                => 'non-proxy-repo',
         :type                => :hosted,
         :provider_type       => :maven2,
-        :remote_storage      => 'http://maven-proxy/',
+        :remote_storage      => 'http://maven-proxy/'
       )
     }.to raise_error(Puppet::ResourceError, /'remote_storage' must not be set/)
   end

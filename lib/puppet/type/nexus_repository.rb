@@ -20,7 +20,7 @@ Puppet::Type.newtype(:nexus_repository) do
     :remote_user,
     :remote_password,
     :remote_nt_lan_host,
-    :remote_nt_lan_domain,
+    :remote_nt_lan_domain
   ]
 
   ensurable

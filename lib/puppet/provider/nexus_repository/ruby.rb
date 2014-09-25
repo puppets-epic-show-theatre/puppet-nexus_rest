@@ -77,7 +77,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'].to_s : :nil,
           :remote_password                => remote_authentication.has_key?('password') ? remote_authentication['password'].to_s : :nil,
           :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'].to_s : :nil,
-          :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'].to_s : :nil,
+          :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'].to_s : :nil
         )
       end
     rescue => e
