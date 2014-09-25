@@ -15,7 +15,6 @@ describe Puppet::Type.type(:nexus_repository) do
     it { expect(repository[:indexable]).to eq(:true) }
     it { expect(repository[:not_found_cache_ttl]).to eq(1440) }
     it { expect(repository[:local_storage_url]).to eq(nil) }
-    it { expect(repository[:download_remote_indexes]).to eq(:false) }
   end
 
   it 'should validate provider_type' do

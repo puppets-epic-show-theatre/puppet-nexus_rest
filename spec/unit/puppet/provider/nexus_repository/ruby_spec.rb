@@ -21,7 +21,6 @@ describe provider_class do
       :indexable               => :true,
       :not_found_cache_ttl     => 1440,
       :local_storage_url       => 'file:///some/path',
-      :download_remote_indexes => :false
     })
     provider_class.new(resource)
   end
@@ -75,7 +74,6 @@ describe provider_class do
     it { expect(instance.indexable).to eq(:true) }
     it { expect(instance.not_found_cache_ttl).to eq(0) }
     it { expect(instance.local_storage_url).to eq('file:///some/path') }
-    it { expect(instance.download_remote_indexes).to eq(:false) }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -109,7 +107,6 @@ describe provider_class do
     it { expect(instance.indexable).to eq(:false) }
     it { expect(instance.not_found_cache_ttl).to eq(0) }
     it { expect(instance.local_storage_url).to eq(:absent) }
-    it { expect(instance.download_remote_indexes).to eq(:false) }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -164,10 +161,6 @@ describe provider_class do
     end
     it 'should map local_storage_url to overrideLocalStorageUrl' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:overrideLocalStorageUrl => 'file:///some/path'))
-      provider.create
-    end
-    it 'should map download_remote_indexes to downloadRemoteIndexes' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:downloadRemoteIndexes => false))
       provider.create
     end
 
@@ -344,11 +337,6 @@ end
     it 'should map local_storage_url to overrideLocalStorageUrl' do
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:overrideLocalStorageUrl => 'file:///some/path'))
       provider.local_storage_url = 'file://some/path'
-      provider.flush
-    end
-    it 'should map download_remote_indexes to downloadRemoteIndexes' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:downloadRemoteIndexes => false))
-      provider.download_remote_indexes = :false
       provider.flush
     end
   end
