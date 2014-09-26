@@ -17,6 +17,23 @@ describe Puppet::Type.type(:nexus_repository) do
     it { expect(repository[:local_storage_url]).to eq(nil) }
   end
 
+  describe 'by default with proxy' do
+    let(:repository) { Puppet::Type.type(:nexus_repository).new(
+      :name => 'default-proxy',
+      :type => 'proxy',
+      :remote_storage => 'http://maven-repo/'
+    ) }
+
+    it { expect(repository[:remote_storage]).to eq('http://maven-repo/') }
+    it { expect(repository[:remote_download_indexes]).to eq(:true) }
+    it { expect(repository[:remote_auto_block]).to eq(:true) }
+    it { expect(repository[:remote_file_validation]).to eq(:true) }
+    it { expect(repository[:remote_checksum_policy]).to eq(:warn) }
+    it { expect(repository[:remote_artifact_max_age]).to eq(-1) }
+    it { expect(repository[:remote_metadata_max_age]).to eq(1440) }
+    it { expect(repository[:remote_item_max_age]).to eq(1440) }
+  end
+
   it 'should validate provider_type' do
     expect {
       Puppet::Type.type(:nexus_repository).new(

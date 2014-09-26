@@ -100,6 +100,7 @@ Puppet::Type.newtype(:nexus_repository) do
   newproperty(:remote_download_indexes, :boolean => true) do
     desc 'Indicates if the index stored on the remote repository should be downloaded and used for local searches. Applicable for proxy repositories only. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? :true : nil end
     munge { |value| @resource.munge_boolean(value) }
   end
   
@@ -110,6 +111,7 @@ Puppet::Type.newtype(:nexus_repository) do
          'remote peer detected as reachable/healthy. Auto-blocked repositories behaves exactly the same as user ' \
          'blocked proxy repositories, except they will auto-unblock themselves too. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? :true : nil end
     munge { |value| @resource.munge_boolean(value) }
   end
 
@@ -117,6 +119,7 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'Flag to check the remote file\'s content to see if it is valid. (e.g. not html error page), ' \
          'handy when you cannot enable strict checksum checking. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? :true : nil end
     munge { |value| @resource.munge_boolean(value) }
   end
 
@@ -128,6 +131,7 @@ Puppet::Type.newtype(:nexus_repository) do
          ':strict_if_exists: Do not serve the artifact if the checksum exists but is invalid. ' \
          ':strict: Require that a checksum exists on the remote repository and that it is valid. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? :warn : nil end
     newvalues(:ignore, :warn, :strict_if_exists, :strict, nil)
   end
   
@@ -155,6 +159,7 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'This controls how long to cache the artifacts in the repository before rechecking the remote repository. ' \
          'In a release repository, this value should be -1 (infinite) as release artifacts shouldn\'t change. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? -1 : nil end
     munge { |value| Integer(value) }
   end
 
@@ -162,6 +167,7 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'This controls how long to cache the metadata in the repository before rechecking the remote repository. ' \
          'Unlike artifact max age, this value should not be infinite or Maven won\'t discover new artifact releases.' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? 1440 : nil end
     munge { |value| Integer(value) }
   end
 
@@ -169,6 +175,7 @@ Puppet::Type.newtype(:nexus_repository) do
     desc 'Repositories may contain resources that are neither artifacts identified by GAV coordinates or metadata. ' \
          'This value controls how long to cache such items in the repository before rechecking the remote repository. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? 1440 : nil end
     munge { |value| Integer(value) }
   end
 
@@ -192,6 +199,7 @@ Puppet::Type.newtype(:nexus_repository) do
   newproperty(:remote_request_retries) do
     desc 'Nexus will make this many connection attempts before giving up. ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? 10 : nil end
     munge { |value| Integer(value) }
   end
 
