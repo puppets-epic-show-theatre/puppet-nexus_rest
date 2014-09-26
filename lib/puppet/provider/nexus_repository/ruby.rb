@@ -2,6 +2,7 @@ require 'json'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'config.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'util.rb'))
 
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
@@ -156,6 +157,39 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :notFoundCacheTTL        => resource[:not_found_cache_ttl],
     }
     data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
+
+    if :proxy == resource[:type]
+      proxy_properties = {
+        :autoBlockActive            => resource[:remote_auto_block],
+        :checksumPolicy             => resource[:remote_checksum_policy],
+        :downloadRemoteIndexes      => resource[:remote_download_indexes],
+        :fileTypeValidation         => resource[:remote_file_validation],
+        :itemMaxAge                 => resource[:remote_item_max_age],
+        :artifactMaxAge             => resource[:artifactMaxAge],
+        :metadataMaxAge             => resource[:remote_metadata_max_age],
+        :remoteStorage              => {
+          :remoteStorageUrl         => resource[:remote_storage],
+          :authentication           => {
+            :ntlmDomain             => resource[:remote_nt_lan_domain],
+            :ntlmHost               => resource[:remote_nt_lan_host],
+            :password               => resource[:remote_password],
+            :user                   => resource[:user],
+          },
+          :connectionSettings  => {
+            :connectionTimeout      => resource[:remote_request_timeout],
+            :queryString            => resource[:remote_query_string],
+            :retrievalRetryCount    => resource[:remote_request_retries],
+            :userAgentString        => resource[:remote_user_agent],
+          }
+        }
+      }
+
+      #recursively remove nil and empty hashes
+      Nexus::Rest.strip_hash(proxy_properties)
+
+      data = data.merge(proxy_properties)
+    end
+
     {:data => data}
   end
 
