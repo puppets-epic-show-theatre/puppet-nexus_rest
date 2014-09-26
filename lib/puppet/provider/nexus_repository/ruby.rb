@@ -228,11 +228,72 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     @dirty_flag = true
   end
 
-  def download_remote_indexes=(value)
-    @dirty_flag = true
-  end
-
   def local_storage_url=(value)
     @dirty_flag = true
   end
+
+  def remote_storage=(value)
+    @dirty_flag = true
+  end
+
+  def remote_auto_block=(value)
+    @dirty_flag = true
+  end
+
+  def remote_checksum_policy=(value)
+    @dirty_flag = true
+  end
+
+  def remote_download_indexes=(value)
+    @dirty_flag = true
+  end
+
+  def remote_file_validation=(value)
+    @dirty_flag = true
+  end
+
+  def remote_item_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_artifact_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_metadata_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_request_timeout=(value)
+    @dirty_flag = true
+  end
+
+  def remote_request_retries=(value)
+    @dirty_flag = true
+  end
+
+  def remote_query_string=(value)
+    @dirty_flag = true
+  end
+
+  def remote_user_agent=(value)
+    @dirty_flag = true
+  end
+
+  def remote_user=(value)
+    @dirty_flag = true
+  end
+
+  def remote_password=(value)
+    @dirty_flag = true
+  end
+
+  def remote_nt_lan_host=(value)
+    @dirty_flag = true
+  end
+
+  def remote_nt_lan_domai=(value)
+    @dirty_flag = true
+  end
+
 end
