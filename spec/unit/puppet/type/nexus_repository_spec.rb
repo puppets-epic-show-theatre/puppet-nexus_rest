@@ -17,6 +17,12 @@ describe Puppet::Type.type(:nexus_repository) do
     it { expect(repository[:local_storage_url]).to eq(nil) }
   end
 
+  describe 'by default non-maven' do
+    let(:repository) { Puppet::Type.type(:nexus_repository).new(:name => 'default-nuget', :provider_type => :nuget) }
+
+    it { expect(repository[:policy]).to eq(:mixed) }
+  end
+
   describe 'by default with proxy' do
     let(:repository) { Puppet::Type.type(:nexus_repository).new(
       :name => 'default-proxy',
@@ -76,11 +82,21 @@ describe Puppet::Type.type(:nexus_repository) do
     expect { described_class.new(defaults.merge(:local_storage_url => 'relative/path')) }.to raise_error(Puppet::Error, /Invalid local_storage_url/)
   end
 
+  it 'should not accept any other policy except mixed for non-maven provider_types' do
+    expect {
+      Puppet::Type.type(:nexus_repository).new(
+        :name                => 'nuget-repo',
+        :type                => :hosted,
+        :provider_type       => :nuget,
+        :policy              => :release
+      )
+    }.to raise_error(Puppet::ResourceError, /'policy' must be 'mixed'/)
+  end
+
   it 'should accept proxy repository' do
     Puppet::Type.type(:nexus_repository).new(
       :name                => 'proxy-repo',
       :type                => :proxy,
-      :provider_type       => :maven2,
       :remote_storage      => 'http://maven-proxy/'
     )
   end
@@ -90,7 +106,6 @@ describe Puppet::Type.type(:nexus_repository) do
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'proxy-repo',
         :type                => :proxy,
-        :provider_type       => :maven2
       )
     }.to raise_error(Puppet::ResourceError, /'remote_storage' must be set/)
   end
@@ -99,8 +114,6 @@ describe Puppet::Type.type(:nexus_repository) do
     expect {
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'non-proxy-repo',
-        :type                => :hosted,
-        :provider_type       => :maven2,
         :remote_storage      => 'http://maven-proxy/'
       )
     }.to raise_error(Puppet::ResourceError, /'remote_storage' must not be set/)

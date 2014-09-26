@@ -47,8 +47,7 @@ Puppet::Type.newtype(:nexus_repository) do
 
   newproperty(:policy) do
     desc 'Repositories can store either only release or snapshot artefacts.'
-    # TODO: :release is only the default for Maven; for other repositories, the value is :mixed and cannot be changed
-    defaultto :release
+    defaultto do [:maven1, :maven2].include?(@resource[:provider_type]) ? :release : :mixed end
     newvalues(:snapshot, :release, :mixed)
   end
 
@@ -215,6 +214,9 @@ Puppet::Type.newtype(:nexus_repository) do
 
   validate do
     if self[:ensure] == :present
+      if ![:maven1, :maven2].include?(self[:provider_type])
+        raise ArgumentError, "\'policy' must be 'mixed' if 'provider_type' is not ':maven1' or ':maven2'" if :mixed != self[:policy]
+      end
       if self[:type] != :proxy
         proxy_only_properties.each do |property|
           raise ArgumentError, "\'#{property}\' must not be set if type is not :proxy (value is #{self[property]})." if nil != self[property]
