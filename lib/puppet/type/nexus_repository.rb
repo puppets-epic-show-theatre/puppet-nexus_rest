@@ -131,7 +131,7 @@ Puppet::Type.newtype(:nexus_repository) do
          ':strict: Require that a checksum exists on the remote repository and that it is valid. ' \
          'Only useful for proxy-type repositories.'
     defaultto do @resource[:type] == :proxy ? :warn : nil end
-    newvalues(:ignore, :warn, :strict_if_exists, :strict, nil)
+    newvalues(:ignore, :warn, :strict_if_exists, :strict)
   end
   
   newproperty(:remote_user) do
