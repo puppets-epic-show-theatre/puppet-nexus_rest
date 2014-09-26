@@ -185,7 +185,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       }
 
       #recursively remove nil and empty hashes
-      Nexus::Rest.strip_hash(proxy_properties)
+      Nexus::Util.strip_hash(proxy_properties)
 
       data = data.merge(proxy_properties)
     end
