@@ -105,7 +105,7 @@ describe Puppet::Type.type(:nexus_repository) do
     expect {
       Puppet::Type.type(:nexus_repository).new(
         :name                => 'proxy-repo',
-        :type                => :proxy,
+        :type                => :proxy
       )
     }.to raise_error(Puppet::ResourceError, /'remote_storage' must be set/)
   end
