@@ -64,21 +64,21 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :not_found_cache_ttl            => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
           :local_storage_url              => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : nil,
           :remote_storage                 => remote_storage.has_key?('remoteStorageUrl') ? remote_storage['remoteStorageUrl'].to_s : nil,
-          :remote_auto_block              => repository.has_key?('autoBlockActive') ? repository['autoBlockActive'].to_s : nil,
-          :remote_checksum_policy         => repository.has_key?('checksumPolicy') ? repository['checksumPolicy'].to_s.to_sym : nil,
+          :remote_auto_block              => repository.has_key?('autoBlockActive') ? repository['autoBlockActive'].to_s.to_sym : nil,
+          :remote_checksum_policy         => repository.has_key?('checksumPolicy') ? repository['checksumPolicy'].downcase.to_sym : nil,
           :remote_download_indexes        => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s.to_sym : nil,
-          :remote_file_validation         => repository.has_key?('fileTypeValidation') ? repository['fileTypeValidation'].to_s : nil,
-          :remote_item_max_age            => remote_storage.has_key?('itemMaxAge') ? remote_storage['itemMaxAge'].to_s : nil,
-          :remote_artifact_max_age        => remote_storage.has_key?('artifactMaxAge') ? remote_storage['artifactMaxAge'].to_s : nil,
-          :remote_metadata_max_age        => remote_storage.has_key?('metadataMaxAge') ? remote_storage['metadataMaxAge'].to_s : nil,
-          :remote_request_timeout         => remote_connection.has_key?('connectionTimeout') ? remote_connection['connectionTimeout'].to_s : nil,
-          :remote_request_retries         => remote_connection.has_key?('retrievalRetryCount') ? remote_connection['retrievalRetryCount'].to_s : nil,
-          :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'].to_s : nil,
-          :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'].to_s : nil,
-          :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'].to_s : nil,
-          :remote_password                => remote_authentication.has_key?('password') ? remote_authentication['password'].to_s : nil,
-          :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'].to_s : nil,
-          :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'].to_s : nil
+          :remote_file_validation         => repository.has_key?('fileTypeValidation') ? repository['fileTypeValidation'].to_s.to_sym : nil,
+          :remote_item_max_age            => repository.has_key?('itemMaxAge') ? repository['itemMaxAge'] : nil,
+          :remote_artifact_max_age        => repository.has_key?('artifactMaxAge') ? repository['artifactMaxAge'] : nil,
+          :remote_metadata_max_age        => repository.has_key?('metadataMaxAge') ? repository['metadataMaxAge'] : nil,
+          :remote_request_timeout         => remote_connection.has_key?('connectionTimeout') ? remote_connection['connectionTimeout'] : nil,
+          :remote_request_retries         => remote_connection.has_key?('retrievalRetryCount') ? remote_connection['retrievalRetryCount'] : nil,
+          :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'] : nil,
+          :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
+          :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
+          :remote_password                => remote_authentication.has_key?('password') ? remote_authentication['password'] : nil,
+          :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
+          :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
         )
 
       end
@@ -162,7 +162,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     if :proxy == resource[:type]
       proxy_properties = {
         :autoBlockActive            => resource[:remote_auto_block],
-        :checksumPolicy             => resource[:remote_checksum_policy],
+        :checksumPolicy             => resource[:remote_checksum_policy].to_s.upcase,
         :downloadRemoteIndexes      => resource[:remote_download_indexes],
         :fileTypeValidation         => resource[:remote_file_validation],
         :itemMaxAge                 => resource[:remote_item_max_age],

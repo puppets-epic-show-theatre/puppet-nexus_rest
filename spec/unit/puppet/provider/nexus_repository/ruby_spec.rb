@@ -110,6 +110,81 @@ describe provider_class do
     it { expect(instance.exists?).to be_true }
   end
 
+  describe 'a proxy instance' do
+    let :instance do
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
+        'data' => [{
+          'id'                            => 'repository-3',
+          'name'                          => 'a repository proxy',
+          'provider'                      => 'maven2',
+          'format'                        => 'maven2',
+          'repoType'                      => 'proxy',
+          'repoPolicy'                    => 'RELEASE',
+          'exposed'                       => true,
+          'writePolicy'                   => 'READ_ONLY',
+          'browseable'                    => true,
+          'indexable'                     => true,
+          'overrideLocalStorageUrl'       => 'file:///some/path',
+          'browseable'                    => true,
+          'exposed'                       => true,
+          'notFoundCacheTTL'              => 1440,
+          'autoBlockActive'               => true,
+          'checksumPolicy'                => 'STRICT',
+          'downloadRemoteIndexes'         => true,
+          'fileTypeValidation'            => false,
+          'itemMaxAge'                    => 1445,
+          'artifactMaxAge'                => -1,
+          'metadataMaxAge'                => 1450,
+          'remoteStorage'                 => {
+              'remoteStorageUrl'          =>  'http://maven-repo/',
+              'connectionSettings'        => {
+                  'connectionTimeout'     => 9001,
+                  'retrievalRetryCount'   => 3,
+                  'queryString'           => 'param1=a&amp;param2=b',
+                  'userAgentString'       => 'user-agent'
+              },
+              'authentication'            => {
+                  'username'              => 'username',
+                  'password'              => '|$|N|E|X|U|S|$|',
+                  'ntlmHost'              => 'nt-lan-host',
+                  'ntlmDomain'            => 'nt-manager-domain'
+              }
+          }
+        }]
+      })
+      provider_class.instances[0]
+    end
+
+    it { expect(instance.name).to eq('repository-3') }
+    it { expect(instance.label).to eq('a repository proxy') }
+    it { expect(instance.provider_type).to eq(:maven2) }
+    it { expect(instance.type).to eq(:proxy) }
+    it { expect(instance.policy).to eq(:release) }
+    it { expect(instance.exposed).to eq(:true) }
+    it { expect(instance.write_policy).to eq(:read_only) }
+    it { expect(instance.browseable).to eq(:true) }
+    it { expect(instance.indexable).to eq(:true) }
+    it { expect(instance.not_found_cache_ttl).to eq(1440) }
+    it { expect(instance.local_storage_url).to eq('file:///some/path') }
+    it { expect(instance.remote_storage).to eq('http://maven-repo/') }
+    it { expect(instance.remote_auto_block).to eq(:true) }
+    it { expect(instance.remote_checksum_policy).to eq(:strict) }
+    it { expect(instance.remote_download_indexes).to eq(:true) }
+    it { expect(instance.remote_file_validation).to eq(:false) }
+    it { expect(instance.remote_item_max_age).to eq(1445) }
+    it { expect(instance.remote_artifact_max_age).to eq(-1) }
+    it { expect(instance.remote_metadata_max_age).to eq(1450) }
+    it { expect(instance.remote_request_timeout).to eq(9001) }
+    it { expect(instance.remote_request_retries).to eq(3) }
+    it { expect(instance.remote_query_string).to eq('param1=a&amp;param2=b') }
+    it { expect(instance.remote_user_agent).to eq('user-agent') }
+    it { expect(instance.remote_user).to eq('username') }
+    it { expect(instance.remote_password).to eq('|$|N|E|X|U|S|$|') }
+    it { expect(instance.remote_nt_lan_host).to eq('nt-lan-host') }
+    it { expect(instance.remote_nt_lan_domain).to eq('nt-manager-domain') }
+    it { expect(instance.exists?).to be_true }
+  end
+
   describe 'create' do
     it 'should use /service/local/repositories to create a new resource' do
       Nexus::Rest.should_receive(:create).with('/service/local/repositories', anything())
