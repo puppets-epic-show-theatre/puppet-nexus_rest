@@ -203,6 +203,7 @@ Puppet::Type.newtype(:nexus_repository) do
   newproperty(:remote_request_timeout) do
     desc 'Time Nexus will wait for a successful connection before retrying. (seconds) ' \
          'Only useful for proxy-type repositories.'
+    defaultto do @resource[:type] == :proxy ? 60 : nil end
     munge { |value| Integer(value) }
   end
 
