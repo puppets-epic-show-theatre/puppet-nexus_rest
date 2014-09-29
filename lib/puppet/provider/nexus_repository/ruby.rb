@@ -165,7 +165,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
         :downloadRemoteIndexes      => resource[:remote_download_indexes],
         :fileTypeValidation         => resource[:remote_file_validation],
         :itemMaxAge                 => resource[:remote_item_max_age],
-        :artifactMaxAge             => resource[:artifactMaxAge],
+        :artifactMaxAge             => resource[:remote_artifact_max_age],
         :metadataMaxAge             => resource[:remote_metadata_max_age],
         :remoteStorage              => {
           :remoteStorageUrl         => resource[:remote_storage],

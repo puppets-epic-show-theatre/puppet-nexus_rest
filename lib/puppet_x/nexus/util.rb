@@ -3,7 +3,7 @@ module Nexus
 
     def self.strip_hash(hash)
       hash.each do |key, value|
-        prune(value) if value.is_a?(Hash)
+        self.strip_hash(value) if value.is_a?(Hash)
         hash.delete(key) if ((value.respond_to?(:empty?) && value.empty?) || value.nil?)
       end
     end
