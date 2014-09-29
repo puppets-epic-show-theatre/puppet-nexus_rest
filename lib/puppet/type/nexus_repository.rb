@@ -195,8 +195,13 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:remote_query_string) do
+    # RestClient URL incorrectly encodes HTTP POST data with 'application/json' Content-Type =(
+    # Whenever this field contains ampersands (which is likely), they are escaped before being
+    # sent to Nexus
+    #   https://github.com/rest-client/rest-client/issues/84
     desc 'These are additional parameters sent along with the HTTP request. ' \
          'They are appended to the url along with a \'?\'. So \'foo=bar&foo2=bar2\' becomes \'HTTP://myurl?foo=bar&foo2=bar2\' ' \
+         'This property is partially broken due to the ruby RestClient library ' \
          'Only useful for proxy-type repositories.'
   end
 
