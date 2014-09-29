@@ -76,6 +76,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'] : nil,
           :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
           :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
+          :remote_password                => remote_authentication.has_key?('password') ? :present : :absent,
           :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
           :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
         )
@@ -149,21 +150,21 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :providerRole            => content_type_details[:providerRole],
       :format                  => content_type_details[:format],
       :repoPolicy              => resource[:policy].to_s.upcase,
-      :exposed                 => resource[:exposed] == :true,
+      :exposed                 => Nexus::Util::sym_to_bool(resource[:exposed]),
 
       :writePolicy             => resource[:write_policy].to_s.upcase,
-      :browseable              => resource[:browseable] == :true,
-      :indexable               => resource[:indexable] == :true,
+      :browseable              => Nexus::Util::sym_to_bool(resource[:browseable]),
+      :indexable               => Nexus::Util::sym_to_bool(resource[:indexable]),
       :notFoundCacheTTL        => resource[:not_found_cache_ttl],
     }
     data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
 
     if :proxy == resource[:type]
       proxy_properties = {
-        :autoBlockActive            => resource[:remote_auto_block],
+        :autoBlockActive            => Nexus::Util::sym_to_bool(resource[:remote_auto_block]),
         :checksumPolicy             => resource[:remote_checksum_policy].to_s.upcase,
-        :downloadRemoteIndexes      => resource[:remote_download_indexes],
-        :fileTypeValidation         => resource[:remote_file_validation],
+        :downloadRemoteIndexes      => Nexus::Util::sym_to_bool(resource[:remote_download_indexes]),
+        :fileTypeValidation         => Nexus::Util::sym_to_bool(resource[:remote_file_validation]),
         :itemMaxAge                 => resource[:remote_item_max_age],
         :artifactMaxAge             => resource[:remote_artifact_max_age],
         :metadataMaxAge             => resource[:remote_metadata_max_age],
@@ -173,7 +174,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
             :ntlmDomain             => resource[:remote_nt_lan_domain],
             :ntlmHost               => resource[:remote_nt_lan_host],
             :password               => resource[:remote_password] == :present ? resource[:remote_password_value] : nil,
-            :user                   => resource[:remote_user],
+            :username               => resource[:remote_user],
           },
           :connectionSettings  => {
             :connectionTimeout      => resource[:remote_request_timeout],

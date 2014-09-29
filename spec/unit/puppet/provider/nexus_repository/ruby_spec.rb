@@ -110,62 +110,58 @@ describe provider_class do
     it { expect(instance.exists?).to be_true }
   end
 
+  $proxy_template = {
+    'data' => [{
+      'id'                            => 'repository-3',
+      'name'                          => 'a repository proxy',
+      'repoType'                      => 'proxy',
+      'repoPolicy'                    => 'RELEASE',
+      'writePolicy'                   => 'READ_ONLY',
+      'browseable'                    => true,
+      'exposed'                       => true,
+      'notFoundCacheTTL'              => 1440,
+      'autoBlockActive'               => true,
+      'checksumPolicy'                => 'STRICT',
+      'downloadRemoteIndexes'         => true,
+      'fileTypeValidation'            => false,
+      'itemMaxAge'                    => 1445,
+      'artifactMaxAge'                => -1,
+      'metadataMaxAge'                => 1450,
+      'remoteStorage'                 => {
+        'remoteStorageUrl'            =>  'http://maven-repo/',
+        'connectionSettings'          => {
+          'connectionTimeout'         => 9001,
+          'retrievalRetryCount'       => 3,
+          'queryString'               => 'param1=a&amp;param2=b',
+          'userAgentString'           => 'user-agent'
+        },
+        'authentication'              => {
+          'username'                  => 'username',
+          'password'                  => 'secret',
+          'ntlmHost'                  => 'nt-lan-host',
+          'ntlmDomain'                => 'nt-manager-domain'
+        }
+      }
+    }]
+  }
+
+  $proxy_template_without_auth = Marshal.load(Marshal.dump($proxy_template)) 
+  $proxy_template_without_auth['data'][0]['remoteStorage']['authentication'].delete('username')
+  $proxy_template_without_auth['data'][0]['remoteStorage']['authentication'].delete('password')
+
+
   describe 'a proxy instance' do
     let :instance do
-      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return({
-        'data' => [{
-          'id'                            => 'repository-3',
-          'name'                          => 'a repository proxy',
-          'provider'                      => 'maven2',
-          'format'                        => 'maven2',
-          'repoType'                      => 'proxy',
-          'repoPolicy'                    => 'RELEASE',
-          'exposed'                       => true,
-          'writePolicy'                   => 'READ_ONLY',
-          'browseable'                    => true,
-          'indexable'                     => true,
-          'overrideLocalStorageUrl'       => 'file:///some/path',
-          'browseable'                    => true,
-          'exposed'                       => true,
-          'notFoundCacheTTL'              => 1440,
-          'autoBlockActive'               => true,
-          'checksumPolicy'                => 'STRICT',
-          'downloadRemoteIndexes'         => true,
-          'fileTypeValidation'            => false,
-          'itemMaxAge'                    => 1445,
-          'artifactMaxAge'                => -1,
-          'metadataMaxAge'                => 1450,
-          'remoteStorage'                 => {
-              'remoteStorageUrl'          =>  'http://maven-repo/',
-              'connectionSettings'        => {
-                  'connectionTimeout'     => 9001,
-                  'retrievalRetryCount'   => 3,
-                  'queryString'           => 'param1=a&amp;param2=b',
-                  'userAgentString'       => 'user-agent'
-              },
-              'authentication'            => {
-                  'username'              => 'username',
-                  'password'              => '|$|N|E|X|U|S|$|',
-                  'ntlmHost'              => 'nt-lan-host',
-                  'ntlmDomain'            => 'nt-manager-domain'
-              }
-          }
-        }]
-      })
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return($proxy_template)
       provider_class.instances[0]
     end
 
     it { expect(instance.name).to eq('repository-3') }
     it { expect(instance.label).to eq('a repository proxy') }
-    it { expect(instance.provider_type).to eq(:maven2) }
     it { expect(instance.type).to eq(:proxy) }
     it { expect(instance.policy).to eq(:release) }
-    it { expect(instance.exposed).to eq(:true) }
     it { expect(instance.write_policy).to eq(:read_only) }
-    it { expect(instance.browseable).to eq(:true) }
-    it { expect(instance.indexable).to eq(:true) }
     it { expect(instance.not_found_cache_ttl).to eq(1440) }
-    it { expect(instance.local_storage_url).to eq('file:///some/path') }
     it { expect(instance.remote_storage).to eq('http://maven-repo/') }
     it { expect(instance.remote_auto_block).to eq(:true) }
     it { expect(instance.remote_checksum_policy).to eq(:strict) }
@@ -179,9 +175,18 @@ describe provider_class do
     it { expect(instance.remote_query_string).to eq('param1=a&amp;param2=b') }
     it { expect(instance.remote_user_agent).to eq('user-agent') }
     it { expect(instance.remote_user).to eq('username') }
+    it { expect(instance.remote_password).to eq(:present) }
     it { expect(instance.remote_nt_lan_host).to eq('nt-lan-host') }
     it { expect(instance.remote_nt_lan_domain).to eq('nt-manager-domain') }
     it { expect(instance.exists?).to be_true }
+  end
+
+  describe 'a proxy instance without authentication' do
+    let :instance do
+      Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return($proxy_template_without_auth)
+      provider_class.instances[0]
+    end
+    it { expect(instance.remote_password).to eq(:absent) }
   end
 
   describe 'create' do
@@ -287,9 +292,12 @@ describe provider_class do
     describe do
       let(:provider) do
         resource = Puppet::Type::Nexus_repository.new({
-          :name           => 'example-proxy',
-          :type           => 'proxy',
-          :remote_storage => 'http://some-maven-repo/',
+          :name                   => 'example-proxy',
+          :type                   => :proxy,
+          :remote_storage         => 'http://some-maven-repo/',
+          :remote_user            => 'proxy-user',
+          :remote_password_value  => 'proxy-password',
+          :remote_password        => :present,
         })
         provider_class.new(resource)
       end
@@ -299,7 +307,7 @@ describe provider_class do
         provider.create
       end
       it 'should select default value and map remote_auto_block to autoBlockActive' do
-        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:autoBlockActive => :true))
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:autoBlockActive => true))
         provider.create
       end
       it 'should select default value and map label to remote_checksum_policy' do
@@ -307,11 +315,11 @@ describe provider_class do
         provider.create
       end
       it 'should select default value and map remote_download_indexes to downloadRemoteIndexes' do
-        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:downloadRemoteIndexes => :true))
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:downloadRemoteIndexes => true))
         provider.create
       end
       it 'should select default value and map remote_file_validation to fileTypeValidation' do
-        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:fileTypeValidation => :true))
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:fileTypeValidation => true))
         provider.create
       end
       it 'should select default value and map remote_item_max_age to itemMaxAge' do
@@ -326,12 +334,20 @@ describe provider_class do
         Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:metadataMaxAge => 1440))
         provider.create
       end
+      it 'should map remote_user to remoteStorage.authentication.username' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:authentication => hash_including(:username => 'proxy-user'))))
+        provider.create
+      end
+      it 'should map remote_password_value to remoteStorage.authentication.password' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:authentication => hash_including(:password => 'proxy-password'))))
+        provider.create
+      end
       it 'should map remote_request_timeout to remoteStorage.connectionSettings.connectionTimeout' do
         Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:connectionSettings => hash_including(:connectionTimeout => 60))))
         provider.create
       end
       it 'should map remote_request_retries to remoteStorage.connectionSettings.retrievalRetryCount' do
-        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:connectionSettings => hash_including(:connectionTimeout => 60))))
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:connectionSettings => hash_including(:retrievalRetryCount => 10))))
         provider.create
       end
     end

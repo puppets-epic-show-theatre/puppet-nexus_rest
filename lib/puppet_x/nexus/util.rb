@@ -8,5 +8,8 @@ module Nexus
       end
     end
 
+    def self.sym_to_bool(sym)
+      nil == sym ? nil : :true == sym
+    end
   end
 end
