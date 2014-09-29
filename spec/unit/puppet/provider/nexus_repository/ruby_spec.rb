@@ -287,6 +287,58 @@ describe provider_class do
     describe do
       let(:provider) do
         resource = Puppet::Type::Nexus_repository.new({
+          :name           => 'example-proxy',
+          :type           => 'proxy',
+          :remote_storage => 'http://some-maven-repo/',
+        })
+        provider_class.new(resource)
+      end
+
+      it 'should map remote_storage to remoteStorage.remoteStorageUrl' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:remoteStorageUrl => 'http://some-maven-repo/')))
+        provider.create
+      end
+      it 'should select default value and map remote_auto_block to autoBlockActive' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:autoBlockActive => :true))
+        provider.create
+      end
+      it 'should select default value and map label to remote_checksum_policy' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:checksumPolicy => 'WARN'))
+        provider.create
+      end
+      it 'should select default value and map remote_download_indexes to downloadRemoteIndexes' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:downloadRemoteIndexes => :true))
+        provider.create
+      end
+      it 'should select default value and map remote_file_validation to fileTypeValidation' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:fileTypeValidation => :true))
+        provider.create
+      end
+      it 'should select default value and map remote_item_max_age to itemMaxAge' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:itemMaxAge => 1440))
+        provider.create
+      end
+      it 'should select default value and map remote_artifact_max_age to artifactMaxAge' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:artifactMaxAge => -1))
+        provider.create
+      end
+      it 'should select default value and map remote_metadata_max_age to metadataMaxAge' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:metadataMaxAge => 1440))
+        provider.create
+      end
+      it 'should map remote_request_timeout to remoteStorage.connectionSettings.connectionTimeout' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:connectionSettings => hash_including(:connectionTimeout => 60))))
+        provider.create
+      end
+      it 'should map remote_request_retries to remoteStorage.connectionSettings.retrievalRetryCount' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:connectionSettings => hash_including(:connectionTimeout => 60))))
+        provider.create
+      end
+    end
+
+    describe do
+      let(:provider) do
+        resource = Puppet::Type::Nexus_repository.new({
           :name          => 'example',
           :provider_type => 'nuget',
         })
@@ -303,6 +355,10 @@ describe provider_class do
       end
       it 'should auto-detect format for provider_type => nuget' do
         Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:format => 'nuget'))
+        provider.create
+      end
+      it 'should select `mixed` policy for provider_type => nuget' do
+        Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repoPolicy => 'MIXED'))
         provider.create
       end
     end
@@ -352,7 +408,7 @@ describe provider_class do
         provider.create
       end
     end
-end
+  end
 
   describe 'flush' do
     before(:each) do
