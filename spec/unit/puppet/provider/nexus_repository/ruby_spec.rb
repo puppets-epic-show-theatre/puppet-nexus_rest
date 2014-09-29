@@ -179,7 +179,6 @@ describe provider_class do
     it { expect(instance.remote_query_string).to eq('param1=a&amp;param2=b') }
     it { expect(instance.remote_user_agent).to eq('user-agent') }
     it { expect(instance.remote_user).to eq('username') }
-    it { expect(instance.remote_password).to eq('|$|N|E|X|U|S|$|') }
     it { expect(instance.remote_nt_lan_host).to eq('nt-lan-host') }
     it { expect(instance.remote_nt_lan_domain).to eq('nt-manager-domain') }
     it { expect(instance.exists?).to be_true }

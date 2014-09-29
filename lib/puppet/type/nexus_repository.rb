@@ -140,8 +140,19 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:remote_password) do
-    desc 'The password used for authentication to the remote repository. ' \
+    desc 'The state of the password used for authentication to the remote repository. ' \
+         'Either `absent` or `present` whereas `absent` means no password at all and ' \
+         '`present` will update the password to the given `remote_password_value` field. ' \
+         'Unfortunately, it is not possible to retrieve the current password.' \
          'Only useful for proxy-type repositories.'
+    newvalues(:absent, :present)
+  end
+
+  newparam(:remote_password_value) do
+    desc 'The password used for authentication to the remote repository. ' \
+         'Will be only used if `remote_password` is set to `present`. ' \
+         'Only useful for proxy-type repositories.'
+    desc 'The expected value of the password. Will be only used if `password` is set to `present`.'
   end
 
   newproperty(:remote_nt_lan_host) do

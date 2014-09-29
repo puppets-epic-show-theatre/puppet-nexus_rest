@@ -76,7 +76,6 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'] : nil,
           :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
           :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
-          :remote_password                => remote_authentication.has_key?('password') ? remote_authentication['password'] : nil,
           :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
           :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
         )
@@ -173,8 +172,8 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :authentication           => {
             :ntlmDomain             => resource[:remote_nt_lan_domain],
             :ntlmHost               => resource[:remote_nt_lan_host],
-            :password               => resource[:remote_password],
-            :user                   => resource[:user],
+            :password               => resource[:remote_password] == :present ? resource[:remote_password_value] : nil,
+            :user                   => resource[:remote_user],
           },
           :connectionSettings  => {
             :connectionTimeout      => resource[:remote_request_timeout],
