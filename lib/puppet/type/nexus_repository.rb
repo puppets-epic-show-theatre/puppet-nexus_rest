@@ -167,7 +167,7 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:remote_artifact_max_age) do
-    desc 'This controls how long to cache the artifacts in the repository before rechecking the remote repository. ' \
+    desc 'This controls how long to cache the artifacts in the repository before rechecking the remote repository. (minutes) ' \
          'In a release repository, this value should be -1 (infinite) as release artifacts shouldn\'t change. ' \
          'Only useful for proxy-type repositories.'
     defaultto do @resource[:type] == :proxy ? -1 : nil end
@@ -175,7 +175,7 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:remote_metadata_max_age) do
-    desc 'This controls how long to cache the metadata in the repository before rechecking the remote repository. ' \
+    desc 'This controls how long to cache the metadata in the repository before rechecking the remote repository. (minutes) ' \
          'Unlike artifact max age, this value should not be infinite or Maven won\'t discover new artifact releases.' \
          'Only useful for proxy-type repositories.'
     defaultto do @resource[:type] == :proxy ? 1440 : nil end
@@ -183,7 +183,7 @@ Puppet::Type.newtype(:nexus_repository) do
   end
 
   newproperty(:remote_item_max_age) do
-    desc 'Repositories may contain resources that are neither artifacts identified by GAV coordinates or metadata. ' \
+    desc 'Repositories may contain resources that are neither artifacts identified by GAV coordinates or metadata. (minutes) ' \
          'This value controls how long to cache such items in the repository before rechecking the remote repository. ' \
          'Only useful for proxy-type repositories.'
     defaultto do @resource[:type] == :proxy ? 1440 : nil end
