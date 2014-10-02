@@ -76,9 +76,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'] : nil,
           :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
           :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
-          :remote_password                => remote_authentication.has_key?('password') ? :present : :absent,
-          :remote_nt_lan_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
-          :remote_nt_lan_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
+          :remote_password_ensure         => remote_authentication.has_key?('password') ? :present : :absent,
+          :remote_ntlm_host             => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
+          :remote_ntlm_domain           => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
         )
 
       end
@@ -171,9 +171,9 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
         :remoteStorage              => {
           :remoteStorageUrl         => resource[:remote_storage],
           :authentication           => {
-            :ntlmDomain             => resource[:remote_nt_lan_domain],
-            :ntlmHost               => resource[:remote_nt_lan_host],
-            :password               => resource[:remote_password] == :present ? resource[:remote_password_value] : nil,
+            :ntlmDomain             => resource[:remote_ntlm_domain],
+            :ntlmHost               => resource[:remote_ntlm_host],
+            :password               => resource[:remote_password_ensure] == :present ? resource[:remote_password] : nil,
             :username               => resource[:remote_user],
           },
           :connectionSettings  => {
@@ -285,15 +285,19 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     @dirty_flag = true
   end
 
-  def remote_password=(value)
+  def remote_password_ensure=(value)
     @dirty_flag = true
   end
 
-  def remote_nt_lan_host=(value)
+  def remote_password(value)
     @dirty_flag = true
   end
 
-  def remote_nt_lan_domai=(value)
+  def remote_ntlm_host=(value)
+    @dirty_flag = true
+  end
+
+  def remote_ntlm_domain=(value)
     @dirty_flag = true
   end
 

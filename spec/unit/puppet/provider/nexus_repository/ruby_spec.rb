@@ -175,9 +175,9 @@ describe provider_class do
     it { expect(instance.remote_query_string).to eq('param1=a&amp;param2=b') }
     it { expect(instance.remote_user_agent).to eq('user-agent') }
     it { expect(instance.remote_user).to eq('username') }
-    it { expect(instance.remote_password).to eq(:present) }
-    it { expect(instance.remote_nt_lan_host).to eq('nt-lan-host') }
-    it { expect(instance.remote_nt_lan_domain).to eq('nt-manager-domain') }
+    it { expect(instance.remote_password_ensure).to eq(:present) }
+    it { expect(instance.remote_ntlm_host).to eq('nt-lan-host') }
+    it { expect(instance.remote_ntlm_domain).to eq('nt-manager-domain') }
     it { expect(instance.exists?).to be_true }
   end
 
@@ -186,7 +186,7 @@ describe provider_class do
       Nexus::Rest.should_receive(:get_all_plus_n).with('/service/local/repositories').and_return($proxy_template_without_auth)
       provider_class.instances[0]
     end
-    it { expect(instance.remote_password).to eq(:absent) }
+    it { expect(instance.remote_password_ensure).to eq(:absent) }
   end
 
   describe 'create' do
@@ -296,8 +296,8 @@ describe provider_class do
           :type                   => :proxy,
           :remote_storage         => 'http://some-maven-repo/',
           :remote_user            => 'proxy-user',
-          :remote_password_value  => 'proxy-password',
-          :remote_password        => :present,
+          :remote_password        => 'proxy-password',
+          :remote_password_ensure => :present,
         })
         provider_class.new(resource)
       end
@@ -338,7 +338,7 @@ describe provider_class do
         Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:authentication => hash_including(:username => 'proxy-user'))))
         provider.create
       end
-      it 'should map remote_password_value to remoteStorage.authentication.password' do
+      it 'should map remote_password to remoteStorage.authentication.password' do
         Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:remoteStorage => hash_including(:authentication => hash_including(:password => 'proxy-password'))))
         provider.create
       end

@@ -18,9 +18,10 @@ Puppet::Type.newtype(:nexus_repository) do
     :remote_query_string,
     :remote_user_agent,
     :remote_user,
+    :remote_password_ensure,
     :remote_password,
-    :remote_nt_lan_host,
-    :remote_nt_lan_domain
+    :remote_ntlm_host,
+    :remote_ntlm_domain
   ]
 
   ensurable
@@ -139,7 +140,7 @@ Puppet::Type.newtype(:nexus_repository) do
          'Only useful for proxy-type repositories.'
   end
 
-  newproperty(:remote_password) do
+  newproperty(:remote_password_ensure) do
     desc 'The state of the password used for authentication to the remote repository. ' \
          'Either `absent` or `present` whereas `absent` means no password at all and ' \
          '`present` will update the password to the given `remote_password_value` field. ' \
@@ -148,19 +149,19 @@ Puppet::Type.newtype(:nexus_repository) do
     newvalues(:absent, :present)
   end
 
-  newparam(:remote_password_value) do
+  newparam(:remote_password) do
     desc 'The password used for authentication to the remote repository. ' \
          'Will be only used if `remote_password` is set to `present`. ' \
          'Only useful for proxy-type repositories.'
     desc 'The expected value of the password. Will be only used if `password` is set to `present`.'
   end
 
-  newproperty(:remote_nt_lan_host) do
+  newproperty(:remote_ntlm_host) do
     desc 'The Windows NT Lan Manager for authentication to the remote repository. ' \
          'Only useful for proxy-type repositories.'
   end
 
-  newproperty(:remote_nt_lan_domain) do
+  newproperty(:remote_ntlm_domain) do
     desc 'The Windows NT Lan Manager domain for authentication to the remote repository. ' \
          'Only useful for proxy-type repositories.'
   end
