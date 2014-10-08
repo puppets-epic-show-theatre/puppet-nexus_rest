@@ -172,7 +172,7 @@ describe provider_class do
     it { expect(instance.remote_metadata_max_age).to eq(1450) }
     it { expect(instance.remote_request_timeout).to eq(9001) }
     it { expect(instance.remote_request_retries).to eq(3) }
-    it { expect(instance.remote_query_string).to eq('param1=a&amp;param2=b') }
+    it { expect(instance.remote_query_string).to eq('param1=a&param2=b') }
     it { expect(instance.remote_user_agent).to eq('user-agent') }
     it { expect(instance.remote_user).to eq('username') }
     it { expect(instance.remote_password_ensure).to eq(:present) }

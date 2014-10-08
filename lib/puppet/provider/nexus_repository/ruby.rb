@@ -1,4 +1,5 @@
 require 'json'
+require 'CGI'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'config.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
@@ -73,7 +74,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
           :remote_metadata_max_age        => repository.has_key?('metadataMaxAge') ? repository['metadataMaxAge'] : nil,
           :remote_request_timeout         => remote_connection.has_key?('connectionTimeout') ? remote_connection['connectionTimeout'] : nil,
           :remote_request_retries         => remote_connection.has_key?('retrievalRetryCount') ? remote_connection['retrievalRetryCount'] : nil,
-          :remote_query_string            => remote_connection.has_key?('queryString') ? remote_connection['queryString'] : nil,
+          :remote_query_string            => remote_connection.has_key?('queryString') ? CGI.unescapeHTML(remote_connection['queryString']) : nil,
           :remote_user_agent              => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
           :remote_user                    => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
           :remote_password_ensure         => remote_authentication.has_key?('password') ? :present : :absent,
