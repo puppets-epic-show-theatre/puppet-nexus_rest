@@ -1,7 +1,9 @@
 require 'json'
+require 'cgi'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'config.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'exception.rb'))
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'rest.rb'))
+require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'puppet_x', 'nexus', 'util.rb'))
 
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
@@ -44,21 +46,42 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     begin
       repositories = Nexus::Rest.get_all_plus_n('/service/local/repositories')
       repositories['data'].collect do |repository|
+
+        remote_storage = repository.has_key?('remoteStorage') ? repository['remoteStorage'] : {}
+        remote_authentication = remote_storage.has_key?('authentication') ? remote_storage['authentication'] : {}
+        remote_connection = remote_storage.has_key?('connectionSettings') ? remote_storage['connectionSettings'] : {}
+
         new(
-          :ensure                  => :present,
-          :name                    => repository['id'],
-          :label                   => repository['name'],
-          :provider_type           => repository.has_key?('format') ? repository['format'].to_sym : nil, # TODO using the format because it maps 1:1 to the provider_type
-          :type                    => repository.has_key?('repoType') ? repository['repoType'].to_sym : nil,
-          :policy                  => repository.has_key?('repoPolicy') ? repository['repoPolicy'].downcase.to_sym : nil,
-          :exposed                 => repository.has_key?('exposed') ? repository['exposed'].to_s.to_sym : nil,
-          :write_policy            => repository.has_key?('writePolicy') ? repository['writePolicy'].downcase.to_sym : nil,
-          :browseable              => repository.has_key?('browseable') ? repository['browseable'].to_s.to_sym : nil,
-          :indexable               => repository.has_key?('indexable') ? repository['indexable'].to_s.to_sym : nil,
-          :not_found_cache_ttl     => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
-          :local_storage_url       => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : nil,
-          :download_remote_indexes => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s.to_sym : :false
+          :ensure                   => :present,
+          :name                     => repository['id'],
+          :label                    => repository['name'],
+          :provider_type            => repository.has_key?('format') ? repository['format'].to_sym : nil, # TODO using the format because it maps 1:1 to the provider_type
+          :type                     => repository.has_key?('repoType') ? repository['repoType'].to_sym : nil,
+          :policy                   => repository.has_key?('repoPolicy') ? repository['repoPolicy'].downcase.to_sym : nil,
+          :exposed                  => repository.has_key?('exposed') ? repository['exposed'].to_s.to_sym : nil,
+          :write_policy             => repository.has_key?('writePolicy') ? repository['writePolicy'].downcase.to_sym : nil,
+          :browseable               => repository.has_key?('browseable') ? repository['browseable'].to_s.to_sym : nil,
+          :indexable                => repository.has_key?('indexable') ? repository['indexable'].to_s.to_sym : nil,
+          :not_found_cache_ttl      => repository.has_key?('notFoundCacheTTL') ? Integer(repository['notFoundCacheTTL']) : nil,
+          :local_storage_url        => repository.has_key?('overrideLocalStorageUrl') ? repository['overrideLocalStorageUrl'] : nil,
+          :remote_storage           => remote_storage.has_key?('remoteStorageUrl') ? remote_storage['remoteStorageUrl'].to_s : nil,
+          :remote_auto_block        => repository.has_key?('autoBlockActive') ? repository['autoBlockActive'].to_s.to_sym : nil,
+          :remote_checksum_policy   => repository.has_key?('checksumPolicy') ? repository['checksumPolicy'].downcase.to_sym : nil,
+          :remote_download_indexes  => repository.has_key?('downloadRemoteIndexes') ? repository['downloadRemoteIndexes'].to_s.to_sym : nil,
+          :remote_file_validation   => repository.has_key?('fileTypeValidation') ? repository['fileTypeValidation'].to_s.to_sym : nil,
+          :remote_item_max_age      => repository.has_key?('itemMaxAge') ? repository['itemMaxAge'] : nil,
+          :remote_artifact_max_age  => repository.has_key?('artifactMaxAge') ? repository['artifactMaxAge'] : nil,
+          :remote_metadata_max_age  => repository.has_key?('metadataMaxAge') ? repository['metadataMaxAge'] : nil,
+          :remote_request_timeout   => remote_connection.has_key?('connectionTimeout') ? remote_connection['connectionTimeout'] : nil,
+          :remote_request_retries   => remote_connection.has_key?('retrievalRetryCount') ? remote_connection['retrievalRetryCount'] : nil,
+          :remote_query_string      => remote_connection.has_key?('queryString') ? CGI.unescapeHTML(remote_connection['queryString']) : nil,
+          :remote_user_agent        => remote_connection.has_key?('userAgentString') ? remote_connection['userAgentString'] : nil,
+          :remote_user              => remote_authentication.has_key?('username') ? remote_authentication['username'] : nil,
+          :remote_password_ensure   => remote_authentication.has_key?('password') ? :present : :absent,
+          :remote_ntlm_host         => remote_authentication.has_key?('ntlmHost') ? remote_authentication['ntlmHost'] : nil,
+          :remote_ntlm_domain       => remote_authentication.has_key?('ntlmDomain') ? remote_authentication['ntlmDomain'] : nil
         )
+
       end
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_repository instances: #{e}"
@@ -128,16 +151,47 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :providerRole            => content_type_details[:providerRole],
       :format                  => content_type_details[:format],
       :repoPolicy              => resource[:policy].to_s.upcase,
-      :exposed                 => resource[:exposed] == :true,
+      :exposed                 => Nexus::Util::sym_to_bool(resource[:exposed]),
 
       :writePolicy             => resource[:write_policy].to_s.upcase,
-      :browseable              => resource[:browseable] == :true,
-      :indexable               => resource[:indexable] == :true,
+      :browseable              => Nexus::Util::sym_to_bool(resource[:browseable]),
+      :indexable               => Nexus::Util::sym_to_bool(resource[:indexable]),
       :notFoundCacheTTL        => resource[:not_found_cache_ttl],
-
-      :downloadRemoteIndexes   => resource[:download_remote_indexes] == :true,
     }
     data[:overrideLocalStorageUrl] = resource[:local_storage_url] unless resource[:local_storage_url].nil?
+
+    if :proxy == resource[:type]
+      proxy_properties = {
+        :autoBlockActive            => Nexus::Util::sym_to_bool(resource[:remote_auto_block]),
+        :checksumPolicy             => resource[:remote_checksum_policy].to_s.upcase,
+        :downloadRemoteIndexes      => Nexus::Util::sym_to_bool(resource[:remote_download_indexes]),
+        :fileTypeValidation         => Nexus::Util::sym_to_bool(resource[:remote_file_validation]),
+        :itemMaxAge                 => resource[:remote_item_max_age],
+        :artifactMaxAge             => resource[:remote_artifact_max_age],
+        :metadataMaxAge             => resource[:remote_metadata_max_age],
+        :remoteStorage              => {
+          :remoteStorageUrl         => resource[:remote_storage],
+          :authentication           => {
+            :ntlmDomain             => resource[:remote_ntlm_domain],
+            :ntlmHost               => resource[:remote_ntlm_host],
+            :password               => resource[:remote_password_ensure] == :present ? resource[:remote_password] : nil,
+            :username               => resource[:remote_user],
+          },
+          :connectionSettings  => {
+            :connectionTimeout      => resource[:remote_request_timeout],
+            :queryString            => resource[:remote_query_string],
+            :retrievalRetryCount    => resource[:remote_request_retries],
+            :userAgentString        => resource[:remote_user_agent],
+          }
+        }
+      }
+
+      #recursively remove nil and empty hashes
+      Nexus::Util.strip_hash(proxy_properties)
+
+      data = data.merge(proxy_properties)
+    end
+
     {:data => data}
   end
 
@@ -176,11 +230,76 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
     @dirty_flag = true
   end
 
-  def download_remote_indexes=(value)
-    @dirty_flag = true
-  end
-
   def local_storage_url=(value)
     @dirty_flag = true
   end
+
+  def remote_storage=(value)
+    @dirty_flag = true
+  end
+
+  def remote_auto_block=(value)
+    @dirty_flag = true
+  end
+
+  def remote_checksum_policy=(value)
+    @dirty_flag = true
+  end
+
+  def remote_download_indexes=(value)
+    @dirty_flag = true
+  end
+
+  def remote_file_validation=(value)
+    @dirty_flag = true
+  end
+
+  def remote_item_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_artifact_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_metadata_max_age=(value)
+    @dirty_flag = true
+  end
+
+  def remote_request_timeout=(value)
+    @dirty_flag = true
+  end
+
+  def remote_request_retries=(value)
+    @dirty_flag = true
+  end
+
+  def remote_query_string=(value)
+    @dirty_flag = true
+  end
+
+  def remote_user_agent=(value)
+    @dirty_flag = true
+  end
+
+  def remote_user=(value)
+    @dirty_flag = true
+  end
+
+  def remote_password_ensure=(value)
+    @dirty_flag = true
+  end
+
+  def remote_password(value)
+    @dirty_flag = true
+  end
+
+  def remote_ntlm_host=(value)
+    @dirty_flag = true
+  end
+
+  def remote_ntlm_domain=(value)
+    @dirty_flag = true
+  end
+
 end
