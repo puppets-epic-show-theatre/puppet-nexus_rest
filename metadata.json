@@ -7,7 +7,7 @@
   "dependencies": [],
   "types": [],
   "checksums": {},
-  "source": "git@bitbucket.org:atlassian/puppet-module-nexus_rest.git",
+  "source": "https://bitbucket.org/atlassian/puppet-module-nexus_rest.git",
   "project_page": "https://bitbucket.org/atlassian/puppet-module-nexus_rest",
   "license": "Apache License, Version 2.0"
 }
