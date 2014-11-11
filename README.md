@@ -22,7 +22,7 @@ disadvantages and has its own:
  * Have to manage and maintain XML configuration templates and files
  * Introduce additional complexity to Puppet manifests
 
-This Puppet Module aims to address addresses all of these disadvantages. At this point
+This Puppet Module aims to address all of these disadvantages. At this point
 not all options covered by XML configuration are covered by this module, but the module is
 designed to be easily extensible and pull requests are welcome. This module could be 
 capable of managing anything configurable through the Nexus UI.
