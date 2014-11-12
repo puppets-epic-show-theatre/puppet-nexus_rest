@@ -370,7 +370,7 @@ built-in functionality that is only available in Puppet 3.x.
 ### Nexus compatibility ###
 Furthermore, the module has been tested with the following Nexus versions:
 
-* Nexus Pro 2.7.2 running on Ubuntu 12.04
+* Nexus Pro 2.9.x running on Ubuntu 12.04
 
 ### A note on passwords ###
 
