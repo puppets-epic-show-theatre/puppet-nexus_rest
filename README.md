@@ -375,7 +375,7 @@ Furthermore, the module has been tested with the following Nexus versions:
 ### A note on passwords ###
 
 Due to the limitation of the Nexus REST api it is not possible to retrieve the current value of a password. Hence,
-Puppet can only manage the existence of the Puppet but won't notice when passwords change. Either way, passwords will
+Puppet can only manage the existence of the password but won't notice when passwords change. Either way, passwords will
 be updated when attributes of the same resource change as well.
 
 ## Contributing ##
