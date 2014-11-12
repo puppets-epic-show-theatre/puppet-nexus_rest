@@ -132,7 +132,10 @@ providers: simply inspect the current state with
 ```
 puppet resource <resource-name>
 ```
-
+for example:
+```
+puppet resource nexus_repository
+```
 and copy & paste the result into your manifest file.
 
 ### Global Configuration ###
