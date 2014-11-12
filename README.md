@@ -122,7 +122,7 @@ recommended to manage the file within Puppet and limit the visibility to the roo
 Any change is enforced through Nexus' REST api. Hence, the Nexus service has to be running before any modification can
 be made. In general, any ordering between the `service { 'nexus': }` resource and resources provided by this module
 should be made explicit in the Puppet manifest itself. This module doesn't express any autorequire dependency ('soft
-dependency') on the service resource itself - this is up to the client. However, any resource provided by this module
+dependency') on the service resource itself - this is up to the user of the puppet module. However, any resource provided by this module
 will wait a certain amount of time in order to given Nexus the chance to properly start up. The default timeout is 150
 seconds and can be configured via the configuration file.
 
