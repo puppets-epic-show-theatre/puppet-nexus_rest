@@ -133,7 +133,7 @@ providers: simply inspect the current state with
 puppet resource <resource-name>
 ```
 
-and copy&paste the result in your manifest.
+and copy & paste the result into your manifest file.
 
 ### Global Configuration ###
 
