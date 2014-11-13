@@ -217,7 +217,7 @@ nexus_repository { 'new-repository':
   indexable               => true,                 #valid values: true (default), false
   not_found_cache_ttl     => 1440,                 #1440 is default (minutes, -1 is never)
   local_storage_url       => 'file:///some/path',  #valid values: not specified (default), or absolute file path beginning with 'file:///'
-  download_remote_indexes => false                 #valid values: true, false (default)
+  download_remote_indexes => false,                #valid values: true, false (default)
 
   #the following 'remote_' properties may only be used when type => 'proxy'
 
@@ -232,12 +232,12 @@ nexus_repository { 'new-repository':
   remote_ntlm_host        => 'nt_host',            #optional, default is unspecified
   remote_ntlm_domain      => 'nt_domain',          #optional, default is unspecified
   remote_artifact_max_age => -1,                   #-1 is default (minutes, -1 is never)
-  remote_metadata_max_age => 30                    #default is 1440 (minutes, -1 is never)
-  remote_item_max_age     => 60                    #default is 1440 (minutes, -1 is never)
+  remote_metadata_max_age => 30,                   #default is 1440 (minutes, -1 is never)
+  remote_item_max_age     => 60,                   #default is 1440 (minutes, -1 is never)
   remote_user_agent       => 'Nexus 2.9',          #optional, default is unspecified
   remote_query_string     => 'arg1=true&arg2=5'    #optional, default is unspecified
-  remote_request_timeout  => 120                   #60 is default (seconds)
-  remote_request_retries  => 3                     #10 is default
+  remote_request_timeout  => 120,                  #60 is default (seconds)
+  remote_request_retries  => 3,                    #10 is default
 }
 ```
 
