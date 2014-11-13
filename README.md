@@ -332,7 +332,7 @@ Due to the complexity of the resource it is strongly recommended to configure th
 
 Setting `reoccurrence` to one of the following values requires to specify additional properties:
 
-* `manual` - no futher property required
+* `manual` - no further property required
 * `once` - `start_date` and `start_time`
 * `hourly` - `start_date` and `start_time`
 * `daily` - `start_date` and  `recurring_time`
