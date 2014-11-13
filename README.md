@@ -115,20 +115,17 @@ can_delete_repositories: false
 # health_check_timeout: 3
 ```
 
-This file needs to exist on the machine where the Nexus is running. It will provide the module with the required
-information about where Nexus is listening and which credentials to use to enforce the configuration. Obviously it is
-recommended to manage the file within Puppet and limit the visibility to the root and / or the Puppet user.
+The configuration file will provide the module with the required information about where Nexus is listening and which credentials to use to enforce the configuration. Obviously it is
+recommended to manage the file within Puppet and limit the visibility to the root.
 
 Any change is enforced through Nexus' REST api. Hence, the Nexus service has to be running before any modification can
 be made. In general, any ordering between the `service { 'nexus': }` resource and resources provided by this module
 should be made explicit in the Puppet manifest itself. This module doesn't express any autorequire dependency ('soft
 dependency') on the service resource itself - this is up to the user of the Puppet module. However, any resource provided by this module
-will wait a certain amount of time in order to given Nexus the chance to properly start up. The default timeout is 150
+will wait a certain amount of time in order to give Nexus the chance to properly start up. The default timeout is 150
 seconds and can be configured via the configuration file.
 
-If you have a running Nexus instance, you can just benifit from the fact that all resources are implemented as
-providers: simply inspect the current state with
-
+All resources are implemented as providers. This means that if you have a running Nexus instance you can simply inspect the current state with:
 ```
 puppet resource <resource-name>
 ```
@@ -163,9 +160,7 @@ nexus_connection_settings { 'current':
 
 Note: the query string returned by Nexus contains encoded HTML entities. So submitting e.g. `&` via the REST interface
 will result in an new version of the query string where it is replaced with `&amp;`. To avoid a ongoing war between
-Nexus and Puppet updating the configuration, this module will unescape the received query string. Hence, this can be
-subject to an API breakage when Sonatype would decide to change the behaviour.
-
+Nexus and Puppet updating the configuration, this module will unescape the received query string. This can be subject to API breakages if Sonatype decides to change the behaviour.
 
 ```
 #!puppet
@@ -190,7 +185,7 @@ nexus_proxy_settings { 'current':
 }
 ```
 
-Note: The current implementation doesn't support authentication at the proxy server. We're happy to accept a PR on this matter.
+Note: The current implementation doesn't support authentication at the proxy server. But code contributions are gratefully accepted!
 
 ```
 #!puppet
@@ -382,8 +377,9 @@ be updated when attributes of the same resource change as well.
 
 ## Contributing ##
 
-1. Fork it
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create new Pull Request
+1. Raise an issue
+2. Fork it
+3. Create your feature branch (`git checkout -b my-new-feature`)
+4. Commit your changes (`git commit -am 'Add some feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create new pull request targeting master
