@@ -52,13 +52,13 @@ describe Nexus::Service do
       expect { service.ensure_running }.to_not raise_error
     end
 
-    specify 'should cache result' do
-      delegatee.should_receive(:ensure_running).exactly(1).times.and_return()
+    specify 'should not cache successful result' do
+      delegatee.should_receive(:ensure_running).exactly(2).times.and_return()
       service.ensure_running
       expect { service.ensure_running }.to_not raise_error
     end
 
-    specify 'should cache a negative result as well' do
+    specify 'should cache a negative result' do
       delegatee.should_receive(:ensure_running).exactly(1).times.and_raise('service is borked')
       expect { service.ensure_running }.to raise_error(RuntimeError, /service is borked/)
       expect { service.ensure_running }.to raise_error(RuntimeError, /Nexus service failed a previous health check/)

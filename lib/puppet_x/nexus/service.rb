@@ -18,8 +18,6 @@ module Nexus
     def ensure_running
       if @last_result == :not_running
         fail("Nexus service failed a previous health check.")
-      elsif @last_result == :running
-        Puppet.debug("Nexus service is running (already checked ealier).")
       else
         begin
           @delegatee.ensure_running
