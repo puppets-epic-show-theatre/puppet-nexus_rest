@@ -1,5 +1,5 @@
 name    'atlassian-nexus_rest'
-version '0.1.0'
+version '0.1.1'
 source 'https://bitbucket.org/atlassian/puppet-module-nexus_rest.git'
 author 'Atlassian'
 license 'Apache License, Version 2.0'
