@@ -1,4 +1,3 @@
-require 'puppet/property/keyvalue'
 require 'puppet/property/list'
 
 Puppet::Type.newtype(:nexus_staging_ruleset) do
@@ -7,8 +6,7 @@ Puppet::Type.newtype(:nexus_staging_ruleset) do
   ensurable
 
   newparam(:name, :namevar => true) do
-    desc 'Name of the scheduled task. Although Nexus allows to use the same name for multiple tasks, the module will
-      print a warning and ignore and subsequent task with the same name.'
+    desc 'The name of the rule set.'
   end
 
   newparam(:id) do
@@ -16,15 +14,16 @@ Puppet::Type.newtype(:nexus_staging_ruleset) do
   end
 
   newproperty(:description) do
-    desc 'The description of the rule'
+    desc 'The description of the rule set.'
     defaultto ''
   end
 
   newproperty(:rules, :parent => Puppet::Property::List) do
-    desc ''
+    desc 'The type of rules to be applied. Can be the type name (as shown in the user interface) or the type id. The
+      plugin ships a list of known type names; if a type name is not known, it is passed unmodified to Nexus.'
     validate do |value|
       raise ArgumentError, 'Rules must not be empty' if value.to_s.empty?
-      raise ArgumentError, 'Multiple reccuring days must be provided as an array, not a comma-separated list.' if value.to_s.include?(',')
+      raise ArgumentError, 'Multiple rules must be provided as an array, not a comma-separated list.' if value.to_s.include?(',')
     end
     def membership
       :inclusive_membership
