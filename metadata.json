@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "summary": "Manage Nexus resources through a REST interface",
   "author": "Atlassian",
-  "description": "Manage Nexus repositpry resources through a REST interface",
+  "description": "Manage Nexus repository resources through a REST interface",
   "dependencies": [],
   "types": [],
   "checksums": {},
