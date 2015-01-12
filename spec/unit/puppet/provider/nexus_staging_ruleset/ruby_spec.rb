@@ -180,6 +180,25 @@ describe Puppet::Type.type(:nexus_staging_ruleset).provider(:ruby) do
       ]
 
       expect(instance.map_resource_to_data['data']).to include('rules')
+      expect(instance.map_resource_to_data['data']['rules']).to have(2).items
+    end
+
+    specify 'should add a rule name' do
+      resource[:rules] = 'Artifact Uniqueness Validation'
+
+      expect(instance.map_resource_to_data['data']['rules'][0]).to include('name' => 'Artifact Uniqueness Validation')
+    end
+
+    specify 'should add a rule typeId' do
+      resource[:rules] = 'Artifact Uniqueness Validation'
+
+      expect(instance.map_resource_to_data['data']['rules'][0]).to include('typeId' => 'uniq-staging')
+    end
+
+    specify 'should enable rule' do
+      resource[:rules] = 'Artifact Uniqueness Validation'
+
+      expect(instance.map_resource_to_data['data']['rules'][0]).to include('enabled' => true)
     end
   end
 

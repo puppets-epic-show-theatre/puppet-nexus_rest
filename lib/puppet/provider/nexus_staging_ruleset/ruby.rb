@@ -81,8 +81,8 @@ Puppet::Type.type(:nexus_staging_ruleset).provide(:ruby) do
   # Reverse operation to #map_rules_to_list
   #
   def map_rules_to_hash
-    @resource[:rules].split(',').collect do |rule_id|
-      ruleType = Nexus::StagingRuleset.find_type_by_id(rule_id)
+    @resource[:rules].split(',').collect do |rule_name|
+      ruleType = Nexus::StagingRuleset.find_type_by_name(rule_name)
       {
           'name'    => ruleType.name,
           'typeId'  => ruleType.id,
