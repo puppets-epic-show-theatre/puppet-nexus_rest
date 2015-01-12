@@ -7,6 +7,7 @@
   "dependencies": [],
   "types": [],
   "checksums": {},
+  "tags": ["sonatype", "nexus", "rest"],
   "source": "https://bitbucket.org/atlassian/puppet-module-nexus_rest.git",
   "project_page": "https://bitbucket.org/atlassian/puppet-module-nexus_rest",
   "issues_url": "https://bitbucket.org/atlassian/puppet-module-nexus_rest/issues?status=new&status=open",
