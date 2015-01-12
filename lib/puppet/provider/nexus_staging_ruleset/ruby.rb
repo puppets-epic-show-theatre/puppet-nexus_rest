@@ -47,7 +47,7 @@ Puppet::Type.type(:nexus_staging_ruleset).provide(:ruby) do
         :id          => staging_ruleset['id'],
         :name        => staging_ruleset['name'],
         :description => staging_ruleset.has_key?('description') ? staging_ruleset['description'] : :absent,
-        :rules       => staging_ruleset.has_key?('rules') ? map_rules_to_list(staging_ruleset['rules']) : :absent,
+        :rules       => staging_ruleset.has_key?('rules') ? map_rules_to_list(staging_ruleset['rules']).join(',') : :absent,
     }
   end
 

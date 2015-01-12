@@ -114,10 +114,15 @@ describe Puppet::Type.type(:nexus_staging_ruleset).provider(:ruby) do
     end
 
     specify 'should map typeId of the rule to type' do
-      Nexus::Rest.should_receive(:get_all).exactly(2).and_return({'data' => [example_data]})
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data]})
 
       expect(described_class.instances[0].rules).to include('Artifact Uniqueness Validation')
-      expect(described_class.instances[0].rules).to include('Javadoc Validation')
+    end
+
+    specify 'should join rules into a single string' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data]})
+
+      expect(described_class.instances[0].rules).to eq('Artifact Uniqueness Validation,Javadoc Validation')
     end
 
     specify 'should ignore rules with enabled => false' do
