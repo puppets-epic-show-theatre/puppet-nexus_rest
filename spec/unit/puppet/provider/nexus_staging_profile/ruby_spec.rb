@@ -12,8 +12,8 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
         'finishNotifyRoles'         => ['role-a'],
         'finishNotifyCreator'       => true,
         'promoteNotifyEmails'       => 'drop@example.com',
-        'promoteNotifyRoles'        => ['role-b'],
-        'promoteNotifyCreator'      => true,
+        'promotionNotifyRoles'      => ['role-b'],
+        'promotionNotifyCreator'    => true,
         'dropNotifyEmails'          => 'drop@example.com',
         'dropNotifyRoles'           => [],
         'dropNotifyCreator'         => false,
@@ -172,14 +172,14 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       expect(described_class.instances[0].promote_notify_emails).to eq('promote@example.com')
     end
 
-    specify 'should map promoteNotifyRoles to promote_notify_roles' do
-      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promoteNotifyRoles' => ['admins', 'users'])]})
+    specify 'should map promotionNotifyRoles to promote_notify_roles' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promotionNotifyRoles' => ['admins', 'users'])]})
 
       expect(described_class.instances[0].promote_notify_roles).to eq('admins,users')
     end
 
-    specify 'should map promoteNotifyCreator to promote_notify_creator' do
-      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promoteNotifyCreator' => true)]})
+    specify 'should map promotionNotifyCreator to promote_notify_creator' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promotionNotifyCreator' => true)]})
 
       expect(described_class.instances[0].promote_notify_creator).to eq(:true)
     end
@@ -314,16 +314,16 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     #   expect(instance.map_resource_to_data['data']).to_not include('promotionNotifyEmails')
     # end
 
-    specify 'should map promote_notify_roles to promoteNotifyRoles' do
+    specify 'should map promote_notify_roles to promotionNotifyRoles' do
       resource[:promote_notify_roles] = ['admins', 'users']
 
-      expect(instance.map_resource_to_data['data']).to include('promoteNotifyRoles' => ['admins', 'users'])
+      expect(instance.map_resource_to_data['data']).to include('promotionNotifyRoles' => ['admins', 'users'])
     end
 
-    specify 'should map promote_notify_creator to promoteNotifyCreator' do
+    specify 'should map promote_notify_creator to promotionNotifyCreator' do
       resource[:promote_notify_creator] = :false
 
-      expect(instance.map_resource_to_data['data']).to include('promoteNotifyCreator' => false)
+      expect(instance.map_resource_to_data['data']).to include('promotionNotifyCreator' => false)
     end
 
     specify 'should map promote_rulesets to promoteRuleSets' do
