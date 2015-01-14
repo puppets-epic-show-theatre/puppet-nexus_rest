@@ -348,6 +348,27 @@ leading zeros). The `recurring_day` accepts multiple values as a list (e.g. `[1,
 Furthermore, you should keep your manifest clean and not specify properties that are not required (e.g. specify
 `cron_expression` for a `manual` task).
 
+### Nexus Staging configuration ###
+
+Note: Nexus Stating is a feature available to the professional edition only.
+
+```
+#!puppet
+
+nexus_staging_ruleset { 'Public Release':
+  ensure      => present,                                   # present or absent
+  description => 'Ensure the release artifacts are unique and apply basic sanity checking.',
+  rules       => [                                          # non-empty list of rules to apply (disabled rules are removed) 
+    'Artifact Uniqueness Validation',
+    'Javadoc Validation', 
+    'POM Validation',
+    "POM must not contain 'system' scoped dependencies",
+    'Signature Validation',
+    'Sources Validation',
+  ],
+}
+```
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
