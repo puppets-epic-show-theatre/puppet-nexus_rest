@@ -183,6 +183,9 @@ Puppet::Type.newtype(:nexus_staging_profile) do
         raise ArgumentError, 'Multiple rulesets must be provided as an array, not a comma-separated list.' if value.include?(',')
       end
     end
+    def membership
+      :inclusive_membership
+    end
   end
 
   newproperty(:drop_notify_emails, :parent => Puppet::Property::List) do

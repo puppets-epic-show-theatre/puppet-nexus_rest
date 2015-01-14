@@ -387,7 +387,7 @@ describe Puppet::Type.type(:nexus_staging_profile) do
     specify 'should default to empty string' do
       defaults.delete(:promote_rulesets)
 
-      expect(described_class.new(defaults)[:close_rulesets]).to eq('')
+      expect(described_class.new(defaults)[:promote_rulesets]).to eq('')
     end
 
     specify 'should accept a single string' do

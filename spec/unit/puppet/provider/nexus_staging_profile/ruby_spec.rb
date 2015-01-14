@@ -4,6 +4,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
   let(:example_data) do
     {
         'id'                        => '1',
+        'name'                      => 'example-profile',
         'repositoryTemplateId'      => 'my-template-id',
         'promotionTargetRepository' => 'my-release-repository-id',
         'repositoriesSearchable'    => false,
@@ -40,6 +41,59 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
   end
 
   describe :instances do
+    specify do
+      Nexus::Rest.should_receive(:get_all).with('/service/local/staging/profiles').and_return(
+          {
+              'data' => [
+                  {
+                      'id'                        => '1',
+                      'name'                      => 'profile 1',
+                      'repositoryTargetId'        => 'all artifacts',
+                      'promotionTargetRepository' => 'public artifacts',
+                      'targetGroups'              => [
+                          'public repositories'
+                      ]
+                  },
+                  {
+                      'id'                        => '2',
+                      'name'                      => 'profile 2',
+                      'repositoryTargetId'        => 'internal artifacts',
+                      'promotionTargetRepository' => 'internal artifacts repository',
+                      'targetGroups'              => [
+                          'internal repositories'
+                      ]
+                  }
+              ]
+          }
+      )
+
+      expect(described_class.instances).to have(2).items
+    end
+
+    specify do
+      Nexus::Rest.should_receive(:get_all).and_raise('Operation failed')
+
+      expect { described_class.instances }.to raise_error(Puppet::Error, /Error while retrieving all nexus_staging_profile instances/)
+    end
+
+    specify 'should set ensure to present' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data]})
+
+      expect(described_class.instances[0].ensure).to eq(:present)
+    end
+
+    specify 'should retrieve id' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data]})
+
+      expect(described_class.instances[0].id).to eq('1')
+    end
+
+    specify 'should retrieve name' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data]})
+
+      expect(described_class.instances[0].name).to eq('example-profile')
+    end
+
     specify 'should map autoStagingDisabled to implicitly_selectable' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('autoStagingDisabled' => true)]})
 
@@ -89,9 +143,9 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     end
 
     specify 'should map finishNotifyEmails to close_notify_emails' do
-      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('finishNotifyEmails' => 'close@example.com')]})
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('finishNotifyEmails' => 'finish@example.com')]})
 
-      expect(described_class.instances[0].close_notify_emails).to eq('close@example.com')
+      expect(described_class.instances[0].close_notify_emails).to eq('finish@example.com')
     end
 
     specify 'should map finishNotifyRoles to close_notify_roles' do
@@ -115,13 +169,13 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map promotionNotifyEmails to promote_notify_emails' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promotionNotifyEmails' => 'promote@example.com')]})
 
-      expect(described_class.instances[0].promote_notify_emails).to eq('finish@example.com')
+      expect(described_class.instances[0].promote_notify_emails).to eq('promote@example.com')
     end
 
-    specify 'should map promoteNotifyRoles to promte_notify_roles' do
+    specify 'should map promoteNotifyRoles to promote_notify_roles' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promoteNotifyRoles' => ['admins', 'users'])]})
 
-      expect(described_class.instances[0].promte_notify_roles).to eq('admins,users')
+      expect(described_class.instances[0].promote_notify_roles).to eq('admins,users')
     end
 
     specify 'should map promoteNotifyCreator to promote_notify_creator' do
@@ -139,7 +193,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map dropNotifyEmails to drop_notify_emails' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('dropNotifyEmails' => 'drop@example.com')]})
 
-      expect(described_class.instances[0].close_notify_emails).to eq('drop@example.com')
+      expect(described_class.instances[0].drop_notify_emails).to eq('drop@example.com')
     end
 
     specify 'should map dropNotifyRoles to drop_notify_roles' do
@@ -148,10 +202,24 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       expect(described_class.instances[0].drop_notify_roles).to eq('admins,users')
     end
 
-    specify 'should map dropNotifyCreator to ondrop_notify_creator' do
+    specify 'should map dropNotifyCreator to drop_notify_creator' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('dropNotifyCreator' => false)]})
 
-      expect(described_class.instances[0].ondrop_notify_creator).to eq(:false)
+      expect(described_class.instances[0].drop_notify_creator).to eq(:false)
+    end
+  end
+
+  describe :create do
+    specify 'should use /service/local/staging/profiles to create a new resource' do
+      Nexus::Rest.should_receive(:create).with('/service/local/staging/profiles', anything())
+
+      expect { instance.create }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:create).and_raise('Operation failed')
+
+      expect { instance.create }.to raise_error(Puppet::Error, /Error while creating nexus_staging_profile\['any'\]/)
     end
   end
 
@@ -159,133 +227,165 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map implicitly_selectable to autoStagingDisabled' do
       resource[:implicitly_selectable] = :true
 
-      expect(instance.map_resource_to_data['data'][0]).to include('autoStagingDisabled' => true)
+      expect(instance.map_resource_to_data['data']).to include('autoStagingDisabled' => true)
     end
 
     specify 'should map searchable to repositoriesSearchable' do
       resource[:searchable] = 'true'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('repositoriesSearchable' => true)
+      expect(instance.map_resource_to_data['data']).to include('repositoriesSearchable' => true)
     end
 
     specify 'should map staging_mode `both` to `BOTH`' do
       resource[:staging_mode] = :both
 
-      expect(instance.map_resource_to_data['data'][0]).to include('mode' => 'BOTH')
+      expect(instance.map_resource_to_data['data']).to include('mode' => 'BOTH')
     end
 
     specify 'should map staging_mode `deploy` to `DEPLOY`' do
       resource[:staging_mode] = :deploy
 
-      expect(instance.map_resource_to_data['data'][0]).to include('mode' => 'DEPLOY')
+      expect(instance.map_resource_to_data['data']).to include('mode' => 'DEPLOY')
     end
 
     specify 'should map staging_mode `upload` to `UPLOAD`' do
       resource[:staging_mode] = :upload
 
-      expect(instance.map_resource_to_data['data'][0]).to include('mode' => 'UPLOAD')
+      expect(instance.map_resource_to_data['data']).to include('mode' => 'UPLOAD')
     end
 
     specify 'should map staging_template to repositoryTemplateId' do
       resource[:staging_template] = 'template-id'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('repositoryTemplateId' => 'template-id')
+      expect(instance.map_resource_to_data['data']).to include('repositoryTemplateId' => 'template-id')
     end
 
     specify 'should map repository_target to repositoryTargetId' do
       resource[:repository_target] = 'repository-target-name'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('repositoryTargetId' => 'repository-target-name')
+      expect(instance.map_resource_to_data['data']).to include('repositoryTargetId' => 'repository-target-name')
     end
 
     specify 'should map release_repository to promotionTargetRepository' do
       resource[:release_repository] = 'my-release-repository-id'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('promotionTargetRepository' => 'my-release-repository-id')
+      expect(instance.map_resource_to_data['data']).to include('promotionTargetRepository' => 'my-release-repository-id')
     end
 
     specify 'should map close_notify_emails to finishNotifyEmails' do
       resource[:close_notify_emails] = 'close@example.com'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('finishNotifyEmails' => 'close@example.com')
+      expect(instance.map_resource_to_data['data']).to include('finishNotifyEmails' => 'close@example.com')
     end
 
-    specify 'should omit empty close_notify_emails' do
-      resource[:close_notify_emails] = ''
-
-      expect(instance.map_resource_to_data['data'][0]).to_not include('finishNotifyEmails')
-    end
+    # specify 'should omit empty close_notify_emails' do
+    #   resource[:close_notify_emails] = ''
+    #
+    #   expect(instance.map_resource_to_data['data']).to_not include('finishNotifyEmails')
+    # end
 
     specify 'should map close_notify_roles to finishNotifyRoles' do
-      resource[:close_notify_roles] = 'admins,users'
+      resource[:close_notify_roles] = ['admins', 'users']
 
-      expect(instance.map_resource_to_data['data'][0]).to include('finishNotifyRoles' => ['admins', 'users'])
+      expect(instance.map_resource_to_data['data']).to include('finishNotifyRoles' => ['admins', 'users'])
     end
 
     specify 'should map close_notify_creator to finishNotifyCreator' do
       resource[:close_notify_creator] = :true
 
-      expect(instance.map_resource_to_data['data'][0]).to include('finishNotifyCreator' => true)
+      expect(instance.map_resource_to_data['data']).to include('finishNotifyCreator' => true)
     end
 
     specify 'should map close_rulesets to closeRuleSets' do
-      resource[:close_rulesets] = 'ruleset-1,ruleset-2'
+      resource[:close_rulesets] = ['ruleset-1', 'ruleset-2']
 
-      expect(instance.map_resource_to_data['data'][0]).to include('closeRuleSets' => ['ruleset-1', 'ruleset-2'])
+      expect(instance.map_resource_to_data['data']).to include('closeRuleSets' => ['ruleset-1', 'ruleset-2'])
     end
 
     specify 'should map promote_notify_emails to promotionNotifyEmails' do
       resource[:promote_notify_emails] = 'finish@example.com'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('promotionNotifyEmails' => 'finish@example.com')
+      expect(instance.map_resource_to_data['data']).to include('promotionNotifyEmails' => 'finish@example.com')
     end
 
-    specify 'should omit empty promote_notify_emails' do
-      resource[:promote_notify_emails] = ''
-
-      expect(instance.map_resource_to_data['data'][0]).to_not include('promotionNotifyEmails')
-    end
+    # specify 'should omit empty promote_notify_emails' do
+    #   resource[:promote_notify_emails] = ''
+    #
+    #   expect(instance.map_resource_to_data['data']).to_not include('promotionNotifyEmails')
+    # end
 
     specify 'should map promote_notify_roles to promoteNotifyRoles' do
-      resource[:promote_notify_roles] = 'admins,users'
+      resource[:promote_notify_roles] = ['admins', 'users']
 
-      expect(instance.map_resource_to_data['data'][0]).to include('promoteNotifyRoles' => ['admins', 'users'])
+      expect(instance.map_resource_to_data['data']).to include('promoteNotifyRoles' => ['admins', 'users'])
     end
 
     specify 'should map promote_notify_creator to promoteNotifyCreator' do
       resource[:promote_notify_creator] = :false
 
-      expect(instance.map_resource_to_data['data'][0]).to include('promoteNotifyCreator' => false)
+      expect(instance.map_resource_to_data['data']).to include('promoteNotifyCreator' => false)
     end
 
     specify 'should map promote_rulesets to promoteRuleSets' do
-      resource[:promote_rulesets] = 'ruleset-1,ruleset-2'
+      resource[:promote_rulesets] = ['ruleset-1', 'ruleset-2']
 
-      expect(instance.map_resource_to_data['data'][0]).to include('promoteRuleSets' => ['ruleset-1', 'ruleset-2'])
+      expect(instance.map_resource_to_data['data']).to include('promoteRuleSets' => ['ruleset-1', 'ruleset-2'])
     end
 
     specify 'should map drop_notify_emails to dropNotifyEmails' do
       resource[:drop_notify_emails] = 'drop@example.com'
 
-      expect(instance.map_resource_to_data['data'][0]).to include('dropNotifyEmails' => 'drop@example.com')
+      expect(instance.map_resource_to_data['data']).to include('dropNotifyEmails' => 'drop@example.com')
     end
 
-    specify 'should omit empty promote_notify_emails' do
-      resource[:drop_notify_emails] = ''
-
-      expect(instance.map_resource_to_data['data'][0]).to_not include('dropNotifyEmails')
-    end
+    # specify 'should omit empty promote_notify_emails' do
+    #   resource[:drop_notify_emails] = ''
+    #
+    #   expect(instance.map_resource_to_data['data']).to_not include('dropNotifyEmails')
+    # end
 
     specify 'should map drop_notify_roles to dropNotifyRoles' do
-      resource[:drop_notify_roles] = 'admins,users'
+      resource[:drop_notify_roles] = ['admins', 'users']
 
-      expect(instance.map_resource_to_data['data'][0]).to include('dropNotifyRoles' => ['admins', 'users'])
+      expect(instance.map_resource_to_data['data']).to include('dropNotifyRoles' => ['admins', 'users'])
     end
 
     specify 'should map drop_notify_creator to dropNotifyCreator' do
       resource[:drop_notify_creator] = :false
 
-      expect(instance.map_resource_to_data['data'][0]).to include('dropNotifyCreator' => false)
+      expect(instance.map_resource_to_data['data']).to include('dropNotifyCreator' => false)
+    end
+  end
+
+  describe :flush do
+    specify 'should use /service/local/staging/profiles/<id> to update an existing resource' do
+      instance.set({:id => 'a1b2'})
+      instance.mark_config_dirty
+      Nexus::Rest.should_receive(:update).with('/service/local/staging/profiles/a1b2', anything())
+
+      expect { instance.flush }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      instance.mark_config_dirty
+      Nexus::Rest.should_receive(:update).and_raise('Operation failed')
+
+      expect { instance.flush }.to raise_error(Puppet::Error, /Error while updating nexus_staging_profile\['any'\]/)
+    end
+  end
+
+  describe :destroy do
+    specify 'should use /service/local/staging/profiles/<id> to delete an existing resource' do
+      instance.set({:id => 'a1b2'})
+      Nexus::Rest.should_receive(:destroy).with('/service/local/staging/profiles/a1b2')
+
+      expect { instance.destroy }.to_not raise_error
+    end
+
+    specify 'should raise a human readable error message if the operation failed' do
+      Nexus::Rest.should_receive(:destroy).and_raise('Operation failed')
+
+      expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_staging_profile\['any'\]/)
     end
   end
 end
