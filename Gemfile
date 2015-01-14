@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-puppetversion = ENV['PUPPET_VERSION'] || '~> 3.4.0'
+puppetversion = ENV['PUPPET_VERSION'] || '~> 3.7.3'
 
 gem 'puppet', puppetversion
 gem 'json', '~> 1.8.1'
