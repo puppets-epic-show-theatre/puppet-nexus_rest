@@ -50,6 +50,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         :searchable             => Nexus::Util.a_boolean_or_absent(staging_profile['repositoriesSearchable']),
         :staging_mode           => staging_profile.fetch('mode', :absent).to_s.downcase.intern,
         :staging_template       => staging_profile.fetch('repositoryTemplateId', :absent),
+        :repository_type        => staging_profile.fetch('repositoryType', :absent),
         :repository_target      => staging_profile.fetch('repositoryTargetId', :absent),
         :release_repository     => staging_profile.fetch('promotionTargetRepository', :absent),
         :target_groups          => Nexus::Util.a_list_or_absent(staging_profile['targetGroups']),
@@ -119,6 +120,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         'repositoriesSearchable'    => @resource[:searchable] == :true,
         'mode'                      => @resource[:staging_mode].to_s.upcase,
         'repositoryTemplateId'      => @resource[:staging_template],
+        'repositoryType'            => @resource[:repository_type],
         'repositoryTargetId'        => @resource[:repository_target],
         'promotionTargetRepository' => @resource[:release_repository],
         'targetGroups'              => @resource[:target_groups].split(','),
@@ -166,6 +168,10 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
   end
 
   def staging_template=(value)
+    @update_required = true
+  end
+
+  def repository_type=(value)
     @update_required = true
   end
 

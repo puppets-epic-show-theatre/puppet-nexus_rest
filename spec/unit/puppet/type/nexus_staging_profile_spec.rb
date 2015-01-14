@@ -85,19 +85,19 @@ describe Puppet::Type.type(:nexus_staging_profile) do
     end
   end
 
-  describe :staging_repository_type do
+  describe :repository_type do
     specify 'should default to `maven2`' do
-      defaults.delete(:staging_repository_type)
+      defaults.delete(:repository_type)
 
-      expect(described_class.new(defaults)[:staging_repository_type]).to eq(:maven2)
+      expect(described_class.new(defaults)[:repository_type]).to eq(:maven2)
     end
 
     specify 'should accept valid string' do
-      expect { described_class.new(defaults.merge(:staging_repository_type => 'typeX')) }.to_not raise_error
+      expect { described_class.new(defaults.merge(:repository_type => 'typeX')) }.to_not raise_error
     end
 
     specify 'should not accept empty string' do
-      expect { described_class.new(defaults.merge(:staging_repository_type => '')) }.to raise_error(Puppet::ResourceError, /must be a non-empty string/)
+      expect { described_class.new(defaults.merge(:repository_type => '')) }.to raise_error(Puppet::ResourceError, /must be a non-empty string/)
     end
   end
 

@@ -52,7 +52,7 @@ Puppet::Type.newtype(:nexus_staging_profile) do
     end
   end
 
-  newproperty(:staging_repository_type) do
+  newproperty(:repository_type) do
     desc 'The type of the generated staging repositories (e.g. `maven1` or `maven2`). The Nexus UI will show it as
           `Content Type`.'
     defaultto :maven2

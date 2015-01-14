@@ -6,6 +6,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
         'id'                        => '1',
         'name'                      => 'example-profile',
         'repositoryTemplateId'      => 'my-template-id',
+        'repositoryType'            => 'typeX',
         'promotionTargetRepository' => 'my-release-repository-id',
         'repositoriesSearchable'    => false,
         'finishNotifyEmails'        => 'finish@example.com',
@@ -128,6 +129,12 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('repositoryTemplateId' => 'my-template')]})
 
       expect(described_class.instances[0].staging_template).to eq('my-template')
+    end
+
+    specify 'should map repositoryType to repository_type' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('repositoryType' => 'typeX')]})
+
+      expect(described_class.instances[0].repository_type).to eq('typeX')
     end
 
     specify 'should map repositoryTargetId to repository_target' do
@@ -258,6 +265,12 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       resource[:staging_template] = 'template-id'
 
       expect(instance.map_resource_to_data['data']).to include('repositoryTemplateId' => 'template-id')
+    end
+
+    specify 'should map repository_type to repositoryType' do
+      resource[:repository_type] = 'typeX'
+
+      expect(instance.map_resource_to_data['data']).to include('repositoryType' => 'typeX')
     end
 
     specify 'should map repository_target to repositoryTargetId' do
