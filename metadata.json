@@ -5,12 +5,17 @@
   "author": "Atlassian",
   "description": "Manage Nexus repository resources through a REST interface",
   "dependencies": [],
-  "types": [],
   "tags": ["sonatype", "nexus", "rest"],
   "operatingsystem_support": [
     {
       "operatingsystem": "Ubuntu",
       "operatingsystemrelease": [ "12.04" ]
+    }
+  ],
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": "3.x"
     }
   ],
   "source": "https://bitbucket.org/atlassian/puppet-module-nexus_rest.git",
