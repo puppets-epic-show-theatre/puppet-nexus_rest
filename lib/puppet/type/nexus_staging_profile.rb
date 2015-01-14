@@ -52,6 +52,15 @@ Puppet::Type.newtype(:nexus_staging_profile) do
     end
   end
 
+  newproperty(:staging_repository_type) do
+    desc 'The type of the generated staging repositories (e.g. `maven1` or `maven2`). The Nexus UI will show it as
+          `Content Type`.'
+    defaultto :maven2
+    validate do |value|
+      raise ArgumentError, 'must be a non-empty string' if value.to_s.empty?
+    end
+  end
+
   newproperty(:repository_target) do
     desc 'Name of the repository target that will cause this profile to be selected. This will auto-require the
           referenced `repository_target` resource. You may want to set `implicitly_selectable` to `true` as well.'
