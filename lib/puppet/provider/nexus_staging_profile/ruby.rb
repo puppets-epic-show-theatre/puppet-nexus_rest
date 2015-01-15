@@ -149,22 +149,25 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         'repositoryTargetId'        => @resource[:repository_target],
         'promotionTargetRepository' => @resource[:release_repository],
         'targetGroups'              => @resource[:target_groups].split(','),
+
         # emails: expected to be comma separate list and just passed through
-        # roles: expected to be a real list - exploding the string
-        # creator: expected to be a boolean flag
-        # rulesets: expected to be a real list - exploding the string
         'finishNotifyEmails'        => @resource[:close_notify_emails],
-        'finishNotifyRoles'         => @resource[:close_notify_roles].split(','),
-        'finishNotifyCreator'       => @resource[:close_notify_creator] == :true,
-        'closeRuleSets'             => @resource[:close_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) },
         'promotionNotifyEmails'     => @resource[:promote_notify_emails],
-        'promotionNotifyRoles'      => @resource[:promote_notify_roles].split(','),
-        'promotionNotifyCreator'    => @resource[:promote_notify_creator] == :true,
-        'promoteRuleSets'           => @resource[:promote_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) },
         'dropNotifyEmails'          => @resource[:drop_notify_emails],
+
+        # roles: expected to be a real list - exploding the string
+        'finishNotifyRoles'         => @resource[:close_notify_roles].split(','),
+        'promotionNotifyRoles'      => @resource[:promote_notify_roles].split(','),
         'dropNotifyRoles'           => @resource[:drop_notify_roles].split(','),
+
+        # creator: expected to be a boolean flag
+        'finishNotifyCreator'       => @resource[:close_notify_creator] == :true,
+        'promotionNotifyCreator'    => @resource[:promote_notify_creator] == :true,
         'dropNotifyCreator'         => @resource[:drop_notify_creator] == :true,
 
+        # rulesets: expected to be a real list - exploding the string and translating the ruleset name to the ruleset id
+        'closeRuleSets'             => @resource[:close_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) },
+        'promoteRuleSets'           => @resource[:promote_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) }
     }
     data['id'] = @property_hash[:id] unless @property_hash[:id].nil?
     { 'data' => data }
