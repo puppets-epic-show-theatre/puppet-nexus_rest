@@ -13,10 +13,24 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
 
   def self.instances
     begin
+      known_rulesets = get_known_rulesets
       staging_profiles = Nexus::Rest.get_all('/service/local/staging/profiles')['data']
-      staging_profiles.collect { |staging_profile| new(map_data_to_resource(staging_profile)) }
+      staging_profiles.collect { |staging_profile| new(map_data_to_resource(staging_profile, known_rulesets)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_staging_profile instances: #{e}"
+    end
+  end
+
+  # Returns a hash of known staging rulesets:
+  #
+  # {
+  #   'rulesetX_id' => 'rulesetX_name',
+  #   'rulesetY_id' => 'rulesetY_name',
+  # }
+  #
+  def self.get_known_rulesets
+    Nexus::Rest.get_all('/service/local/staging/rule_sets')['data'].inject({}) do |processed_rulesets, ruleset|
+      processed_rulesets.merge({ruleset['id'] => ruleset['name']})
     end
   end
 
@@ -41,7 +55,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
   #    :puppet_attribute_3 => ...,
   # }
   #
-  def self.map_data_to_resource(staging_profile)
+  def self.map_data_to_resource(staging_profile, known_rulesets)
     {
         :ensure                 => :present,
         :id                     => staging_profile['id'],
@@ -57,11 +71,11 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         :close_notify_emails    => staging_profile.fetch('finishNotifyEmails', :absent),
         :close_notify_roles     => Nexus::Util.a_list_or_absent(staging_profile['finishNotifyRoles']),
         :close_notify_creator   => Nexus::Util.a_boolean_or_default(staging_profile['finishNotifyCreator'], :false),
-        :close_rulesets         => Nexus::Util.a_list_or_absent(staging_profile['closeRuleSets']),
+        :close_rulesets         => staging_profile.fetch('closeRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(','),
         :promote_notify_emails  => staging_profile.fetch('promotionNotifyEmails', :absent),
         :promote_notify_roles   => Nexus::Util.a_list_or_absent(staging_profile['promotionNotifyRoles']),
         :promote_notify_creator => Nexus::Util.a_boolean_or_default(staging_profile['promotionNotifyCreator'], :false),
-        :promote_rulesets       => Nexus::Util.a_list_or_absent(staging_profile['promoteRuleSets']),
+        :promote_rulesets       => staging_profile.fetch('promoteRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(','),
         :drop_notify_emails     => staging_profile.fetch('dropNotifyEmails', :absent),
         :drop_notify_roles      => Nexus::Util.a_list_or_absent(staging_profile['dropNotifyRoles']),
         :drop_notify_creator    => Nexus::Util.a_boolean_or_default(staging_profile['dropNotifyCreator'], :false)
@@ -114,6 +128,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
   #            }
   # }
   def map_resource_to_data
+    known_rulesets = self.class.get_known_rulesets.invert
     data = {
         'name'                      => @resource[:name],
         'autoStagingDisabled'       => @resource[:implicitly_selectable] == :false,
@@ -131,11 +146,11 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         'finishNotifyEmails'        => @resource[:close_notify_emails],
         'finishNotifyRoles'         => @resource[:close_notify_roles].split(','),
         'finishNotifyCreator'       => @resource[:close_notify_creator] == :true,
-        'closeRuleSets'             => @resource[:close_rulesets].split(','),
+        'closeRuleSets'             => @resource[:close_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) },
         'promotionNotifyEmails'     => @resource[:promote_notify_emails],
         'promotionNotifyRoles'      => @resource[:promote_notify_roles].split(','),
         'promotionNotifyCreator'    => @resource[:promote_notify_creator] == :true,
-        'promoteRuleSets'           => @resource[:promote_rulesets].split(','),
+        'promoteRuleSets'           => @resource[:promote_rulesets].split(',').collect { |ruleset_name| known_rulesets.fetch(ruleset_name, ruleset_name) },
         'dropNotifyEmails'          => @resource[:drop_notify_emails],
         'dropNotifyRoles'           => @resource[:drop_notify_roles].split(','),
         'dropNotifyCreator'         => @resource[:drop_notify_creator] == :true,

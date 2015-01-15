@@ -39,6 +39,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
     Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+    described_class.stub(:get_known_rulesets).and_return({'beef-1' => 'ruleset-1', 'beef-2' => 'ruleset-2'})
   end
 
   describe :instances do
@@ -167,8 +168,8 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       expect(described_class.instances[0].close_notify_creator).to eq(:true)
     end
 
-    specify 'should map closeRuleSets to close_rulesets' do
-      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('closeRuleSets' => ['ruleset-1'])]})
+    specify 'should map closeRuleSets to close_rulesets and resolve ruleset ids to name' do
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('closeRuleSets' => ['beef-1'])]})
 
       expect(described_class.instances[0].close_rulesets).to eq('ruleset-1')
     end
@@ -192,7 +193,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     end
 
     specify 'should map promoteRuleSets to promote_rulesets' do
-      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promoteRuleSets' => ['ruleset-2'])]})
+      Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('promoteRuleSets' => ['beef-2'])]})
 
       expect(described_class.instances[0].promote_rulesets).to eq('ruleset-2')
     end
@@ -312,7 +313,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map close_rulesets to closeRuleSets' do
       resource[:close_rulesets] = ['ruleset-1', 'ruleset-2']
 
-      expect(instance.map_resource_to_data['data']).to include('closeRuleSets' => ['ruleset-1', 'ruleset-2'])
+      expect(instance.map_resource_to_data['data']).to include('closeRuleSets' => ['beef-1', 'beef-2'])
     end
 
     specify 'should map promote_notify_emails to promotionNotifyEmails' do
@@ -342,7 +343,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map promote_rulesets to promoteRuleSets' do
       resource[:promote_rulesets] = ['ruleset-1', 'ruleset-2']
 
-      expect(instance.map_resource_to_data['data']).to include('promoteRuleSets' => ['ruleset-1', 'ruleset-2'])
+      expect(instance.map_resource_to_data['data']).to include('promoteRuleSets' => ['beef-1', 'beef-2'])
     end
 
     specify 'should map drop_notify_emails to dropNotifyEmails' do
