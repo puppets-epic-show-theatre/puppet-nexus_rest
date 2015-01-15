@@ -268,6 +268,6 @@ Puppet::Type.newtype(:nexus_staging_profile) do
   end
 
   autorequire(:nexus_staging_ruleset) do
-    self[:close_rulesets].split(',') & self[:promote_rulesets].split(',')
+    self[:close_rulesets].split(',') + self[:promote_rulesets].split(',')
   end
 end
