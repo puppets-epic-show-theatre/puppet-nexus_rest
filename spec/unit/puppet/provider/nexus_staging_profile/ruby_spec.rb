@@ -98,7 +98,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
     specify 'should map autoStagingDisabled to implicitly_selectable' do
       Nexus::Rest.should_receive(:get_all).and_return({'data' => [example_data.merge('autoStagingDisabled' => true)]})
 
-      expect(described_class.instances[0].implicitly_selectable).to eq(:true)
+      expect(described_class.instances[0].implicitly_selectable).to eq(:false)
     end
 
     specify 'should map repositoriesSearchable to searchable' do
@@ -232,7 +232,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
 
   describe :map_resource_to_data do
     specify 'should map implicitly_selectable to autoStagingDisabled' do
-      resource[:implicitly_selectable] = :true
+      resource[:implicitly_selectable] = :false
 
       expect(instance.map_resource_to_data['data']).to include('autoStagingDisabled' => true)
     end

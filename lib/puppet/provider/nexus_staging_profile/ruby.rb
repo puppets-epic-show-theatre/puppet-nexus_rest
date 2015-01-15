@@ -46,7 +46,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         :ensure                 => :present,
         :id                     => staging_profile['id'],
         :name                   => staging_profile['name'],
-        :implicitly_selectable  => Nexus::Util.a_boolean_or_absent(staging_profile['autoStagingDisabled']),
+        :implicitly_selectable  => (!staging_profile.fetch('autoStagingDisabled', false)).to_s.intern,
         :searchable             => Nexus::Util.a_boolean_or_absent(staging_profile['repositoriesSearchable']),
         :staging_mode           => staging_profile.fetch('mode', :absent).to_s.downcase.intern,
         :staging_template       => staging_profile.fetch('repositoryTemplateId', :absent),
@@ -116,7 +116,7 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
   def map_resource_to_data
     data = {
         'name'                      => @resource[:name],
-        'autoStagingDisabled'       => @resource[:implicitly_selectable] == :true,
+        'autoStagingDisabled'       => @resource[:implicitly_selectable] == :false,
         'repositoriesSearchable'    => @resource[:searchable] == :true,
         'mode'                      => @resource[:staging_mode].to_s.upcase,
         'repositoryTemplateId'      => @resource[:staging_template],
