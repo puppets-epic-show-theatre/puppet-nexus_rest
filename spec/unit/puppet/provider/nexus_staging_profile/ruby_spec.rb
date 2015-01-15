@@ -292,12 +292,6 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       expect(instance.map_resource_to_data['data']).to include('finishNotifyEmails' => 'close@example.com')
     end
 
-    # specify 'should omit empty close_notify_emails' do
-    #   resource[:close_notify_emails] = ''
-    #
-    #   expect(instance.map_resource_to_data['data']).to_not include('finishNotifyEmails')
-    # end
-
     specify 'should map close_notify_roles to finishNotifyRoles' do
       resource[:close_notify_roles] = ['admins', 'users']
 
@@ -322,12 +316,6 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
       expect(instance.map_resource_to_data['data']).to include('promotionNotifyEmails' => 'finish@example.com')
     end
 
-    # specify 'should omit empty promote_notify_emails' do
-    #   resource[:promote_notify_emails] = ''
-    #
-    #   expect(instance.map_resource_to_data['data']).to_not include('promotionNotifyEmails')
-    # end
-
     specify 'should map promote_notify_roles to promotionNotifyRoles' do
       resource[:promote_notify_roles] = ['admins', 'users']
 
@@ -351,12 +339,6 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
 
       expect(instance.map_resource_to_data['data']).to include('dropNotifyEmails' => 'drop@example.com')
     end
-
-    # specify 'should omit empty promote_notify_emails' do
-    #   resource[:drop_notify_emails] = ''
-    #
-    #   expect(instance.map_resource_to_data['data']).to_not include('dropNotifyEmails')
-    # end
 
     specify 'should map drop_notify_roles to dropNotifyRoles' do
       resource[:drop_notify_roles] = ['admins', 'users']
