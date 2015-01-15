@@ -68,17 +68,27 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
         :repository_target      => staging_profile.fetch('repositoryTargetId', :absent),
         :release_repository     => staging_profile.fetch('promotionTargetRepository', :absent),
         :target_groups          => Nexus::Util.a_list_or_absent(staging_profile['targetGroups']),
+
+        # emails come in a comma-separate strings which is the expected format of the list property - but only if there
+        # is an email set at all, otherwise it is omitted
         :close_notify_emails    => staging_profile.fetch('finishNotifyEmails', :absent),
-        :close_notify_roles     => Nexus::Util.a_list_or_absent(staging_profile['finishNotifyRoles']),
-        :close_notify_creator   => Nexus::Util.a_boolean_or_default(staging_profile['finishNotifyCreator'], :false),
-        :close_rulesets         => staging_profile.fetch('closeRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(','),
         :promote_notify_emails  => staging_profile.fetch('promotionNotifyEmails', :absent),
-        :promote_notify_roles   => Nexus::Util.a_list_or_absent(staging_profile['promotionNotifyRoles']),
-        :promote_notify_creator => Nexus::Util.a_boolean_or_default(staging_profile['promotionNotifyCreator'], :false),
-        :promote_rulesets       => staging_profile.fetch('promoteRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(','),
         :drop_notify_emails     => staging_profile.fetch('dropNotifyEmails', :absent),
+
+        # roles come in as a list and have to be joined into a comma-separated string
+        :close_notify_roles     => Nexus::Util.a_list_or_absent(staging_profile['finishNotifyRoles']),
+        :promote_notify_roles   => Nexus::Util.a_list_or_absent(staging_profile['promotionNotifyRoles']),
         :drop_notify_roles      => Nexus::Util.a_list_or_absent(staging_profile['dropNotifyRoles']),
-        :drop_notify_creator    => Nexus::Util.a_boolean_or_default(staging_profile['dropNotifyCreator'], :false)
+
+        # just a boolean flag
+        :close_notify_creator   => Nexus::Util.a_boolean_or_default(staging_profile['finishNotifyCreator'], :false),
+        :promote_notify_creator => Nexus::Util.a_boolean_or_default(staging_profile['promotionNotifyCreator'], :false),
+        :drop_notify_creator    => Nexus::Util.a_boolean_or_default(staging_profile['dropNotifyCreator'], :false),
+
+        # a list of staging ruleset ids (ids, not the logical names); thus their real name has to be resolved as this is
+        # used at the Puppet resource level to reference them
+        :close_rulesets         => staging_profile.fetch('closeRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(','),
+        :promote_rulesets       => staging_profile.fetch('promoteRuleSets', []).collect { |ruleset_id| known_rulesets.fetch(ruleset_id, ruleset_id) }.join(',')
     }
   end
 
