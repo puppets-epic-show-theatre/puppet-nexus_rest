@@ -13,8 +13,8 @@ Puppet::Type.type(:nexus_staging_ruleset).provide(:ruby) do
 
   def self.instances
     begin
-      repositories = Nexus::Rest.get_all('/service/local/staging/rule_sets')['data']
-      repositories.collect { |staging_ruleset| new(map_data_to_resource(staging_ruleset)) }
+      staging_rulesets = Nexus::Rest.get_all('/service/local/staging/rule_sets')['data']
+      staging_rulesets.collect { |staging_ruleset| new(map_data_to_resource(staging_ruleset)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_staging_ruleset instances: #{e}"
     end
