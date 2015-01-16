@@ -19,8 +19,6 @@ Puppet::Type.newtype(:nexus_repository_target) do
     validate do |value|
       raise ArgumentError, 'must be a non-empty string' if value.to_s.empty?
     end
-
-    newvalues(:maven1, :maven2, :nuget, :obr, :p2, :site, :any)
   end
 
   newproperty(:patterns, :array_matching => :all) do
