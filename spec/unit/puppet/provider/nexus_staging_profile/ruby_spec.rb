@@ -38,6 +38,7 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
 
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
+    Nexus::Config.stub(:can_delete_repositories).and_return(true)
     Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
     described_class.stub(:get_known_rulesets).and_return({'beef-1' => 'ruleset-1', 'beef-2' => 'ruleset-2'})
   end
@@ -383,5 +384,12 @@ describe Puppet::Type.type(:nexus_staging_profile).provider(:ruby) do
 
       expect { instance.destroy }.to raise_error(Puppet::Error, /Error while deleting nexus_staging_profile\['any'\]/)
     end
+
+    specify 'should fail if configuration prevents deletion of staging profiles' do
+      Nexus::Config.stub(:can_delete_repositories).and_return(false)
+
+      expect { instance.destroy }.to raise_error(RuntimeError, /current configuration prevents the deletion of nexus_staging_profile\['any'\]/)
+    end
+
   end
 end

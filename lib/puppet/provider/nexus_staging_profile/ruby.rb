@@ -121,6 +121,10 @@ Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
   end
 
   def destroy
+    raise "The current configuration prevents the deletion of #{@resource.class.name}['#{@resource[:name]}']; If this
+           change is intended, please update the configuration file (#{Nexus::Config.file_path}) in order to perform
+           this change." unless Nexus::Config.can_delete_repositories
+
     begin
       Nexus::Rest.destroy("/service/local/staging/profiles/#{@property_hash[:id]}")
     rescue Exception => e
