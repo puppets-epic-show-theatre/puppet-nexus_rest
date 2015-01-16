@@ -368,8 +368,8 @@ nexus_staging_profile { 'staging-repository':
 
   release_repository     => 'Public Repository',            # required; the final repository the artifacts are promoted to
   repository_target      => 'any artifact',                 # required
-  target_groups          => ['Restricted Repository Group'],# required; a list of repositories staging repositories are 
-                                                            # made available to 
+  target_groups          => ['Restricted Repository Group'],# required; a list of repositories groups which will contain
+                                                            # the created staging repositories
 
   # Parameters that need to be tweaked unless Maven 2 is used
   staging_template       => 'default_hosted_release',        
