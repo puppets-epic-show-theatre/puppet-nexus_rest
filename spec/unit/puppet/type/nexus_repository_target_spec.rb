@@ -8,13 +8,13 @@ describe Puppet::Type.type(:nexus_repository_target) do
     it { expect(repository[:patterns]).to eq([]) }
   end
 
-  it 'should validate provider_type' do
+  it 'should not accept empty provider_type' do
     expect {
       Puppet::Type.type(:nexus_repository_target).new(
         :name          => 'example-target',
-        :provider_type => 'invalid'
+        :provider_type => ''
       )
-    }.to raise_error(Puppet::Error, /Invalid value "invalid"/)
+    }.to raise_error(Puppet::Error, /must be a non-empty string/)
   end
 
   it 'should accept Maven1 repository target' do

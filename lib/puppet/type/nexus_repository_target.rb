@@ -16,6 +16,10 @@ Puppet::Type.newtype(:nexus_repository_target) do
   newproperty(:provider_type) do
     desc 'The content provider of the Repository Target. The Nexus UI will show this as Repository Type'
     defaultto :maven2
+    validate do |value|
+      raise ArgumentError, 'must be a non-empty string' if value.to_s.empty?
+    end
+
     newvalues(:maven1, :maven2, :nuget, :obr, :p2, :site, :any)
   end
 
