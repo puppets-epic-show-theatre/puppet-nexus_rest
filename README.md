@@ -379,7 +379,7 @@ nexus_staging_profile { 'staging-repository':
   implicitly_selectable  => false,                          # true (default) or false; the Profile Selection Strategy
   
   # An optional list of rule set names; they can be used to enforce certain properties of the release. Use the
-  # `nexus_staging_ruleset` resource to manage them.
+  # nexus_staging_ruleset resource to manage them.
   close_rulesets         => 'Public Release',
   promote_rulesets       => 'Public Release',
 
