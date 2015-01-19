@@ -19,7 +19,7 @@ Puppet::Type.type(:nexus_repository_target).provide(:ruby) do
           :ensure                  => :present,
           :name                    => target['id'],
           :label                   => target['name'],
-          :provider_type           => target.has_key?('contentClass') ? target['contentClass'].to_sym : nil,
+          :provider_type           => target.has_key?('contentClass') ? target['contentClass'] : nil,
           :patterns                => target.has_key?('patterns') ? [target['patterns']].flatten : []
         )
       end
