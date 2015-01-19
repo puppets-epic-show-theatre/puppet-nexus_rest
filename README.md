@@ -350,7 +350,57 @@ Furthermore, you should keep your manifest clean and not specify properties that
 
 ### Nexus Staging configuration ###
 
-Note: Nexus Stating is a feature available to the professional edition only.
+Note: Nexus Staging is a feature available to the professional edition only.
+
+The Nexus Staging feature enables the usage of temporary repositories that are created on the fly. They form a staging
+area where artifacts can be kept until they have been approved by QA. Have a read through chapter 11 of the Nexus book:
+[Improved Releases with Nexus Staging](http://books.sonatype.com/nexus-book/reference/staging.html).
+
+The example below shows how a staging profile can be configured from Puppet. The resource respects the 
+`can_delete_repositories` kill switch and won't delete staging profiles unless configured to do so. 
+
+```
+#!puppet
+
+nexus_staging_profile { 'staging-repository':
+  ensure                 => present,                        # present or absent
+  staging_mode           => deploy,                         # deploy, upload or both
+
+  release_repository     => 'Public Repository',            # required; the final repository the artifacts are promoted to
+  repository_target      => 'any artifact',                 # required
+  target_groups          => ['Restricted Repository Group'],# required; a list of repositories groups which will contain
+                                                            # the created staging repositories
+
+  # Parameters that need to be tweaked unless Maven 2 is used
+  staging_template       => 'default_hosted_release',        
+  repository_type        => maven2,                         
+   
+  searchable             => false,                          # true (default) or false 
+  implicitly_selectable  => false,                          # true (default) or false; the Profile Selection Strategy
+  
+  # An optional list of rule set names; they can be used to enforce certain properties of the release. Use the
+  # nexus_staging_ruleset resource to manage them.
+  close_rulesets         => 'Public Release',
+  promote_rulesets       => 'Public Release',
+
+  # An optional boolean flag to indicate whether to inform the uploader
+  close_notify_creator   => false,
+  promote_notify_creator => true,
+  drop_notify_creator    => true,
+
+  # An optional list of email addresses to be notified
+  close_notify_emails    => ['john@example.com'],
+  promote_notify_emails  => ['jane@example.com'],
+  drop_notify_emails     => ['john@example.com', 'jane@example.com'],
+
+  # An optional list of roles to be notified
+  close_notify_roles     => ['qa'],
+  promote_notify_roles   => ['developers'],
+  drop_notify_roles      => [],
+}
+```
+
+The following example shows how to define a Nexus staging ruleset with a couple of rules:
 
 ```
 #!puppet
@@ -382,13 +432,15 @@ and
 
 * Puppet 3.4
 * Puppet 3.5
+* Puppet 3.6
+* Puppet 3.7
 
 It is very likely to work with any Puppet 3.x version. Support for Puppet 2.7.x has been dropped in favour of improved support for custom Puppet types and providers that is only available in Puppet 3.x.
 
 ### Nexus compatibility ###
 Furthermore, the module has been tested with the following Nexus versions:
 
-* Nexus Pro 2.9.x running on Ubuntu 12.04
+* Nexus Pro 2.11.x running on Ubuntu 12.04
 
 ### A note on passwords ###
 

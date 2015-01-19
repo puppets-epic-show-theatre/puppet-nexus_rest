@@ -76,4 +76,16 @@ describe Nexus::Util do
     specify { expect(described_class.strip_hash(concrete_original)).to eq(concrete_stripped) }
   end
 
+  describe :a_boolean_or_default do
+    specify { expect(described_class.a_boolean_or_default(true, :default)).to eq(:true) }
+    specify { expect(described_class.a_boolean_or_default(false, :default)).to eq(:false) }
+    specify { expect(described_class.a_boolean_or_default(nil, :default)).to eq(:default) }
+  end
+
+  describe :a_list_or_default do
+    specify { expect(described_class.a_list_or_default(['a', 'b'], :default)).to eq('a,b') }
+    specify { expect(described_class.a_list_or_default(['a'], :default)).to eq('a') }
+    specify { expect(described_class.a_list_or_default([], :default)).to eq('') }
+    specify { expect(described_class.a_list_or_default(nil, :default)).to eq(:default) }
+  end
 end
