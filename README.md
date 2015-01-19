@@ -383,7 +383,7 @@ nexus_staging_profile { 'staging-repository':
   close_rulesets         => 'Public Release',
   promote_rulesets       => 'Public Release',
 
-  # An optional boolean flag to indicate whether to information the uploader
+  # An optional boolean flag to indicate whether to inform the uploader
   close_notify_creator   => false,
   promote_notify_creator => true,
   drop_notify_creator    => true,
