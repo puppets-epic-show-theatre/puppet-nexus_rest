@@ -61,7 +61,7 @@ describe provider_class do
 
     it { expect(instance.name).to eq('example-target-4') }
     it { expect(instance.label).to eq('Example Repository Target 4') }
-    it { expect(instance.provider_type).to eq(:site) }
+    it { expect(instance.provider_type).to eq('site') }
     it { expect(instance.patterns).to eq(['.*paraphernalia.*', '.*trappings.*']) }
   end
 
