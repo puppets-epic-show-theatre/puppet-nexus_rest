@@ -20,7 +20,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'maven2',
     },
-    'obr' => {
+    'obr'       => {
       :provider     => 'obr-proxy',
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'obr',
@@ -34,6 +34,16 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :provider     => 'site',
       :providerRole => 'org.sonatype.nexus.proxy.repository.WebSiteRepository',
       :format       => 'site',
+    },
+    'npm'       => {
+      :provider     => 'npm-proxy',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'npm',
+    },
+    'rubygems'  => {
+      :provider     => 'rubygems-proxy',
+      :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
+      :format       => 'rubygems',
     },
   }
 

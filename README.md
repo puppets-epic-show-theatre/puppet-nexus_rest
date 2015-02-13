@@ -208,7 +208,7 @@ nexus_smtp_settings { 'current':
 
 nexus_repository { 'new-repository':
   label                   => 'A New Repository',   #required
-  provider_type           => 'maven2',             #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  provider_type           => 'maven2',             #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'npm', 'rubygems'
   type                    => 'hosted',             #valid values: 'hosted' (default), 'proxy', 'virtual'
   policy                  => 'snapshot',           #valid values: 'snapshot', 'release' (default), 'mixed'
   exposed                 => true,                 #valid values: true (default), false
@@ -246,7 +246,7 @@ nexus_repository { 'new-repository':
 
 nexus_repository_group { 'example-repo-group':
   label           => 'Example Repository Group',   #required
-  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr'
+  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'npm', 'rubygems'
   exposed         => true,                         #valid values: true (default), false
   repositories    => [                             #note: these must be existing `nexus_repository` resources  with the same `provider_type` as the repository group, order is significant, [] is default
                       'new-repository',
@@ -261,7 +261,7 @@ nexus_repository_group { 'example-repo-group':
 
 nexus_repository_target { 'dummy-target-id':
   label         => 'dummy-target',                 #required
-  provider_type => 'maven2',                       #e.g. 'maven1', 'maven2' (default), 'nuget', 'site', 'obr' or 'any'
+  provider_type => 'maven2',                       #e.g. 'maven1', 'maven2' (default), 'nuget', 'site', 'obr' or 'any', 'npm', 'rubygems'
   patterns      => [                               #required, must be non-empty
                         '^/com/atlassian/.*$',
                         '^/io/atlassian/.*$'
