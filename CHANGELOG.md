@@ -1,4 +1,8 @@
-##2015-01-XX - Release 0.2.0
+##2015-02-17 - Release 0.3.0
+
+Support for rubygems and npm repositories ([pull request #37](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/37)).
+
+##2015-01-20 - Release 0.2.0
 
 Two new resources
 
