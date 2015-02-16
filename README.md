@@ -217,7 +217,6 @@ nexus_repository { 'new-repository':
   indexable               => true,                 #valid values: true (default), false
   not_found_cache_ttl     => 1440,                 #1440 is default (minutes, -1 is never)
   local_storage_url       => 'file:///some/path',  #valid values: not specified (default), or absolute file path beginning with 'file:///'
-  download_remote_indexes => false,                #valid values: true, false (default)
 
   #the following 'remote_' properties may only be used when type => 'proxy'
 
