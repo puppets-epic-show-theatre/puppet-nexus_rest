@@ -43,7 +43,7 @@ Puppet::Type.newtype(:nexus_repository) do
   newproperty(:provider_type) do
     desc 'The content provider of the repository'
     defaultto :maven2
-    newvalues(:maven1, :maven2, :nuget, :site, :obr)
+    newvalues(:maven1, :maven2, :nuget, :site, :obr, :npm, :rubygems)
   end
 
   newproperty(:policy) do
