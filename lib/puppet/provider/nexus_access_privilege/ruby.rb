@@ -44,16 +44,22 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   def self.instances
     begin
+      privilege_bucket = {}
       privileges = Nexus::Rest.get_all('/service/local/privileges')
-      targets['data'].collect do |privilege|
+      privileges['data'].collect do |privilege|
         next if !privilege['userManaged']
+
+        privilege_name = privilege['name'].split(BASENAME_DELIMITER)[0]
+
+        privilege_name = "#{privilege_name}-#{privilege['id']}" if privilege_bucket.has_key?(privilege_name)
+        privilege_bucket[privilege_name] = true
 
         properties = Hash[privilege['properties'].collect { |key_value| [key_value['key'], key_value['value']] }]
 
         new(
           :ensure                  => :present,
+          :name                    => privilege_name,
           :id                      => privilege['id'],
-          :name                    => privilege['name'].split(BASENAME_DELIMITER),
           :description             => privilege['description'],
           :methods                 => properties.has_key?('method') ? properties['method'] : nil,
           :repository_target       => properties.has_key?('repositoryTargetId') ? properties['repositoryTargetId'] : nil,
@@ -66,20 +72,10 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
     end
   end
 
-  #######################
-  #######################
-  #######################
-  #######################
-  #WIP WIP WIP WIP WIP
-  #######################
-  #######################
-  #######################
-  #######################
-
   def self.prefetch(resources)
-    targets = instances
+    privileges = instances
     resources.keys.each do |name|
-      if provider = targets.find { |target| target.name == name }
+      if provider = privileges.find { |target| target.name == name }
         resources[name].provider = provider
       end
     end
@@ -87,18 +83,23 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   def create
     begin
-      Nexus::Rest.create('/service/local/repo_targets', map_resource_to_data)
+      Nexus::Rest.create('/service/local/privileges_target', map_resource_to_data)
     rescue Exception => e
-      raise Puppet::Error, "Error while creating nexus_repository_target #{resource[:name]}: #{e}"
+      raise Puppet::Error, "Error while creating nexus_access_privilege #{resource[:name]}: #{e}"
     end
   end
 
   def flush
     if @dirty_flag
       begin
-        Nexus::Rest.update("/service/local/repo_targets/#{resource[:name]}", map_resource_to_data)
+        # cannot update, must recreate
+        Nexus::Rest.destroy("/service/local/privileges/#{resource[:id]}")
+        Nexus::Rest.create("/service/local/privileges/#{resource[:id]}", map_resource_to_data)
+
+        # created privilege will have a new random id
+        resource[:id] = privilege_id_from_name(resource[:name])
       rescue Exception => e
-        raise Puppet::Error, "Error while updating nexus_repository_target #{resource[:name]}: #{e}"
+        raise Puppet::Error, "Error while updating nexus_access_privilege #{resource[:name]}: #{e}"
       end
       @property_hash = resource.to_hash
     end
@@ -106,9 +107,9 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   def destroy
     begin
-      Nexus::Rest.destroy("/service/local/repo_targets/#{resource[:name]}")
+      Nexus::Rest.destroy("/service/local/privileges/#{resource[:id]}")
     rescue Exception => e
-      raise Puppet::Error, "Error while deleting nexus_repository_target #{resource[:name]}: #{e}"
+      raise Puppet::Error, "Error while deleting nexus_access_privilege #{resource[:name]}: #{e}"
     end
   end
 
@@ -120,34 +121,51 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
   #
   # {
   #   :data => {
-  #              :id   => <resource name>
-  #              :name => <resource label>
+  #              :name        => <resource name>
+  #              :description => <resource description>
   #              ...
   #            }
   # }
   def map_resource_to_data
     data = {
-      :id                      => resource[:name],
-      :name                    => resource[:label],
-      :contentClass            => resource[:provider_type].to_s,
-      :patterns                => [resource[:patterns]].flatten
+      :name                    => resource[:name].to_s,
+      :description             => resource[:description].to_s,
+      :type                    => 'target',
+      :repositoryTargetId      => resource[:repository_target].to_s,
+      :repositoryId            => resource[:repository].to_s,
+      :repositoryGroupId       => resource[:repository_group].to_s,
+      :method                  => resource[:methods].to_s,
     }
     {:data => data}
   end
 
+  def privilege_id_from_name(name)
+    # since we can't set the id, we can use this method to fetch it
+    privilege = instances.select {|privilege| privilege[:name] == name}
+    raise Puppet::Error, "Error while looking up id of nexus_access_privilege '#{name}'" if privilege.count != 1
+    privilege[:id]
+  end
+
   mk_resource_methods
 
-  def label=(value)
+  def description=(value)
     @dirty_flag = true
   end
 
-  def provider_type=(value)
+  def repository_target=(value)
     @dirty_flag = true
   end
 
-  def patterns=(value)
+  def repository=(value)
+    @dirty_flag = true
+  end
+
+  def repository_group=(value)
+    @dirty_flag = true
+  end
+
+  def methods=(value)
     @dirty_flag = true
   end
 
 end
-
