@@ -17,7 +17,7 @@ Puppet::Type.newtype(:nexus_access_privilege) do
   newproperty(:description) do
     desc 'The description of this privilege.'
     validate do |value|
-      raise ArgumentError, 'must be a non-empty string' if value.to_s.empty?
+      raise ArgumentError, 'must be a non-empty string or not set' if value && value.empty?
     end
   end
 

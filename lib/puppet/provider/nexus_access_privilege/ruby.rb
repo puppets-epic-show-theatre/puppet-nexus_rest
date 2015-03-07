@@ -129,12 +129,12 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
   def map_resource_to_data
     data = {
       :name                    => resource[:name].to_s,
-      :description             => resource[:description].to_s,
+      :description             => resource[:description] ? resource[:name] : resource[:description].to_s,
       :type                    => 'target',
       :repositoryTargetId      => resource[:repository_target].to_s,
       :repositoryId            => resource[:repository].to_s,
       :repositoryGroupId       => resource[:repository_group].to_s,
-      :method                  => resource[:methods].to_s,
+      :method                  => resource[:methods].kind_of?(Array) ? resource[:methods].join(',') : resource[:methods].to_s,
     }
     {:data => data}
   end
