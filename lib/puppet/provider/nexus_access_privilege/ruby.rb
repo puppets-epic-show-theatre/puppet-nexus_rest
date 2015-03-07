@@ -13,35 +13,6 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
     @dirty_flag = false
   end
 
-
-    #{
-    #  "id": "30e78e31cda726",
-    #  "resourceURI": "http://nexus-atlassian-misc.buildeng.atlassian.com:8081/service/local/privileges/30e78e31cda726",
-    #  "name": "atlassian-license-rw - (delete)",
-    #  "description": "atlassian-license-rw",
-    #  "type": "target",
-    #  "userManaged": true,
-    #  "properties": [
-    #    {
-    #      "key": "repositoryGroupId",
-    #      "value": ""
-    #    },
-    #    {
-    #      "key": "method",
-    #      "value": "delete,read"
-    #    },
-    #    {
-    #      "key": "repositoryId",
-    #      "value": "atlassian-license"
-    #    },
-    #    {
-    #      "key": "repositoryTargetId",
-    #      "value": "any"
-    #    }
-    #  ]
-    #},
-
-
   def self.instances
     begin
       privilege_bucket = {}
@@ -64,7 +35,7 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
           :methods                 => properties.has_key?('method') ? properties['method'] : nil,
           :repository_target       => properties.has_key?('repositoryTargetId') ? properties['repositoryTargetId'] : nil,
           :repository              => properties.has_key?('repositoryId') ? properties['repositoryId'] : '',
-          :repository_group        => properties.has_key?('repositoryGroupId') ? properties['repositoryGroupId'] : '',
+          :repository_group        => properties.has_key?('repositoryGroupId') ? properties['repositoryGroupId'] : ''
         )
       end.compact
     rescue => e
@@ -94,10 +65,10 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
       begin
         # cannot update, must recreate
         Nexus::Rest.destroy("/service/local/privileges/#{resource[:id]}")
-        Nexus::Rest.create("/service/local/privileges/#{resource[:id]}", map_resource_to_data)
+        Nexus::Rest.create("/service/local/privileges_target", map_resource_to_data)
 
         # created privilege will have a new random id
-        resource[:id] = privilege_id_from_name(resource[:name])
+        resource[:id] = self.class.privilege_id_from_name(resource[:name])
       rescue Exception => e
         raise Puppet::Error, "Error while updating nexus_access_privilege #{resource[:name]}: #{e}"
       end
@@ -129,21 +100,21 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
   def map_resource_to_data
     data = {
       :name                    => resource[:name].to_s,
-      :description             => resource[:description] ? resource[:name] : resource[:description].to_s,
+      :description             => resource[:description].to_s,
       :type                    => 'target',
       :repositoryTargetId      => resource[:repository_target].to_s,
       :repositoryId            => resource[:repository].to_s,
       :repositoryGroupId       => resource[:repository_group].to_s,
-      :method                  => resource[:methods].kind_of?(Array) ? resource[:methods].join(',') : resource[:methods].to_s,
+      :method                  => resource[:methods].kind_of?(Array) ? resource[:methods].join(',') : resource[:methods].to_s
     }
     {:data => data}
   end
 
-  def privilege_id_from_name(name)
+  def self.privilege_id_from_name(name)
     # since we can't set the id, we can use this method to fetch it
-    privilege = instances.select {|privilege| privilege[:name] == name}
+    privilege = instances.select {|privilege| privilege.name == name}
     raise Puppet::Error, "Error while looking up id of nexus_access_privilege '#{name}'" if privilege.count != 1
-    privilege[:id]
+    privilege[0].id
   end
 
   mk_resource_methods
