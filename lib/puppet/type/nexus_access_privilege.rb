@@ -17,11 +17,11 @@ Puppet::Type.newtype(:nexus_access_privilege) do
   newproperty(:description) do
     desc 'The description of this privilege.'
     validate do |value|
-      raise ArgumentError, 'must be a non-empty string or not set' if value && value.empty?
+      raise ArgumentError, 'must be a non-empty string' if value.to_s.empty?
     end
   end
 
-  newproperty(:methods) do
+  newproperty(:methods, :array_matching => :all) do
     desc 'Operations that this privilege will be granted'
 
     valid_methods = ['create', 'update', 'read', 'delete']
@@ -29,8 +29,7 @@ Puppet::Type.newtype(:nexus_access_privilege) do
 
     validate do |value|
       raise ArgumentError, error_message if !value or value.empty?
-      value = value.split(',') if value.kind_of?(String)
-      value.each do |operation|
+      value.split(',').each do |operation|
         raise ArgumentError, error_message unless valid_methods.include? operation
       end
     end
@@ -54,6 +53,8 @@ Puppet::Type.newtype(:nexus_access_privilege) do
   end
 
   validate do
+    raise ArgumentError, 'description must be defined' if !self[:description]
+    raise ArgumentError, 'repository_target must be defined' if !self[:repository_target]
     raise ArgumentError, 'either repository or repository_group must be specified (but not both)' if self[:repository].empty? and self[:repository_group].empty?
     raise ArgumentError, 'repository and repository_group must not both be specified' if !self[:repository].empty? and !self[:repository_group].empty?
   end
