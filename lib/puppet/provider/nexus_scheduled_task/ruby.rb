@@ -6,6 +6,17 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 
 Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
+  @@do_not_touch = false
+  DO_NOT_TOUCH_ERROR_MESSAGE='Cannot modify nexus_scheduled_task resources due to previous failure(s)'
+
+  def self.do_not_touch
+    @@do_not_touch
+  end
+
+  def self.reset_do_not_touch
+    @@do_not_touch=false
+  end
+
   def initialize(value={})
     super(value)
     @update_required = false
@@ -17,6 +28,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
       repositories.inject([]) do |processed_task_names, scheduled_task|
         name = scheduled_task['name']
         if processed_task_names.include?(name) then
+          @@do_not_touch = true
           fail("Found multiple scheduled tasks with the same name '#{name}'. The name must be unique so Puppet is able " +
             "to match the existing task to the resource declared in the manifest. Please resolve the configuration " +
             "problem through the web interface (e.g. by renaming or deleting the duplicates ones) and run Puppet again.")
@@ -108,6 +120,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
   def create
     begin
+      raise DO_NOT_TOUCH_ERROR_MESSAGE if self.class.do_not_touch
       Nexus::Rest.create('/service/local/schedules', map_resource_to_data)
     rescue Exception => e
       raise Puppet::Error, "Error while creating #{@resource.class.name}['#{@resource[:name]}']: #{e}"
@@ -117,6 +130,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
   def flush
     if @update_required
       begin
+        raise DO_NOT_TOUCH_ERROR_MESSAGE if self.class.do_not_touch
         Nexus::Rest.update("/service/local/schedules/#{@property_hash[:id]}", map_resource_to_data)
         @property_hash = resource.to_hash
       rescue Exception => e
@@ -127,6 +141,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
   def destroy
     begin
+      raise DO_NOT_TOUCH_ERROR_MESSAGE if self.class.do_not_touch
       Nexus::Rest.destroy("/service/local/schedules/#{@property_hash[:id]}")
     rescue Exception => e
       raise Puppet::Error, "Error while deleting #{@resource.class.name}['#{@resource[:name]}']: #{e}"

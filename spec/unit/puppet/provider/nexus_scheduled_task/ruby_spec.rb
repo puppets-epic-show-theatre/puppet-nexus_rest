@@ -41,6 +41,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
   before(:each) do
     Nexus::Config.stub(:resolve).and_return('http://example.com/foobar')
     Nexus::Rest.stub(:get_all).and_return({'data' => {'otherdata' => 'foobar'}})
+    described_class.reset_do_not_touch
   end
 
   describe :instances do
@@ -80,6 +81,7 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       )
 
       expect { described_class.instances }.to raise_error(Puppet::Error, /Found multiple scheduled tasks with the same name 'duplicate'/)
+      expect { described_class.do_not_touch.to equal(true) }
     end
 
     specify do
