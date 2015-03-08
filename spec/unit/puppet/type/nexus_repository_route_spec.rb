@@ -95,6 +95,18 @@ describe Puppet::Type.type(:nexus_repository_route) do
     }.to raise_error(Puppet::Error, /route repositories must not be empty if rule_type is not 'blocking'/)
   end
 
+  it 'should reject undefined repositories list when inclusive' do
+    expect {
+      Puppet::Type.type(:nexus_repository_route).new(
+        #required values
+        :position            => '0',
+        :rule_type           => :inclusive,
+        :repository_group    => 'repo-group',
+        :url_pattern         => 'some_pattern'
+      )
+    }.to raise_error(Puppet::Error, /route repositories must not be empty if rule_type is not 'blocking'/)
+  end
+
   it 'should accept empty repositories list when blocking' do
     Puppet::Type.type(:nexus_repository_route).new(
       #required values
@@ -105,6 +117,16 @@ describe Puppet::Type.type(:nexus_repository_route) do
       :url_pattern         => 'some_pattern',
 
       :repositories        => []
+    )
+  end
+
+  it 'should accept undefined repositories list when blocking' do
+    Puppet::Type.type(:nexus_repository_route).new(
+      #required values
+      :position            => '0',
+      :rule_type           => :blocking,
+      :repository_group    => 'repo-group',
+      :url_pattern         => 'some_pattern'
     )
   end
 

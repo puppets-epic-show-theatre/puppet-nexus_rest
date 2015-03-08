@@ -72,9 +72,9 @@ Puppet::Type.newtype(:nexus_repository_route) do
       raise ArgumentError, 'route url_pattern must not be empty' if !self[:url_pattern] || self[:url_pattern].empty?
       raise ArgumentError, 'route repository_group must not be empty' if !self[:repository_group] || self[:repository_group].empty?
       if self[:rule_type] == :blocking
-        raise ArgumentError, 'route repositories must be empty if rule_type is \'blocking\'' if !self[:repositories].empty?
+        raise ArgumentError, "route repositories must be empty if rule_type is 'blocking' (value is #{self[:repositories]})" if !self[:repositories].nil? and !self[:repositories].empty?
       else
-        raise ArgumentError, 'route repositories must not be empty if rule_type is not \'blocking\'' if self[:repositories].empty?
+        raise ArgumentError, "route repositories must not be empty if rule_type is not 'blocking' (value is #{self[:repositories]}" if self[:repositories].nil? or self[:repositories].empty?
       end
     end
   end
