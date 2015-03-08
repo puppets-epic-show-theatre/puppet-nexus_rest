@@ -418,6 +418,50 @@ nexus_staging_ruleset { 'Public Release':
 }
 ```
 
+## Nexus Security Configuration ##
+
+Nexus' security primatives allow for flexible configuration of access control to repositories and artifacts.
+
+Security primatives currently supported:
+
+ * Privileges
+
+Mixing managed an unmanaged privileges is not recommended due to assumptions made to work around limitations of Nexus' privilege REST API.
+
+```
+#!puppet
+
+nexus_access_privilege { 'all-ro':
+  description       => 'Global read-only',   #optional
+  repository_target => 'any',                #required: must be an existing `repository_target`
+  methods           => ['read']              #required: must contain 'read' and may also contain 'create', 'update', 'delete'
+
+                                                   #leave repository and repository_group empty to apply the privilege to 'all repositories'
+}
+
+nexus_access_privilege { 'repo1-rw':
+  description       => 'repo1 read-write',   #optional
+  repository_target => 'any',                #required: must be an existing `repository_target`
+  methods           => ['read',              #required: must contain 'read' and may also contain 'create', 'update', 'delete'
+                        'create',
+                        'update',
+                        'delete',
+                       ]
+  repository        => 'repo1',              #required: must be an existing `repository`
+}
+
+nexus_access_privilege { 'internal-ro':
+  description       => 'internal read-only', #optional
+  repository_target => 'any',                #required: must be an existing `repository_target`
+  methods           => ['read',              #required: must contain 'read' and may also contain 'create', 'update', 'delete'
+                        'create',
+                        'update',
+                        'delete',
+                       ]
+  repository_group  => 'internal',           #required: must be an existing `repository_group`
+}
+```
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
