@@ -43,21 +43,20 @@ Puppet::Type.newtype(:nexus_access_privilege) do
   end
 
   newproperty(:repository) do
-    desc 'The Repository this privilege will be associated with.'
+    desc 'The Repository this privilege will be associated with (may be blank, if both repository and repository_group are blank, the privilege will match all repositories).'
     defaultto ''
   end
 
   newproperty(:repository_group) do
-    desc 'The Repository Group this privilege will be associated with.'
+    desc 'The Repository Group this privilege will be associated with (may be blank, if both repository and repository_group are blank, the privilege will match all repositories).'
     defaultto ''
   end
 
   validate do
     if self[:ensure] == :present
-      raise ArgumentError, 'description must be defined' if !self[:description]
-      raise ArgumentError, 'repository_target must be defined' if !self[:repository_target]
-      raise ArgumentError, 'either repository or repository_group must be specified (but not both)' if self[:repository].empty? and self[:repository_group].empty?
-      raise ArgumentError, 'repository and repository_group must not both be specified' if !self[:repository].empty? and !self[:repository_group].empty?
+      raise ArgumentError, 'description must be defined' if self[:description].nil?
+      raise ArgumentError, 'repository_target must be defined' if self[:repository_target].nil?
+      raise ArgumentError, 'repository and repository_group must not both be non-empty (but you may leave both empty)' if !self[:repository].to_s.empty? and !self[:repository_group].to_s.empty?
       raise ArgumentError, "methods must contain a 'read' (methods defined: #{self[:methods]})" if !self[:methods].include? 'read'
     end
   end
