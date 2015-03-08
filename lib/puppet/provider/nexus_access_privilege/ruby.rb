@@ -10,14 +10,15 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   def initialize(value={})
     super(value)
-    @dirty_flag = false
+    @update_required = false
   end
 
   def self.instances
     begin
       privilege_bucket = {}
-      privileges = Nexus::Rest.get_all('/service/local/privileges')
-      privileges['data'].collect do |privilege|
+      privileges = Nexus::Rest.get_all('/service/local/privileges')['data']
+
+      privileges.collect do |privilege|
         next if !privilege['userManaged']
 
         privilege_name = privilege['name'].split(BASENAME_DELIMITER)[0]
@@ -32,7 +33,7 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
           :name                    => privilege_name,
           :id                      => privilege['id'],
           :description             => privilege['description'],
-          :methods                 => properties.has_key?('method') ? properties['method'] : nil,
+          :methods                 => properties.has_key?('method') ? properties['method'].split(',') : nil,
           :repository_target       => properties.has_key?('repositoryTargetId') ? properties['repositoryTargetId'] : nil,
           :repository              => properties.has_key?('repositoryId') ? properties['repositoryId'] : '',
           :repository_group        => properties.has_key?('repositoryGroupId') ? properties['repositoryGroupId'] : ''
@@ -61,10 +62,10 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
   end
 
   def flush
-    if @dirty_flag
+    if @update_required
       begin
         # cannot update, must recreate
-        Nexus::Rest.destroy("/service/local/privileges/#{resource[:id]}")
+        Nexus::Rest.destroy("/service/local/privileges/#{@property_hash[:id]}")
         Nexus::Rest.create("/service/local/privileges_target", map_resource_to_data)
 
         # created privilege will have a new random id
@@ -78,7 +79,7 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   def destroy
     begin
-      Nexus::Rest.destroy("/service/local/privileges/#{resource[:id]}")
+      Nexus::Rest.destroy("/service/local/privileges/#{@property_hash[:id]}")
     rescue Exception => e
       raise Puppet::Error, "Error while deleting nexus_access_privilege #{resource[:name]}: #{e}"
     end
@@ -105,7 +106,7 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
       :repositoryTargetId      => resource[:repository_target].to_s,
       :repositoryId            => resource[:repository].to_s,
       :repositoryGroupId       => resource[:repository_group].to_s,
-      :method                  => resource[:methods].kind_of?(Array) ? resource[:methods].join(',') : resource[:methods].to_s
+      :method                  => [ resource[:methods].kind_of?(Array) ? resource[:methods].join(',') : resource[:methods].to_s ]
     }
     {:data => data}
   end
@@ -119,24 +120,28 @@ Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
 
   mk_resource_methods
 
+  def mark_config_dirty
+    @update_required = true
+  end
+
   def description=(value)
-    @dirty_flag = true
+    mark_config_dirty
   end
 
   def repository_target=(value)
-    @dirty_flag = true
+    mark_config_dirty
   end
 
   def repository=(value)
-    @dirty_flag = true
+    mark_config_dirty
   end
 
   def repository_group=(value)
-    @dirty_flag = true
+    mark_config_dirty
   end
 
   def methods=(value)
-    @dirty_flag = true
+    mark_config_dirty
   end
 
 end

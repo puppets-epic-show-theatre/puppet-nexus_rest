@@ -53,10 +53,13 @@ Puppet::Type.newtype(:nexus_access_privilege) do
   end
 
   validate do
-    raise ArgumentError, 'description must be defined' if !self[:description]
-    raise ArgumentError, 'repository_target must be defined' if !self[:repository_target]
-    raise ArgumentError, 'either repository or repository_group must be specified (but not both)' if self[:repository].empty? and self[:repository_group].empty?
-    raise ArgumentError, 'repository and repository_group must not both be specified' if !self[:repository].empty? and !self[:repository_group].empty?
+    if self[:ensure] == :present
+      raise ArgumentError, 'description must be defined' if !self[:description]
+      raise ArgumentError, 'repository_target must be defined' if !self[:repository_target]
+      raise ArgumentError, 'either repository or repository_group must be specified (but not both)' if self[:repository].empty? and self[:repository_group].empty?
+      raise ArgumentError, 'repository and repository_group must not both be specified' if !self[:repository].empty? and !self[:repository_group].empty?
+      raise ArgumentError, "methods must contain a 'read' (methods defined: #{self[:methods]})" if !self[:methods].include? 'read'
+    end
   end
 
   autorequire(:file) do

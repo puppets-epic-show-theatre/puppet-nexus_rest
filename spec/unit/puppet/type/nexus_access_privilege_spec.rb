@@ -5,9 +5,9 @@ describe Puppet::Type.type(:nexus_access_privilege) do
     let(:privilege) { Puppet::Type.type(:nexus_access_privilege).new(
       :name              => 'name',
       :description       => 'description',
-      :methods           => 'read,create',
+      :methods           => ['read', 'create'],
       :repository_target => 'repository_target',
-      :repository        => 'repository',
+      :repository        => 'repository'
     ) }
 
     it { expect(privilege[:repository_group]).to eq('') }
@@ -20,7 +20,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
       :description       => 'description',
       :repository_target => 'repository_target',
       :repository        => 'repository',
-      :methods           => ['read', 'update', 'create', 'delete'],
+      :methods           => ['read', 'update', 'create', 'delete']
     )
   end
 
@@ -31,7 +31,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
         :description       => 'description',
         :repository_target => 'repository_target',
         :repository        => 'repository',
-        :methods           => ['invalid', 'read'],
+        :methods           => ['invalid', 'read']
       )
     }.to raise_error(Puppet::Error, /methods must one or more of these values/)
   end
@@ -42,7 +42,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
         :name              => 'name',
         :description       => 'description',
         :repository        => 'repository',
-        :methods           => 'read',
+        :methods           => 'read'
       )
     }.to raise_error(Puppet::Error, /repository_target must be defined/)
   end
@@ -53,7 +53,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
         :name              => 'name',
         :description       => 'description',
         :repository_target => 'repository_target',
-        :methods           => 'read',
+        :methods           => 'read'
       )
     }.to raise_error(Puppet::Error, /either repository or repository_group must be specified/)
   end
@@ -66,7 +66,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
         :repository_target => 'repository_target',
         :methods           => 'read',
         :repository        => 'repository',
-        :repository_group  => 'repository_group',
+        :repository_group  => 'repository_group'
       )
     }.to raise_error(Puppet::Error, /repository and repository_group must not both be specified/)
   end
@@ -78,7 +78,7 @@ describe Puppet::Type.type(:nexus_access_privilege) do
         :repository_target => 'repository_target',
         :methods           => 'read',
         :repository        => 'repository',
-        :repository_group  => 'repository_group',
+        :repository_group  => 'repository_group'
       )
     }.to raise_error(Puppet::Error, /description must be defined/)
   end

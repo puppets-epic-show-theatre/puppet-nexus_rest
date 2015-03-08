@@ -136,7 +136,7 @@ describe provider_class do
     it { expect(instance.id).to eq('id_4') }
     it { expect(instance.name).to eq('name_4') }
     it { expect(instance.description).to eq('description_4') }
-    it { expect(instance.methods).to eq('read,create,update') }
+    it { expect(instance.methods).to eq(['read', 'create', 'update']) }
     it { expect(instance.repository_target).to eq('repository_target_4') }
     it { expect(instance.repository).to eq('repository_4') }
   end
@@ -159,7 +159,7 @@ describe provider_class do
       instance.create
     end
     it 'should map methods to method' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:method => 'read,create'))
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:method => ['read,create']))
       instance.create
     end
     it 'should map repository_target to repositoryTargetId' do
@@ -177,6 +177,10 @@ describe provider_class do
   end
 
   describe 'destroy' do
+    before(:each) do
+      #set id in property hash
+      instance.instance_variable_get(:@property_hash)[:id] = 'id_1'
+    end
     it 'should use /service/local/privileges/<privilege_id> to delete an existing resource' do
       Nexus::Rest.should_receive(:destroy).with('/service/local/privileges/id_1')
       instance.destroy
@@ -194,7 +198,7 @@ describe provider_class do
   describe 'flush' do
     before(:each) do
       #mark resources as 'dirty' and reset id to pre-update state
-      instance.description = 'description_1'
+      instance.mark_config_dirty
       instance.instance_variable_get(:@property_hash)[:id] = 'id_1'
     end
     it 'should delete using /service/local/privileges/<privilege_id> and create using /service/local/privileges_target to update an existing resource' do
