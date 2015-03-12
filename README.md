@@ -81,6 +81,32 @@ To this:
   }
 ```
 
+## Requirements ##
+
+The module doesn't have any dependencies on other Puppet modules. But it is using Ruby libraries that may not be 
+contained in the default installation. Currently, the following libraries are expected to be installed; the module won't 
+install or manage them in any way (see the Gemfile for more information):
+
+* json
+* rest-client
+* mime-types
+
+Depending on the version of Ruby you're using, some of them are shipped by default (e.g. `json`) whereas others need
+to be installed via Puppet or in a bootstrap process like
+ 
+```
+package { 'rest-client':
+  ensure   => installed,
+  provider => gem,
+}
+```
+ 
+Obviously it would be a great improvement if the module itself could provide a manifest to install and manage its 
+dependencies. Any contributions are welcome!
+
+Limitation: at the moment the module doesn't handle the provision-from-scratch use case very well and will cause a 
+couple of warnings during the resource discovery phase as the Ruby gems may not be available. As long as the gems are
+installed before the Puppet resources are used, everything should be fine.
 
 ## Usage ##
 
