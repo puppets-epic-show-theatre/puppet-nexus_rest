@@ -84,7 +84,7 @@ To this:
 ## Requirements ##
 
 The module doesn't have any dependencies on other Puppet modules. But it is using Ruby libraries that may not be 
-contained in the default installation. Currently, the following libraries are expected to exist - the module won't 
+contained in the default installation. Currently, the following libraries are expected to be installed; the module won't 
 install or manage them in any way (see the Gemfile for more information):
 
 * json
