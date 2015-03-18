@@ -1,3 +1,16 @@
+##2015-03-18 - Release 0.4.0
+
+Clarified requirements for running this module ([pull request #42](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/42))
+
+One new resource:
+
+* `nexus_access_privilege` ([pull request #39](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/39))
+
+Bug fixes:
+
+* Problems handling duplicate scheduled tasks ([pull request #41](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/41))
+* Route validation inconsistency ([pull request #40](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/40))
+
 ##2015-02-17 - Release 0.3.0
 
 Support for rubygems and npm repositories ([pull request #37](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/37)).
