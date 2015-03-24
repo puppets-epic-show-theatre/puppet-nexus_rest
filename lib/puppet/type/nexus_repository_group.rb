@@ -45,6 +45,10 @@ Puppet::Type.newtype(:nexus_repository_group) do
     self[:repositories] if self[:repositories] and self[:repositories].size() > 0
   end
 
+  autorequire(:nexus_repository_group) do
+    self[:repositories] if self[:repositories] and self[:repositories].size() > 0
+  end
+
   validate do
     raise ArgumentError, "label must not be empty" if self[:ensure] == :present and (self[:label].empty?)
   end
