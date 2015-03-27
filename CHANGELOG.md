@@ -1,3 +1,7 @@
+##2015-03-27 - Release 0.4.1
+
+Added autorequire relationship between `nexus_repository_groups` and contained member `nexus_repository_groups` ([pull request #44](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44))
+
 ##2015-03-18 - Release 0.4.0
 
 Clarified requirements for running this module ([pull request #42](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/42))
