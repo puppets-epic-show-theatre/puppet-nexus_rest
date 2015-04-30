@@ -44,7 +44,7 @@ Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
           :ensure                  => :present,
           :name                    => group['id'],
           :label                   => group['name'],
-          :provider_type           => group.has_key?('format') ? group['format'].to_sym : nil,
+          :format                  => group.has_key?('format') ? group['format'].to_sym : nil,
           :exposed                 => group.has_key?('exposed') ? group['exposed'].to_s.to_sym : nil,
           :repositories            => repositories
         )
@@ -107,8 +107,8 @@ Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
     data = {
       :id                      => resource[:name],
       :name                    => resource[:label],
-      :format                  => resource[:provider_type],
-      :provider                => resource[:provider_type],
+      :format                  => resource[:format],
+      :provider                => FORMAT_TO_PROVIDER_MAPPING[resource[:format]],
       :exposed                 => resource[:exposed] == :true,
 
       :repositories            => resource[:repositories].collect { |repository| {'id' => repository} }
