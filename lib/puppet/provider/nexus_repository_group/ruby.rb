@@ -7,24 +7,12 @@ Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
   FORMAT_TO_PROVIDER_MAPPING = {
-    'maven1'    => {
-      :provider     => 'maven1',
-    },
-    'maven2'    => {
-      :provider     => 'maven2',
-    },
-    'obr'       => {
-      :provider     => 'obr-group',
-    },
-    'nuget'     => {
-      :provider     => 'nuget-group',
-    },
-    'npm'       => {
-      :provider     => 'npm-group',
-    },
-    'rubygems'  => {
-      :provider     => 'rubygems-group',
-    },
+    :maven1    => 'maven1',
+    :maven2    => 'maven2',
+    :obr       => 'obr-group',
+    :nuget     => 'nuget-group',
+    :npm       => 'npm-group',
+    :rubygems  => 'rubygems-group',
   }
 
   def initialize(value={})

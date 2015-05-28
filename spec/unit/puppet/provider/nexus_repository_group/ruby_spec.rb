@@ -12,7 +12,7 @@ describe provider_class do
     resource = Puppet::Type::Nexus_repository_group.new({
       :name                    => 'example-group',
       :label                   => 'Example Repository Group',
-      :provider_type           => 'maven2',
+      :format                  => 'maven2',
       :exposed                 => :true,
       :repositories            => ['repository-1', 'repository-2']
     })
@@ -49,7 +49,7 @@ describe provider_class do
 
     it { expect(instance.name).to eq('example-group') }
     it { expect(instance.label).to eq('Example Repository Group') }
-    it { expect(instance.provider_type).to eq(:maven2) }
+    it { expect(instance.format).to eq(:maven2) }
     it { expect(instance.exposed).to eq(:true) }
     it { expect(instance.repositories).to eq(['repository-3', 'repository-4']) }
     it { expect(instance.exists?).to be_true }
@@ -72,8 +72,8 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:name => 'Example Repository Group'))
       provider.create
     end
-    it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => :maven2))
+    it 'should map format to provider' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.create
     end
     it 'should map exposed symbol to boolean' do
@@ -107,11 +107,11 @@ describe provider_class do
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:name => 'Example Repository Group'))
       provider.flush
     end
-    it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:provider => :maven2))
+    it 'should map format to provider' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.flush
     end
-    it 'should map provider_type to format' do
+    it 'should map format to format' do
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:format => :maven2))
       provider.flush
     end
