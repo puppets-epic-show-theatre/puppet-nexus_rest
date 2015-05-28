@@ -15,7 +15,7 @@ Puppet::Type.newtype(:nexus_repository_group) do
     desc 'Human readable label of the Repository Group. The Nexus UI will show it as Group Name.'
   end
 
-  newproperty(:format) do
+  newproperty(:provider_type) do
     desc 'The content provider of the Repository Group'
     defaultto :maven2
     newvalues(:maven1, :maven2, :nuget, :obr, :npm, :rubygems)
