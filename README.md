@@ -271,7 +271,7 @@ nexus_repository { 'new-repository':
 
 nexus_repository_group { 'example-repo-group':
   label           => 'Example Repository Group',   #required
-  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'site', 'obr', 'npm', 'rubygems'
+  provider_type   => 'maven2',                     #valid values: 'maven1', 'maven2' (default), 'nuget', 'obr', 'npm', 'rubygems'
   exposed         => true,                         #valid values: true (default), false
   repositories    => [                             #note: these must be existing `nexus_repository` resources  with the same `provider_type` as the repository group, order is significant, [] is default
                       'new-repository',
