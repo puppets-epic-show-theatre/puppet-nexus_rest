@@ -19,6 +19,17 @@ describe provider_class do
     provider_class.new(resource)
   end
 
+  let :provider_2 do
+    resource = Puppet::Type::Nexus_repository_group.new({
+      :name                    => 'nuget-group',
+      :label                   => 'Example Nuget Repository Group',
+      :format                  => 'nuget',
+      :exposed                 => :true,
+      :repositories            => ['repository-3', 'repository-4']
+    })
+    provider_class.new(resource)
+  end
+
   describe 'an instance' do
     let :instance do
       Nexus::Rest.should_receive(:get_all).with('/service/local/repo_groups').and_return({
@@ -72,7 +83,7 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:name => 'Example Repository Group'))
       provider.create
     end
-    it 'should map format to provider' do
+    it 'should map maven2 format to maven2 provider' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.create
     end
@@ -83,6 +94,10 @@ describe provider_class do
     it 'should map repositories to repositories' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repositories => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]))
       provider.create
+    end
+    it 'should map nuget format to nuget-group provider' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'nuget-group'))
+      provider_2.create
     end
   end
 
