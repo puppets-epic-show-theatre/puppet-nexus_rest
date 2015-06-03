@@ -1,3 +1,7 @@
+##2015-06-03 - Release 0.4.2
+
+Fixed support for `nexus_repository_groups` using non-maven format. ([pull request #46](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44))
+
 ##2015-03-27 - Release 0.4.1
 
 Added autorequire relationship between `nexus_repository_groups` and contained member `nexus_repository_groups` ([pull request #44](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44))
