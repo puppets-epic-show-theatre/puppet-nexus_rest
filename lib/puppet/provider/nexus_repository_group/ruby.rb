@@ -6,6 +6,15 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  FORMAT_TO_PROVIDER_MAPPING = {
+    :maven1    => 'maven1',
+    :maven2    => 'maven2',
+    :obr       => 'obr-group',
+    :nuget     => 'nuget-group',
+    :npm       => 'npm-group',
+    :rubygems  => 'rubygems-group',
+  }
+
   def initialize(value={})
     super(value)
     @dirty_flag = false
@@ -87,7 +96,7 @@ Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
       :id                      => resource[:name],
       :name                    => resource[:label],
       :format                  => resource[:provider_type],
-      :provider                => resource[:provider_type],
+      :provider                => FORMAT_TO_PROVIDER_MAPPING[resource[:provider_type]],
       :exposed                 => resource[:exposed] == :true,
 
       :repositories            => resource[:repositories].collect { |repository| {'id' => repository} }

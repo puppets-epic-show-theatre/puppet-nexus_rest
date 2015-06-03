@@ -12,9 +12,20 @@ describe provider_class do
     resource = Puppet::Type::Nexus_repository_group.new({
       :name                    => 'example-group',
       :label                   => 'Example Repository Group',
-      :provider_type           => 'maven2',
+      :provider_type           => :maven2,
       :exposed                 => :true,
       :repositories            => ['repository-1', 'repository-2']
+    })
+    provider_class.new(resource)
+  end
+
+  let :provider_2 do
+    resource = Puppet::Type::Nexus_repository_group.new({
+      :name                    => 'nuget-group',
+      :label                   => 'Example Nuget Repository Group',
+      :provider_type           => :nuget,
+      :exposed                 => :true,
+      :repositories            => ['repository-3', 'repository-4']
     })
     provider_class.new(resource)
   end
@@ -72,8 +83,8 @@ describe provider_class do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:name => 'Example Repository Group'))
       provider.create
     end
-    it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => :maven2))
+    it 'should map maven2 provider_type to maven2 provider' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.create
     end
     it 'should map exposed symbol to boolean' do
@@ -83,6 +94,10 @@ describe provider_class do
     it 'should map repositories to repositories' do
       Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:repositories => [{'id' => 'repository-1'}, {'id' => 'repository-2'}]))
       provider.create
+    end
+    it 'should map nuget provider_type to nuget-group provider' do
+      Nexus::Rest.should_receive(:create).with(anything, :data => hash_including(:provider => 'nuget-group'))
+      provider_2.create
     end
   end
 
@@ -107,8 +122,8 @@ describe provider_class do
       Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:name => 'Example Repository Group'))
       provider.flush
     end
-    it 'should map provider_type to provider' do
-      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:provider => :maven2))
+    it 'should map provider_type to correct provider' do
+      Nexus::Rest.should_receive(:update).with(anything, :data => hash_including(:provider => 'maven2'))
       provider.flush
     end
     it 'should map provider_type to format' do
