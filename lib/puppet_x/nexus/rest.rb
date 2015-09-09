@@ -1,6 +1,6 @@
 require 'json'
 require 'yaml'
-require 'rest_client'
+autoload :RestClient, 'rest_client'
 require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x', 'nexus', 'service.rb'))
 
 module Nexus

@@ -1,5 +1,5 @@
 require 'json'
-require 'rest_client'
+autoload :RestClient, 'rest_client'
 
 module Nexus
 

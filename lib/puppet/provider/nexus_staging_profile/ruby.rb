@@ -6,6 +6,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 
 Puppet::Type.type(:nexus_staging_profile).provide(:ruby) do
 
+  confine :feature => :restclient
+
   def initialize(value={})
     super(value)
     @update_required = false

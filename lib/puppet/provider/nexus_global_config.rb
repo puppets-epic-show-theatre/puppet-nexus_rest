@@ -6,6 +6,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'puppet_x
 class Puppet::Provider::NexusGlobalConfig < Puppet::Provider
   desc "Manage the global configuration."
 
+  confine :feature => :restclient
+
   @@global_config_rest_resource = '/service/local/global_settings'
 
   def initialize(value={})

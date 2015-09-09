@@ -6,6 +6,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 
 Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
 
+  confine :feature => :restclient
+
   @@do_not_touch = false
   DO_NOT_TOUCH_ERROR_MESSAGE='Cannot modify nexus_scheduled_task resources due to previous failure(s)'
 
