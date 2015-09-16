@@ -1,3 +1,7 @@
+##2015-09-16 - Release 0.4.3
+
+* Confine rest-client as a feature within the provider ([pull request #48](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/48)).
+
 ##2015-06-03 - Release 0.4.2
 
 Fixed support for `nexus_repository_groups` using non-maven format. ([pull request #46](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44))
