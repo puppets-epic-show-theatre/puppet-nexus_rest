@@ -6,6 +6,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository_group).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  confine :feature => :restclient
+
   FORMAT_TO_PROVIDER_MAPPING = {
     :maven1    => 'maven1',
     :maven2    => 'maven2',

@@ -6,6 +6,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_access_privilege).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  confine :feature => :restclient
+
   BASENAME_DELIMITER = ' - ('
 
   def initialize(value={})

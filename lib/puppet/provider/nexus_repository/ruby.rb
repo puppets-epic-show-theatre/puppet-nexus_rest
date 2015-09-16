@@ -8,6 +8,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_repository).provide(:ruby) do
   desc "Uses Ruby's rest library"
 
+  confine :feature => :restclient
+
   WRITE_ONCE_ERROR_MESSAGE = "%s is write-once only and cannot be changed without force."
   PROVIDER_TYPE_MAPPING = {
     'maven1'    => {

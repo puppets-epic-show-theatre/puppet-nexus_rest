@@ -7,6 +7,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), '..', '..', '..', 'pu
 Puppet::Type.type(:nexus_smtp_settings).provide(:ruby, :parent => Puppet::Provider::NexusGlobalConfig) do
   desc "Ruby-based management of the Nexus SMTP settings."
 
+  confine :feature => :restclient
+
   def initialize(value={})
     super(value)
     @update_trust_store_setting = false

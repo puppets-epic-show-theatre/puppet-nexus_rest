@@ -1,6 +1,5 @@
 require 'json'
 require 'puppet'
-require 'rest_client'
 require 'yaml'
 
 module Nexus
