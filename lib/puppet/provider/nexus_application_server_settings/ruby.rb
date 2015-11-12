@@ -3,7 +3,9 @@ require File.join(File.dirname(__FILE__), '..', 'nexus_global_config')
 
 Puppet::Type.type(:nexus_application_server_settings).provide(:ruby, :parent => Puppet::Provider::NexusGlobalConfig) do
   desc "Ruby-based management of the Nexus web application settings."
-
+  
+  confine :feature => :restclient
+  
   def self.map_config_to_resource_hash(global_config)
     notification_settings = global_config['globalRestApiSettings']
     {
