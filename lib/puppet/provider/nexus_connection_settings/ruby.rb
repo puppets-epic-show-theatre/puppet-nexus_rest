@@ -4,7 +4,9 @@ require File.join(File.dirname(__FILE__), '..', 'nexus_global_config')
 
 Puppet::Type.type(:nexus_connection_settings).provide(:ruby, :parent => Puppet::Provider::NexusGlobalConfig) do
   desc "Ruby-based management of the global connection settings."
-
+  
+  confine :feature => :restclient
+  
   def self.map_config_to_resource_hash(global_config)
     connection_settings = global_config['globalConnectionSettings']
     {
