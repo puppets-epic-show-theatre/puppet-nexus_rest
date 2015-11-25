@@ -1,3 +1,10 @@
+##2015-09-16 - Release 0.4.4
+
+This release just ships another iteration on the confinement of the rest-client so it can be installed and used in the 
+same Puppet run.
+
+* Confine rest-client as a feature within the provider ([pull request #49](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/49)).
+
 ##2015-09-16 - Release 0.4.3
 
 * Confine rest-client as a feature within the provider ([pull request #48](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/48)).
