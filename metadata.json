@@ -1,6 +1,6 @@
 {
   "name": "atlassian/nexus_rest",
-  "version": "0.4.4",
+  "version": "0.5.0",
   "summary": "Manage Nexus resources through a REST interface",
   "author": "Atlassian",
   "description": "Manage Nexus repository resources through a REST interface",

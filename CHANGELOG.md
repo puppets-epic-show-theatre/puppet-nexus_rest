@@ -1,3 +1,7 @@
+##2016-02-29 - Release 0.5.0
+
+Update `nexus_repository` to support hosted npm and rubygem repositories ([pull request #50](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/50)).
+
 ##2015-09-16 - Release 0.4.4
 
 This release just ships another iteration on the confinement of the rest-client so it can be installed and used in the 
@@ -11,7 +15,7 @@ same Puppet run.
 
 ##2015-06-03 - Release 0.4.2
 
-Fixed support for `nexus_repository_groups` using non-maven format. ([pull request #46](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44))
+Fixed support for `nexus_repository_groups` using non-maven format ([pull request #46](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-request/44)).
 
 ##2015-03-27 - Release 0.4.1
 
