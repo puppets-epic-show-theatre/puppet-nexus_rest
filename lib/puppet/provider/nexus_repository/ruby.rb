@@ -13,37 +13,65 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
   WRITE_ONCE_ERROR_MESSAGE = "%s is write-once only and cannot be changed without force."
   PROVIDER_TYPE_MAPPING = {
     'maven1'    => {
-      :provider     => 'maven1',
+      :provider     => {
+        :hosted     => 'maven1',
+        :proxy      => 'maven1',
+        :virtual    => 'maven1'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'maven1',
     },
     'maven2'    => {
-      :provider     => 'maven2',
+      :provider     => {
+        :hosted     => 'maven2',
+        :proxy      => 'maven2',
+        :virtual    => 'maven2'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'maven2',
     },
     'obr'       => {
-      :provider     => 'obr-proxy',
+      :provider     => {
+        :hosted     => 'obr-proxy',
+        :proxy      => 'obr-proxy',
+        :virtual    => 'obr-proxy'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'obr',
     },
     'nuget'     => {
-      :provider     => 'nuget-proxy',
+      :provider     => {
+        :hosted     => 'nuget-proxy',
+        :proxy      => 'nuget-proxy',
+        :virtual    => 'nuget-proxy'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'nuget',
     },
     'site'      => {
-      :provider     => 'site',
+      :provider     => {
+        :hosted     => 'site',
+        :proxy      => 'site',
+        :virtual    => 'site'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.WebSiteRepository',
       :format       => 'site',
     },
     'npm'       => {
-      :provider     => 'npm-proxy',
+      :provider     => {
+        :hosted     => 'npm-hosted',
+        :proxy      => 'npm-proxy',
+        :virtual    => 'npm-proxy'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'npm',
     },
     'rubygems'  => {
-      :provider     => 'rubygems-proxy',
+      :provider     => {
+        :hosted     => 'rubygems-hosted',
+        :proxy      => 'rubygems-proxy',
+        :virtual    => 'rubygems-proxy'
+      },
       :providerRole => 'org.sonatype.nexus.proxy.repository.Repository',
       :format       => 'rubygems',
     },
@@ -159,7 +187,7 @@ Puppet::Type.type(:nexus_repository).provide(:ruby) do
       :id                      => resource[:name],
       :name                    => resource[:label],
       :repoType                => resource[:type].to_s,
-      :provider                => content_type_details[:provider],
+      :provider                => content_type_details[:provider][resource[:type]],
       :providerRole            => content_type_details[:providerRole],
       :format                  => content_type_details[:format],
       :repoPolicy              => resource[:policy].to_s.upcase,
