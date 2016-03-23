@@ -11,7 +11,7 @@ describe Puppet::Type.type(:nexus_ldap_settings).provider(:ruby) do
         'searchBase'            => 'dc=domain,dc=org',
         'realm'                 => 'domain.org',
         'protocol'              => 'ldaps',
-        'authScheme' => 'simple'
+        'authScheme'            => 'simple'
       }
     end
 
@@ -46,7 +46,7 @@ describe Puppet::Type.type(:nexus_ldap_settings).provider(:ruby) do
         'ldapGroupsAsRoles'     => true,
         'userSubtree'           => false,
         'groupSubtree'          => true,
-        'ldapFilter'            => '(sn=sm*)',
+        'ldapFilter'            => '(sn=sm*)'
       }
     end
 
@@ -117,7 +117,7 @@ describe Puppet::Type.type(:nexus_ldap_settings).provider(:ruby) do
         :ldap_groups_as_roles     => true,
         :user_subtree             => false,
         :group_subtree            => true,
-        :ldap_filter              => '(sn=sm*)',
+        :ldap_filter              => '(sn=sm*)'
       }
     end
 

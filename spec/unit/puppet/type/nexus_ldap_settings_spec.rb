@@ -20,9 +20,8 @@ describe Puppet::Type.type(:nexus_ldap_settings) do
         :group_id_attribute => '',
         :group_member_attribute => '',
         :group_member_format => '',
-        :group_object_class => '',
-        )
-        .pre_run_check }.to_not raise_error
+        :group_object_class => ''
+        ).pre_run_check }.to_not raise_error
     end
 
     let(:goodGroupSettings) {
@@ -33,7 +32,7 @@ describe Puppet::Type.type(:nexus_ldap_settings) do
         :group_id_attribute => 'cn',
         :group_member_attribute => 'member',
         :group_member_format => '${dn}',
-        :group_object_class => 'group',
+        :group_object_class => 'group'
       )
      }
 

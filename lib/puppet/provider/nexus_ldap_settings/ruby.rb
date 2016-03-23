@@ -68,7 +68,7 @@ Puppet::Type.type(:nexus_ldap_settings).provide(:ruby) do
       :search_base              => ldapSettings['searchBase'],
       :realm                    => ldapSettings['realm'],
       :protocol                 => ldapSettings['protocol'] ? ldapSettings['protocol'].to_sym : :ldap,
-      :authentication_scheme    => ldapSettings['authScheme'] ? ldapSettings['authScheme'].to_sym : :none,
+      :authentication_scheme    => ldapSettings['authScheme'] ? ldapSettings['authScheme'].to_sym : :none
     }
   end
 
@@ -88,7 +88,7 @@ Puppet::Type.type(:nexus_ldap_settings).provide(:ruby) do
       :ldap_groups_as_roles     => ldapSettings['ldapGroupsAsRoles'],
       :user_subtree             => ldapSettings['userSubtree'],
       :group_subtree            => ldapSettings['groupSubtree'],
-      :ldap_filter              => ldapSettings['ldapFilter'],
+      :ldap_filter              => ldapSettings['ldapFilter']
     }
   end
 
@@ -102,7 +102,7 @@ Puppet::Type.type(:nexus_ldap_settings).provide(:ruby) do
       'searchBase'            => resource[:search_base],
       'realm'                 => resource[:realm],
       'protocol'              => resource[:protocol],
-      'authScheme'            => resource[:authentication_scheme],
+      'authScheme'            => resource[:authentication_scheme]
     }
     ldapSettings['systemPassword'] = resource[:password_value] if resource[:password] == :present
     ldapSettings
@@ -124,7 +124,7 @@ Puppet::Type.type(:nexus_ldap_settings).provide(:ruby) do
       'ldapGroupsAsRoles'     => resource[:ldap_groups_as_roles],
       'userSubtree'           => resource[:user_subtree],
       'groupSubtree'          => resource[:group_subtree],
-      'ldapFilter'            => resource[:ldap_filter],
+      'ldapFilter'            => resource[:ldap_filter]
     }
   end
 
