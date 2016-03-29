@@ -24,10 +24,10 @@ disadvantages and has its own:
 
 This Puppet Module aims to address all of these disadvantages. At this point
 not all options covered by XML configuration are covered by this module, but the module is
-designed to be easily extensible and pull requests are welcome. This module could be 
+designed to be easily extensible and pull requests are welcome. This module could be
 capable of managing anything configurable through the Nexus UI.
 
-In a nutshell, Puppet Module for Sonatype Nexus allows configuration to go from this: 
+In a nutshell, Puppet Module for Sonatype Nexus allows configuration to go from this:
 
 ```
   #manifest/.../config.pp
@@ -67,7 +67,7 @@ In a nutshell, Puppet Module for Sonatype Nexus allows configuration to go from 
   </repositories>
   ...
 ```
- 
+
 
 To this:
 
@@ -83,8 +83,8 @@ To this:
 
 ## Requirements ##
 
-The module doesn't have any dependencies on other Puppet modules. But it is using Ruby libraries that may not be 
-contained in the default installation. Currently, the following libraries are expected to be installed; the module won't 
+The module doesn't have any dependencies on other Puppet modules. But it is using Ruby libraries that may not be
+contained in the default installation. Currently, the following libraries are expected to be installed; the module won't
 install or manage them in any way (see the Gemfile for more information):
 
 * json
@@ -93,18 +93,18 @@ install or manage them in any way (see the Gemfile for more information):
 
 Depending on the version of Ruby you're using, some of them are shipped by default (e.g. `json`) whereas others need
 to be installed via Puppet or in a bootstrap process like
- 
+
 ```
 package { 'rest-client':
   ensure   => installed,
   provider => gem,
 }
 ```
- 
-Obviously it would be a great improvement if the module itself could provide a manifest to install and manage its 
+
+Obviously it would be a great improvement if the module itself could provide a manifest to install and manage its
 dependencies. Any contributions are welcome!
 
-Limitation: at the moment the module doesn't handle the provision-from-scratch use case very well and will cause a 
+Limitation: at the moment the module doesn't handle the provision-from-scratch use case very well and will cause a
 couple of warnings during the resource discovery phase as the Ruby gems may not be available. As long as the gems are
 installed before the Puppet resources are used, everything should be fine.
 
@@ -226,6 +226,45 @@ nexus_smtp_settings { 'current':
   sender_email           => 'nexus@example.com',
 }
 ```
+
+## LDAP configuration ##
+
+The Nexus LDAP settings can be configured using the `nexus_ldap_settings` resource:
+
+```
+#!puppet
+
+nexus_ldap_settings { 'current':             #only define one of these resources
+  description                   => 'repo1 read-write',   #optional
+  hostname                      => 'somehost',           #required: LDAP server hostname
+  port                          => '389'                 #389 is default
+  username                      => 'someuser',           #required: User to authenticate with LDAP service
+  password                      => 'present',            #absent is default, valid values: absent, present
+                                                         #if present, the password_value will be used
+  password_value                => 'hunter2',            #optional, default is unspecified
+  protocol                      => 'ldap',               #ldap is default, valid values: ldap, ldaps
+  authentication_scheme         => 'none',               #none is default, valid values: simple, none, DIGEST_MD5, CRAM_MD5
+  search_base                   => '',                   #required
+  realm                         => '',                   #optional
+  ldap_filter                   => '',                   #optional
+  email_address_attribute       => 'email',              #email is default
+  user_password_attribute       => 'pw',                 #optional
+  user_real_name_attribute      => 'displayName',        #default is displayName
+  user_id_attribute             => 'cn',                 #cn is default
+  user_object_class             => 'user',               #user is default
+  user_base_dn                  => 'OU=users',           #OU=users is default
+  user_subtree                  => false,                #false is default
+  group_base_dn                 => 'OU=groups',          #OU=groups is default, required if ldap_groups_as_roles is true
+  group_id_attribute            => 'cn',                 #cn is default, required if ldap_groups_as_roles is true
+  group_member_attribute        => 'uniqueMember',       #uniqueMember is default, required if ldap_groups_as_roles is true
+  group_member_format           => '${dn}',              #${dn} is default, required if ldap_groups_as_roles is true
+  group_object_class            => 'group',              #group is default, required if ldap_groups_as_roles is true
+  group_subtree                 => false,                #false is default
+  ldap_groups_as_roles          => false,                #false is default
+}
+```
+
+
 
 ### Repository Configuration ###
 
@@ -381,8 +420,8 @@ The Nexus Staging feature enables the usage of temporary repositories that are c
 area where artifacts can be kept until they have been approved by QA. Have a read through chapter 11 of the Nexus book:
 [Improved Releases with Nexus Staging](http://books.sonatype.com/nexus-book/reference/staging.html).
 
-The example below shows how a staging profile can be configured from Puppet. The resource respects the 
-`can_delete_repositories` kill switch and won't delete staging profiles unless configured to do so. 
+The example below shows how a staging profile can be configured from Puppet. The resource respects the
+`can_delete_repositories` kill switch and won't delete staging profiles unless configured to do so.
 
 ```
 #!puppet
@@ -397,12 +436,12 @@ nexus_staging_profile { 'staging-repository':
                                                             # the created staging repositories
 
   # Parameters that need to be tweaked unless Maven 2 is used
-  staging_template       => 'default_hosted_release',        
-  repository_type        => maven2,                         
-   
-  searchable             => false,                          # true (default) or false 
+  staging_template       => 'default_hosted_release',
+  repository_type        => maven2,
+
+  searchable             => false,                          # true (default) or false
   implicitly_selectable  => false,                          # true (default) or false; the Profile Selection Strategy
-  
+
   # An optional list of rule set names; they can be used to enforce certain properties of the release. Use the
   # nexus_staging_ruleset resource to manage them.
   close_rulesets         => 'Public Release',
@@ -433,9 +472,9 @@ The following example shows how to define a Nexus staging ruleset with a couple 
 nexus_staging_ruleset { 'Public Release':
   ensure      => present,                                   # present or absent
   description => 'Ensure the release artifacts are unique and apply basic sanity checking.',
-  rules       => [                                          # non-empty list of rules to apply (disabled rules are removed) 
+  rules       => [                                          # non-empty list of rules to apply (disabled rules are removed)
     'Artifact Uniqueness Validation',
-    'Javadoc Validation', 
+    'Javadoc Validation',
     'POM Validation',
     "POM must not contain 'system' scoped dependencies",
     'Signature Validation',
