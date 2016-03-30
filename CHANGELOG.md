@@ -1,3 +1,7 @@
+##2016-03-24 - Release 0.6.0
+
+Added `nexus_ldap_settings` to manage LDAP configuration ([pull request #50](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/51)).
+
 ##2016-02-29 - Release 0.5.0
 
 Update `nexus_repository` to support hosted npm and rubygem repositories ([pull request #50](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/50)).
