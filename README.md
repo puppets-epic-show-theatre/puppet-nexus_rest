@@ -527,6 +527,66 @@ nexus_access_privilege { 'internal-ro':
 }
 ```
 
+## Nexus Generic Configuration ##
+
+For Nexus configurations where there is no provider in this module it may be possible to use nexus_generic_settings.  This provides a low level wrapper around the Nexus REST API calls.
+
+The REST API calls and the expected data formats can be viewed on the Nexus server by following the "Documentation" links for the plugins in the Plugin Console.  The settings_hash property will be transformed into JSON that will be POSTed or PUT to the specified api_url_fragment.
+
+```
+#!puppet
+
+# Configure security realms to use
+
+nexus_generic_settings { 'realms':
+  api_url_fragment => '/service/local/global_settings/current',
+  merge            => true, # merge the settings_hash into existing settings on the server
+  settings_hash    => {
+    securityRealms => [
+                'XmlAuthenticatingRealm',
+                'XmlAuthorizingRealm',
+                'LdapAuthenticatingRealm',
+                'X-NuGet-ApiKey'
+            ],
+  }
+}
+
+# Create an External Role Mapping
+
+nexus_generic_settings { 'admins-role':
+  api_url_fragment => '/service/local/roles',
+  merge            => false,
+  action           => 'create', # action is 'create' or 'update'
+  settings_hash    => {
+    id             => 'Package Repo Admins',
+    name           => 'Package Repo Admins',
+    description    => 'External Role Mapping for Package Repo Admins',
+    sessionTimeout => 0,
+    roles          => ['nx-admin', 'repository-any-full']
+  },
+  require          => Nexus_generic_settings['realms']
+}
+
+# Create a user
+
+nexus_generic_settings { 'readonly-user':
+  api_url_fragment => '/service/local/users',
+  id_field         => 'userId',
+  merge            => false,
+  action           => 'create',
+  settings_hash    => {
+    userId         => 'readonly',
+    firstName      => 'readonly',
+    lastName       => 'readonly',
+    status         => 'active',
+    email          => 'noreply@example.org',
+    roles          => ['repository-any-read','anonymous'],
+    password       => 'secretpassword'
+  }
+}
+
+```
+
 ## Limitations ##
 
 ### Ruby and Puppet compatibility ###
