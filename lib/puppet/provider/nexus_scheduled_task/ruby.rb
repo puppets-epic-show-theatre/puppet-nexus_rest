@@ -38,7 +38,7 @@ Puppet::Type.type(:nexus_scheduled_task).provide(:ruby) do
           processed_task_names << name
         end
       end
-      repositories.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
+      repositories.reject{|scheduled_task| scheduled_task["schedule"] == "internal"}.collect { |scheduled_task| new(map_data_to_resource(scheduled_task)) }
     rescue => e
       raise Puppet::Error, "Error while retrieving all nexus_scheduled_task instances: #{e}"
     end

@@ -21,6 +21,16 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     }
   end
 
+  let(:release_staging_repositories) do
+    {
+      'id'         => '2',
+      'name'       => 'Releasing staging repositories',
+      'enabled'    => true,
+      'typeId'     => 'ReleaseRemoverTask',
+      'schedule'   => 'internal',
+    }
+  end
+
   let(:resource) do
     {
       :name            => 'Empty Trash',
@@ -214,6 +224,12 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
       expect(described_class.instances[0].cron_expression).to eq('0 0 12 * * ?')
     end
   end
+
+    specify 'should set ensure to present' do
+      Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [release_staging_repositories]})
+
+      expect(described_class.instances).to be_empty
+    end
 
   describe :create do
     specify 'should use /service/local/schedules to create a new resource' do
