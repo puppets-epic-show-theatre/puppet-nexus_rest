@@ -225,11 +225,13 @@ describe Puppet::Type.type(:nexus_scheduled_task).provider(:ruby) do
     end
   end
 
+  describe :internal do
     specify 'should set ensure to present' do
       Nexus::Rest.should_receive(:get_all_plus_n).and_return({'data' => [release_staging_repositories]})
 
       expect(described_class.instances).to be_empty
     end
+  end
 
   describe :create do
     specify 'should use /service/local/schedules to create a new resource' do
