@@ -1,6 +1,6 @@
 ##2016-06-22 - Release 0.7.0
 
-Internal scheduled tasks are ignored by nexus_scheduled_task. It will no longer be unintentionally removed. ([pull request #54](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/54)).
+Internal scheduled tasks are ignored by nexus_scheduled_task. They will no longer be unintentionally removed. ([pull request #54](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/54)).
 
 ##2016-03-24 - Release 0.6.0
 
