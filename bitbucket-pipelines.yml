@@ -16,5 +16,4 @@ pipelines:
           - bundler --version
           - bundle install
           - rake spec
-          - gem install puppet-blacksmith
           - rake module:release
