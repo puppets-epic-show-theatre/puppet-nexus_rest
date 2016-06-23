@@ -7,13 +7,13 @@ pipelines:
           - ruby --version
           - bundler --version
           - bundle install
-          - rake spec
+          - bundle exec rspec
   branches:
-    master:
+    release:
       - step:
         script:
           - ruby --version
           - bundler --version
           - bundle install
-          - rake spec
+          - bundle exec rspec
           - rake module:release
