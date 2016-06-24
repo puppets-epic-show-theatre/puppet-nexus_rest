@@ -46,6 +46,9 @@ GEM
       facter (> 1.6, < 3)
       hiera (~> 1.0)
       json_pure
+    puppet-blacksmith (3.3.1)
+      puppet (>= 2.7.16)
+      rest-client
     puppetlabs_spec_helper (0.4.1)
       mocha (>= 0.10.5)
       rake
@@ -88,9 +91,13 @@ DEPENDENCIES
   json (~> 1.8.1)
   mime-types (< 2.0)
   puppet (~> 3.7.3)
+  puppet-blacksmith (~> 3.3.1)
   puppetlabs_spec_helper (~> 0.4.1)
   rake (~> 10.2.2)
   rest-client (~> 1.6.7)
   rspec-puppet (~> 1.0.1)
   rspec_junit_formatter (~> 0.1.6)
   webmock (~> 1.17.4)
+
+BUNDLED WITH
+   1.12.2
