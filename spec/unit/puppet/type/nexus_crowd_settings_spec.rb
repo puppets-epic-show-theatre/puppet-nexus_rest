@@ -29,20 +29,40 @@ describe Puppet::Type.type(:nexus_crowd_settings) do
   end
 
   describe :application_password do
+    specify 'should default to :absent' do
+      expect(described_class.new(:name => 'any')[:application_password]).to eq(:absent)
+    end
+
+    specify 'should accept :present' do
+      expect { described_class.new(:name => 'any', :application_password => :present) }.to_not raise_error
+    end
+
+    specify 'should accept :absent' do
+      expect { described_class.new(:name => 'any', :application_password => :absent) }.to_not raise_error
+    end
+
+    specify 'should not accept anything else' do
+      expect {
+        described_class.new(:name => 'any', :application_password => 'secret')
+      }.to raise_error(Puppet::ResourceError, /Parameter application_password failed/)
+    end
+  end
+
+  describe :application_password_value do
     specify 'should accept string' do
-      expect { described_class.new(:name => 'current', :application_password => 'ABC') }.to_not raise_error
+      expect { described_class.new(:name => 'current', :application_password_value => 'ABC') }.to_not raise_error
     end
 
     specify 'should not accept empty string' do
-      expect { described_class.new(:name => 'current', :application_password => '') }.to raise_error
+      expect { described_class.new(:name => 'current', :application_password_value => '') }.to raise_error
     end
 
     specify 'should reject false' do
-      expect { described_class.new(:name => 'current', :application_password => false) }.to raise_error
+      expect { described_class.new(:name => 'current', :application_password_value => false) }.to raise_error
     end
 
     specify 'should reject nil' do
-      expect { described_class.new(:name => 'current', :application_password => nil) }.to raise_error
+      expect { described_class.new(:name => 'current', :application_password_value => nil) }.to raise_error
     end
   end
 
@@ -59,6 +79,10 @@ describe Puppet::Type.type(:nexus_crowd_settings) do
       expect {
         described_class.new(:name => 'any', :crowd_server_url => 'invalid')
       }.to raise_error(Puppet::ResourceError, /Parameter crowd_server_url failed/)
+    end
+
+    specify 'should reject nil' do
+      expect { described_class.new(:name => 'current', :crowd_server_url => nil) }.to raise_error
     end
 
     specify 'should not accept empty string' do

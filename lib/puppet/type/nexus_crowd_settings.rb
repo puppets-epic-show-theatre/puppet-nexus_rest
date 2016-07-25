@@ -16,6 +16,15 @@ Puppet::Type.newtype(:nexus_crowd_settings) do
   end
 
   newproperty(:application_password) do
+    desc 'The state of the application_password. Either `absent` or `present` whereas `absent` means
+    no password at all and `present` will update the password to the given `password` field. Unfortunately, it is not
+    possible to retrieve the current password.'
+    defaultto :absent
+    newvalues(:absent, :present)
+
+  end
+
+  newparam(:application_password_value) do
     desc 'The password for the application'
 
     validate do |value|

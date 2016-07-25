@@ -26,7 +26,7 @@
     def self.map_config_to_resource_hash(crowd_settings)
       {
         :application_name     => crowd_settings["applicationName"],
-        :application_password => crowd_settings["applicationPassword"],
+        :application_password => crowd_settings["applicationPassword"] ? :present : :absent,
         :crowd_server_url     => crowd_settings["crowdServerUrl"],
         :http_timeout         => crowd_settings["httpTimeout"],
       }
@@ -35,7 +35,7 @@
     def map_resource_hash_to_config
       config = {}
       config["applicationName"] = resource[:application_name] unless resource[:application_name].nil?
-      config["applicationPassword"] = resource[:application_password] unless resource[:application_password].nil?
+      config["applicationPassword"] = resource[:application_password_value] if resource[:application_password] == :present && !resource[:application_name].nil?
       config["crowdServerUrl"] = resource[:crowd_server_url] unless resource[:crowd_server_url].nil?
       config["httpTimeout"] = resource[:http_timeout] unless resource[:http_timeout].nil?
 
