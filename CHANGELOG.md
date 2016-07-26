@@ -1,6 +1,6 @@
 ##2016-07-26 - Release 0.8.0
 
-Added `nexus_crowd_settings` resource to manage Crowd settings (#add Pr once raised).
+Added `nexus_crowd_settings` resource to manage Crowd settings ([pull request #57](https://bitbucket.org/atlassian/puppet-module-nexus_rest/pull-requests/57/buildeng-11428-nexus-crowd-provider/diff)).
 
 ##2016-06-22 - Release 0.7.0
 

@@ -9,6 +9,7 @@ gem 'mime-types', '< 2.0'
 
 group :development do
   gem 'guard-rspec', '~> 4.2.9', :require => false
+  gem 'puppet-blacksmith', '~> 3.3.1'
 end
 
 group :test do

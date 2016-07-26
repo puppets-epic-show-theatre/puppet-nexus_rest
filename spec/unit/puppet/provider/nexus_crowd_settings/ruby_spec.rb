@@ -61,19 +61,10 @@ describe Puppet::Type.type(:nexus_crowd_settings).provider(:ruby) do
       resource[:application_password_value] = 'password'
       resource[:application_password]       =  :present
       crowd_settings = instance.map_resource_hash_to_config
-
-      expect(crowd_settings['applicationName']).to eq('username')
-      expect(crowd_settings['applicationPassword']).to eq('password')
-      expect(crowd_settings['crowdServerUrl']).to eq('http://crowd-server.com')
-      expect(crowd_settings['httpTimeout']).to eq(60)
-    end
-
-    specify 'Should omit password when application_password is :absent' do
-      resource[:application_password_value] = 'Should do nothing'
-      resource[:application_password]       =  :absent
-      crowd_settings = instance.map_resource_hash_to_config
-
-      expect(crowd_settings).to_not include('password' => anything())
+      expect(crowd_settings['data']['applicationName']).to eq('username')
+      expect(crowd_settings['data']['applicationPassword']).to eq('password')
+      expect(crowd_settings['data']['crowdServerUrl']).to eq('http://crowd-server.com')
+      expect(crowd_settings['data']['httpTimeout']).to eq(60)
     end
   end
 end
