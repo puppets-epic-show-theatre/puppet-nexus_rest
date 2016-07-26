@@ -33,11 +33,11 @@
     end
 
     def map_resource_hash_to_config
-      config = {}
-      config["applicationName"] = resource[:application_name] unless resource[:application_name].nil?
-      config["applicationPassword"] = resource[:application_password_value] if resource[:application_password] == :present && !resource[:application_name].nil?
-      config["crowdServerUrl"] = resource[:crowd_server_url] unless resource[:crowd_server_url].nil?
-      config["httpTimeout"] = resource[:http_timeout] unless resource[:http_timeout].nil?
+      config = { "data" => {} }
+      config["data"]["applicationName"] = resource[:application_name] unless resource[:application_name].nil?
+      config["data"]["applicationPassword"] = resource[:application_password_value] unless resource[:application_password_value].nil?
+      config["data"]["crowdServerUrl"] = resource[:crowd_server_url] unless resource[:crowd_server_url].nil?
+      config["data"]["httpTimeout"] = resource[:http_timeout] unless resource[:http_timeout].nil?
 
       config
     end
@@ -67,10 +67,8 @@
 
     def update_crowd_settings
       begin
-        Puppet::debug(self.class.nexus_resource)
-        crowd_settings = Nexus::Rest.get_all(self.class.nexus_resource)
-        crowd_settings['data'].merge!(map_resource_hash_to_config)
-        Nexus::Rest.update(self.class.nexus_resource, crowd_settings)
+        Puppet::debug(map_resource_hash_to_config)
+        Nexus::Rest.update(self.class.nexus_resource, map_resource_hash_to_config)
       rescue Exception => e
         raise Puppet::Error, "Error while updating crowd settings '#{resource[:name]}': #{e}"
       end

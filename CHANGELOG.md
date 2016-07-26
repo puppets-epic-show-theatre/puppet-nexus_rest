@@ -1,4 +1,4 @@
-##2016-07-26 - Release 0.7.0
+##2016-07-26 - Release 0.8.0
 
 Added `nexus_crowd_settings` resource to manage Crowd settings (#add Pr once raised).
 

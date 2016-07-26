@@ -28,7 +28,7 @@ Puppet::Type.newtype(:nexus_crowd_settings) do
     desc 'The password for the application'
 
     validate do |value|
-      raise ArgumentError, "application_password must be set" unless (value.is_a? String) and !value.empty?
+      raise ArgumentError, "application_password_value must be set" unless (value.is_a? String) and !value.empty?
     end
   end
 
