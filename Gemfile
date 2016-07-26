@@ -9,7 +9,6 @@ gem 'mime-types', '< 2.0'
 
 group :development do
   gem 'guard-rspec', '~> 4.2.9', :require => false
-  gem 'puppet-blacksmith', '~> 3.3.1'
 end
 
 group :test do
@@ -19,4 +18,5 @@ group :test do
   gem 'puppetlabs_spec_helper', '~> 0.4.1'
   gem 'webmock', '~> 1.17.4'
   gem 'excon', '~> 0.27.5' # required by webmock
+  gem 'puppet-blacksmith', '~> 3.3.1'
 end
