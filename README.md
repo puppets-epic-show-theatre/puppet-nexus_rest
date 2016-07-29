@@ -227,6 +227,23 @@ nexus_smtp_settings { 'current':
 }
 ```
 
+
+## Crowd Settings ##
+The Nexus Crowd Settings can be configured using the `nexus_crowd_settings` resource:
+
+```
+#!puppet
+
+nexus_crowd_settings { 'current':
+    application_name           => 'AppName',
+    application_password       => 'present',                  #absent is default, valid values: absent, present
+                                                              #if present, the application_password_value will be used
+    application_password_value => 'AppPassword',
+    crowd_server_url           => 'http://crowd-server.com',
+    http_timeout               => 100                         #default is 60
+}
+```
+
 ## LDAP configuration ##
 
 The Nexus LDAP settings can be configured using the `nexus_ldap_settings` resource:
