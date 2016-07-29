@@ -4,6 +4,7 @@ puppetversion = ENV['PUPPET_VERSION'] || '~> 3.7.3'
 
 gem 'puppet', puppetversion
 gem 'json', '~> 1.8.1'
+gem 'json_pure', '~> 1.8.2'
 gem 'rest-client', '~> 1.6.7' # Ruby 1.8.7 compatible version
 gem 'mime-types', '< 2.0'
 
