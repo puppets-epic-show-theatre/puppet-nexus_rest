@@ -8,6 +8,7 @@ gem 'json_pure', '~> 1.8.2'   # Ruby 1.8.7 compatible version
 gem 'rest-client', '~> 1.6.7' # Ruby 1.8.7 compatible version
 gem 'mime-types', '< 2.0'
 gem 'addressable', '~> 2.2.7' # Ruby 1.8.7 compatible version
+gem "listen", "~> 3.0.0"
 
 group :development do
   gem 'guard-rspec', '~> 4.2.9', :require => false
