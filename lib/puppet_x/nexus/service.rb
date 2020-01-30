@@ -1,4 +1,5 @@
 require 'json'
+require 'rest-client'
 
 module Nexus
 

@@ -16,7 +16,8 @@ describe Nexus::Rest do
   before(:each) do
     # health check always successful ...
     service = double('Dummy service').as_null_object
-    Nexus::Rest.stub(:init_service).and_return(service)
+    allow(Nexus::Rest).to receive(:init_service).and_return(service)
+    #Nexus::Rest.stub(:init_service).and_return(service)
   end
 
   after(:each) do
